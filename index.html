@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Process Debt & Chaos Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    
+    /* Standardowy CSS zamiast @apply */
+    .input-group { margin-bottom: 1rem; }
+    .label { display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.25rem; }
+    .input-field { 
+        width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; 
+    }
+    .input-field:focus {
+    outline: none; 
+    border-color: #3b82f6; 
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+    .card { 
+        background-color: white; padding: 1.5rem; border-radius: 0.75rem; 
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); border: 1px solid #f3f4f6; 
+    }
+</style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+    <nav class="bg-slate-900 text-white p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold tracking-tight">IT Process Debt <span class="text-blue-400">& Chaos Calculator</span></h1>
+            <span class="text-xs uppercase bg-blue-600 px-2 py-1 rounded">Portfolio Edition</span>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8 max-w-6xl" id="report-content">
+        <header class="mb-8 border-b pb-6">
+            <h2 class="text-3xl font-extrabold text-slate-800">Kalkulator Długu Procesowego IT</h2>
+            <p class="text-gray-600">Zidentyfikuj i wyceń wąskie gardła w Twojej organizacji IT (ITIL 4 Alignment).</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-1 space-y-6">
+                
+                <section class="card">
+                    <h3 class="text-lg font-semibold mb-4 text-blue-700 border-b pb-2">Parametry Finansowe</h3>
+                    <div class="input-group">
+                        <label class="label">Koszt rbh Inżyniera (PLN)</label>
+                        <input type="number" id="costEng" value="150" class="input-field" oninput="calculate()">
+                    </div>
+                    <div class="input-group">
+                        <label class="label">Koszt rbh Biznesu (PLN)</label>
+                        <input type="number" id="costBiz" value="100" class="input-field" oninput="calculate()">
+                    </div>
+                </section>
+
+                <section class="card">
+                    <h3 class="text-lg font-semibold mb-4 text-blue-700 border-b pb-2">Dane Operacyjne</h3>
+                    
+                    <div class="mb-6">
+                        <p class="text-xs font-bold uppercase text-gray-400 mb-2">Incydenty (Manual Work)</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" id="incCount" placeholder="Szt./miesiąc" class="input-field" oninput="calculate()">
+                            <input type="number" id="incManualTime" placeholder="Minuty straty" class="input-field" oninput="calculate()">
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <p class="text-xs font-bold uppercase text-gray-400 mb-2">Change Management (CAB)</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" id="chgCount" placeholder="CAB/tydzień" class="input-field" oninput="calculate()">
+                            <input type="number" id="chgWaitTime" placeholder="Czekanie (h)" class="input-field" oninput="calculate()">
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <p class="text-xs font-bold uppercase text-gray-400 mb-2">CMDB / Asset Debt</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" id="cmdbDebt" placeholder="% błędów" class="input-field" oninput="calculate()">
+                            <input type="number" id="cmdbSearchTime" placeholder="Szukanie (min)" class="input-field" oninput="calculate()">
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <p class="text-xs font-bold uppercase text-gray-400 mb-2">Employee Onboarding</p>
+                        <div class="input-group">
+                            <input type="number" id="onboardingDays" placeholder="Dni bez narzędzi" class="input-field" oninput="calculate()">
+                        </div>
+                    </div>
+                </section>
+
+                <button onclick="exportPDF()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-lg transition-all shadow-md">
+                    Eksportuj Raport PDF
+                </button>
+            </div>
+
+            <div class="lg:col-span-2 space-y-6">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="card bg-red-50 border-red-200">
+                        <p class="text-sm text-red-600 font-semibold uppercase">Roczny Koszt Chaosu</p>
+                        <p class="text-4xl font-black text-red-700" id="totalCost">0 PLN</p>
+                    </div>
+                    <div class="card bg-amber-50 border-amber-200">
+                        <p class="text-sm text-amber-600 font-semibold uppercase">Zmarnowane rbh / Rok</p>
+                        <p class="text-4xl font-black text-amber-700" id="totalHours">0 h</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">Struktura kosztów długu (Rocznie)</h3>
+                    <div style="max-height: 300px;">
+                        <canvas id="debtChart"></canvas>
+                    </div>
+                </div>
+
+                <div id="expertRecommendation" class="card bg-blue-900 text-white hidden">
+                    <div class="flex items-start">
+                        <div class="mr-4 text-3xl">💡</div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-2 italic text-blue-200">Rekomendacja Eksperta (Senior ITSM):</h3>
+                            <p id="recommendationText" class="leading-relaxed">Wprowadź dane, aby otrzymać analizę.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-12 py-8 bg-gray-100 text-center text-gray-500 text-sm border-t">
+        <p>&copy; 2026 IT Service Management Portfolio Project | Built with Vanilla JS & Tailwind</p>
+    </footer>
+
+    <script>
+        let chart;
+
+        function calculate() {
+            // Pobieranie wartości
+            const cEng = parseFloat(document.getElementById('costEng').value) || 0;
+            const cBiz = parseFloat(document.getElementById('costBiz').value) || 0;
+
+            // Incydenty
+            const incCount = parseFloat(document.getElementById('incCount').value) || 0;
+            const incTime = parseFloat(document.getElementById('incManualTime').value) || 0;
+            const annualIncCost = (incCount * 12) * (incTime / 60) * cEng;
+            const annualIncHours = (incCount * 12) * (incTime / 60);
+
+            // Zmiany
+            const chgCount = parseFloat(document.getElementById('chgCount').value) || 0;
+            const chgTime = parseFloat(document.getElementById('chgWaitTime').value) || 0;
+            const annualChgCost = (chgCount * 52) * chgTime * cBiz; 
+            const annualChgHours = (chgCount * 52) * chgTime;
+
+            // CMDB
+            const cmdbDebt = (parseFloat(document.getElementById('cmdbDebt').value) || 0) / 100;
+            const cmdbSearch = parseFloat(document.getElementById('cmdbSearchTime').value) || 0;
+            const annualCmdbCost = (incCount * 12 * cmdbDebt) * (cmdbSearch / 60) * cEng;
+            const annualCmdbHours = (incCount * 12 * cmdbDebt) * (cmdbSearch / 60);
+
+            // Onboarding (zakładamy rotację 10 osób rocznie dla demonstracji)
+            const onboardDays = parseFloat(document.getElementById('onboardingDays').value) || 0;
+            const annualOnboardCost = 10 * (onboardDays * 8) * cBiz;
+            const annualOnboardHours = 10 * (onboardDays * 8);
+
+            // Sumy
+            const totalCost = annualIncCost + annualChgCost + annualCmdbCost + annualOnboardCost;
+            const totalHours = annualIncHours + annualChgHours + annualCmdbHours + annualOnboardHours;
+
+            document.getElementById('totalCost').innerText = totalCost.toLocaleString() + ' PLN';
+            document.getElementById('totalHours').innerText = Math.round(totalHours).toLocaleString() + ' h';
+
+            updateChart(annualIncCost, annualChgCost, annualCmdbCost, annualOnboardCost);
+            updateRecommendation(annualIncCost, annualChgCost, annualCmdbCost, annualOnboardCost);
+        }
+
+        function updateChart(inc, chg, cmdb, onb) {
+            const ctx = document.getElementById('debtChart').getContext('2d');
+            
+            if (chart) chart.destroy();
+
+            chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Incydenty (Manual)', 'Change (Waiting)', 'CMDB Debt', 'Onboarding Gap'],
+                    datasets: [{
+                        data: [inc, chg, cmdb, onb],
+                        backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        function updateRecommendation(inc, chg, cmdb, onb) {
+            const recBox = document.getElementById('expertRecommendation');
+            const recText = document.getElementById('recommendationText');
+            recBox.classList.remove('hidden');
+
+            let recommendations = [];
+
+            if (inc > 50000) recommendations.push("Krytyczny poziom manualnej pracy przy incydentach. Zalecane: **Self-Service Portal** oraz **Standard Operating Procedures (SOP)** dla Service Desku.");
+            if (chg > 30000) recommendations.push("Proces Change Management generuje przestoje biznesowe. Rozważ wprowadzenie **Standard Changes** (pre-approved) oraz automatyzację workflow.");
+            if (cmdb > 20000) recommendations.push("Niska jakość CMDB wydłuża MTTR. Wdrożenie narzędzia do **Auto-Discovery** zwróci się w ciągu 6 miesięcy.");
+            if (onb > 10000) recommendations.push("Onboarding drenażuje produktywność. Skonfiguruj **Zero-Touch Provisioning** i integrację HR-IT.");
+
+            if (recommendations.length === 0) {
+                recText.innerHTML = "Dług procesowy jest pod kontrolą. Skup się na optymalizacji kosztów licencyjnych.";
+            } else {
+                recText.innerHTML = recommendations.join("<br><br>");
+            }
+        }
+
+        async function exportPDF() {
+            const { jsPDF } = window.jspdf;
+            const element = document.getElementById('report-content');
+            
+            html2canvas(element, { scale: 2 }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgProps = pdf.getImageProperties(imgData);
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save("IT-Chaos-Report.pdf");
+            });
+        }
+
+        // Inicjalizacja pustego wykresu
+        window.onload = calculate;
+    </script>
+</body>
+</html>
