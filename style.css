@@ -1,0 +1,350 @@
+/* ============================================================
+   Strategic Business Case Engine — Dark Theme
+   Font: Space Grotesk (display) + Inter (body)
+   Accent: Cyan #06b6d4  Surface hierarchy: #0f172a → #1e293b → #273548
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;600;700;900&display=swap');
+
+/* ── Reset & base ── */
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --bg-base:       #0a0f1e;
+  --bg-surface:    #111827;
+  --bg-elevated:   #1a2535;
+  --bg-hover:      #1f2f45;
+  --bg-input:      #0f1a2a;
+
+  --border:        #1e3a52;
+  --border-focus:  #06b6d4;
+  --border-subtle: #162030;
+
+  --text-primary:  #e2e8f0;
+  --text-secondary:#94a3b8;
+  --text-muted:    #475569;
+  --text-label:    #7dd3fc;
+
+  --accent:        #06b6d4;
+  --accent-bright: #22d3ee;
+  --accent-glow:   rgba(6, 182, 212, 0.15);
+  --accent-dim:    rgba(6, 182, 212, 0.08);
+
+  --red:    #f87171;
+  --orange: #fb923c;
+  --purple: #c084fc;
+  --green:  #34d399;
+  --yellow: #fbbf24;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  --shadow-card: 0 4px 24px rgba(0,0,0,0.4);
+  --shadow-glow: 0 0 20px rgba(6,182,212,0.12);
+}
+
+/* ── Global ── */
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  padding-bottom: 5rem;
+  /* Subtle dot grid background */
+  background-image: radial-gradient(circle, #1e3a52 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* ── Nav ── */
+nav {
+  background: rgba(10, 15, 30, 0.85) !important;
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border) !important;
+  box-shadow: 0 1px 0 var(--border), 0 4px 20px rgba(0,0,0,0.5) !important;
+}
+
+nav h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: -0.03em;
+  color: var(--text-primary) !important;
+}
+
+nav h1 span {
+  color: var(--accent) !important;
+}
+
+nav p {
+  color:#ffffff !important;
+  letter-spacing: 0.12em;
+}
+
+/* ── Export button ── */
+#exportBtn {
+  background: var(--accent) !important;
+  color: #0a0f1e !important;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  border: none;
+  border-radius: 999px;
+  padding: 0.5rem 1.5rem;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+  box-shadow: 0 0 0 0 var(--accent-glow);
+}
+
+#exportBtn:hover {
+  background: var(--accent-bright) !important;
+  box-shadow: 0 0 18px var(--accent-glow) !important;
+  transform: translateY(-1px);
+}
+
+#exportBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Cards ── */
+.card {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  padding: 1.5rem !important;
+  height: 100%;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: var(--shadow-card);
+  page-break-inside: avoid;
+}
+
+.card:hover {
+  border-color: var(--border-focus) !important;
+  box-shadow: var(--shadow-card), var(--shadow-glow) !important;
+}
+
+/* Phase 1 section card */
+section.card {
+  border-color: var(--border) !important;
+  background: var(--bg-surface) !important;
+}
+
+/* ── Section headings ── */
+section .flex.items-center .bg-blue-600 {
+  background: var(--accent) !important;
+  color: #0a0f1e !important;
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+section h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--text-primary) !important;
+  letter-spacing: -0.02em;
+}
+
+/* ── Q-cards ── */
+.q-card {
+  background: var(--bg-elevated) !important;
+  border-left: 3px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
+  padding: 0.875rem !important;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.q-card:focus-within {
+  border-left-color: var(--accent) !important;
+  background: var(--bg-hover) !important;
+}
+
+/* ── Labels & helper text ── */
+.label {
+  color: var(--text-label) !important;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.68rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem !important;
+}
+
+.helper-text {
+  color: var(--text-muted) !important;
+  font-size: 0.65rem !important;
+}
+
+/* ── Inputs ── */
+.input-field {
+  background: var(--bg-input) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--text-primary) !important;
+  font-size: 0.875rem !important;
+  padding: 0.5rem 0.75rem !important;
+  width: 100%;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.input-field:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--accent-dim) !important;
+}
+
+/* Remove number input spinners */
+.input-field::-webkit-outer-spin-button,
+.input-field::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.input-field[type=number] { -moz-appearance: textfield; }
+
+/* ── Sliders ── */
+.slider {
+  width: 100%;
+  height: 6px !important;
+  background: var(--border) !important;
+  border-radius: 999px;
+  appearance: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent) var(--val, 40%), var(--border) var(--val, 40%));
+}
+
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px !important;
+  height: 18px !important;
+  background: var(--accent) !important;
+  border: 2px solid var(--bg-base);
+  border-radius: 50% !important;
+  cursor: pointer;
+  box-shadow: 0 0 8px var(--accent-glow);
+  transition: transform 0.15s;
+}
+
+.slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+/* ── Investment block ── */
+#pdf-block-2 {
+  background: var(--bg-elevated) !important;
+  border: 1px dashed var(--border-focus) !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+#pdf-block-2 h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--accent) !important;
+  letter-spacing: 0.1em;
+}
+
+#pdf-block-2 p.text-center {
+  color: var(--accent) !important;
+}
+
+/* ── Stat cards ── */
+#pdf-block-3 .card { position: relative; overflow: hidden; }
+#pdf-block-3 .card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+#pdf-block-3 .card:hover::before { opacity: 1; }
+
+/* Override Tailwind color utilities for stat values */
+#statWaste   { color: var(--red)    !important; }
+#statRisk    { color: var(--orange) !important; }
+#statOpp     { color: var(--purple) !important; }
+#totalImpact { color: var(--accent) !important; font-family: 'Space Grotesk', sans-serif; }
+#statNet     { color: var(--green)  !important; }
+
+/* Total Debt card dark override */
+.card.bg-slate-900 {
+  background: linear-gradient(135deg, #0d1f35 0%, #0a1628 100%) !important;
+  border-color: var(--accent) !important;
+  box-shadow: var(--shadow-card), 0 0 0 1px var(--accent-dim), var(--shadow-glow) !important;
+}
+
+.card.bg-slate-900 .label { color: var(--accent) !important; }
+.card.bg-slate-900 p      { color: var(--text-primary) !important; }
+
+/* Stat labels */
+#pdf-block-3 .label { color: var(--text-secondary) !important; }
+
+/* Left-border accent colours for stat cards */
+.border-l-red-600    { border-left-color: var(--red)    !important; }
+.border-l-orange-500 { border-left-color: var(--orange) !important; }
+.border-l-purple-600 { border-left-color: var(--purple) !important; }
+.border-l-green-600  { border-left-color: var(--green)  !important; }
+
+/* ── Chart cards ── */
+#pdf-block-4 .card,
+#pdf-block-5 .card {
+  background: var(--bg-surface) !important;
+}
+
+#pdf-block-4 h2,
+#pdf-block-5 h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--text-secondary) !important;
+  border-bottom-color: var(--border) !important;
+}
+
+#pdf-block-4 h2 span,
+#pdf-block-5 h2 span {
+  color: var(--text-muted) !important;
+}
+
+/* ── Executive summary card ── */
+.card.border-2.border-blue-600 {
+  border-color: var(--accent) !important;
+  background: var(--bg-elevated) !important;
+  box-shadow: var(--shadow-card), 0 0 24px var(--accent-glow) !important;
+}
+
+.card.border-2.border-blue-600 .bg-blue-600 {
+  background: var(--accent) !important;
+  color: #0a0f1e !important;
+}
+
+.card.border-2.border-blue-600 h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--text-primary) !important;
+}
+
+.card.border-2.border-blue-600 p {
+  color: var(--text-muted) !important;
+}
+
+/* Recommendation list */
+#recEngine { color: var(--text-secondary) !important; }
+#recEngine strong.text-red-700    { color: var(--red)    !important; }
+#recEngine strong.text-orange-700 { color: var(--orange) !important; }
+#recEngine strong.text-purple-700 { color: var(--purple) !important; }
+#recEngine strong                 { color: var(--text-primary) !important; }
+
+/* Financial verdict pill */
+#recEngine li.bg-blue-50 {
+  background: var(--accent-dim) !important;
+  border-left-color: var(--accent) !important;
+  color: var(--accent) !important;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+/* ── Q9 slider value display ── */
+#q9Val { color: var(--accent) !important; }
+
+/* ── q-card description text ── */
+.q-card p { color: #ffffff  !important; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
