@@ -200,20 +200,35 @@ section h2 {
 .slider {
   width: 100%;
   height: 6px !important;
-  background: var(--border) !important;
   border-radius: 999px;
   appearance: none;
+  -webkit-appearance: none;
   outline: none;
   cursor: pointer;
+  /* Track fill driven by --val, updated by JS on every input event */
+  background: linear-gradient(
+    90deg,
+    var(--accent) 0%,
+    var(--accent) var(--val, 25%),
+    var(--border) var(--val, 25%),
+    var(--border) 100%
+  ) !important;
 }
 
 .slider::-webkit-slider-runnable-track {
   height: 6px;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--accent) var(--val, 40%), var(--border) var(--val, 40%));
+  background: transparent;
+}
+
+.slider::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: transparent;
 }
 
 .slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
   appearance: none;
   width: 18px !important;
   height: 18px !important;
@@ -223,9 +238,22 @@ section h2 {
   cursor: pointer;
   box-shadow: 0 0 8px var(--accent-glow);
   transition: transform 0.15s;
+  margin-top: -6px;
 }
 
-.slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+.slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: var(--accent);
+  border: 2px solid var(--bg-base);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 8px var(--accent-glow);
+  transition: transform 0.15s;
+}
+
+.slider::-webkit-slider-thumb:hover,
+.slider::-moz-range-thumb:hover { transform: scale(1.2); }
 
 /* ── Investment block ── */
 #pdf-block-2 {

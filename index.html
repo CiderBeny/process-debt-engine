@@ -56,8 +56,8 @@
 
     <main class="container mx-auto px-4 py-8 max-w-7xl">
 
-        <!-- BLOCK 1: DIAGNOSTIC -->
-        <section id="pdf-block-1" class="card mb-8">
+        <!-- BLOCK 1: DIAGNOSTIC Q1–Q10 -->
+        <section id="pdf-block-1a" class="card mb-8">
             <div class="flex items-center gap-3 mb-6">
                 <span class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-black text-sm">?</span>
                 <h2 class="text-xl font-black uppercase tracking-tight" data-i18n="phase1Title">Phase 1: Strategic Diagnostic Questionnaire</h2>
@@ -79,7 +79,7 @@
                 <div class="q-card">
                     <label class="label" data-i18n="q3label">3. Documentation Standard (1–5)</label>
                     <p class="text-[10px] mb-2 leading-tight" data-i18n="q3desc">Does the organization maintain a unified process documentation standard, or is critical knowledge fragmented across tribal silos?</p>
-                    <input type="range" id="q3" min="1" max="5" value="2" class="slider" oninput="calculate()">
+                    <input type="range" id="q3" min="1" max="5" value="2" class="slider" oninput="document.getElementById('q3Val').innerText=this.value;calculate()">
                     <div class="flex justify-between mt-1 px-0.5">
                         <span class="text-[10px]" style="color:var(--text-muted)" data-i18n="q3min">1 — Fragmented</span>
                         <span id="q3Val" class="text-xs font-bold">2</span>
@@ -120,7 +120,7 @@
                 <div class="q-card">
                     <label class="label" data-i18n="q9label">9. Scalability Bottleneck (1–5)</label>
                     <p class="text-[10px] mb-2 leading-tight italic" data-i18n="q9desc">Impact on ability to scale growth?</p>
-                    <input type="range" id="q9" min="1" max="5" value="4" class="slider" oninput="calculate()">
+                    <input type="range" id="q9" min="1" max="5" value="4" class="slider" oninput="document.getElementById('q9Val').innerText=this.value;calculate()">
                     <div class="text-center mt-2">
                         <span id="q9Val" class="text-xs font-bold">4</span>
                         <span class="text-[10px]" style="color:var(--text-muted)">/ 5</span>
@@ -142,7 +142,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="space-y-3">
                     <label class="label" data-i18n="autoLabel">Target Automation Level (%)</label>
-                    <input type="range" id="autoLevel" min="0" max="100" value="40" class="slider" oninput="calculate()">
+                    <input type="range" id="autoLevel" min="0" max="100" value="40" class="slider" oninput="document.getElementById('autoLevelVal').innerText=this.value;calculate()">
                     <p class="text-center font-bold text-sm"><span id="autoLevelVal">40</span>% <span data-i18n="efficiencyGain">Efficiency Gain</span></p>
                 </div>
                 <div>
@@ -435,6 +435,7 @@
             document.getElementById('langFlag').textContent = currentLang === 'en' ? '🇵🇱' : '🇬🇧';
             document.getElementById('langLabel').textContent = currentLang === 'en' ? 'PL' : 'EN';
             applyTranslations();
+            updateSliderFills();
             calculate(); // re-render dynamic content (charts labels, levers, rec engine)
         }
 
@@ -459,6 +460,18 @@
         Chart.defaults.backgroundColor = DARK.navy;
 
         let waterfallChart, bridgeChart, heatmapChart;
+
+        function updateSliderFills() {
+            function setSliderFill(id, min, max) {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const pct = ((el.value - min) / (max - min) * 100).toFixed(1) + '%';
+                el.style.setProperty('--val', pct);
+            }
+            setSliderFill('q3', 1, 5);
+            setSliderFill('q9', 1, 5);
+            setSliderFill('autoLevel', 0, 100);
+        }
 
         function calculate() {
             const manualPercent  = parseFloat(document.getElementById('q1').value) || 0;
@@ -494,6 +507,9 @@
             document.getElementById('statNet').innerText     = '$' + Math.round(netDebt).toLocaleString();
             document.getElementById('q9Val').innerText       = document.getElementById('q9').value;
             document.getElementById('q3Val').innerText       = document.getElementById('q3').value;
+
+            // Update slider track fill (--val CSS custom property drives the gradient)
+            updateSliderFills();
 
             updateCharts(totalAnnualHrs, manualAnnualHrs, chasingAnnualHrs, cWaste, capex, potentialSavings, riskLevel, manualPercent, autoLevel);
             updateRecs(cWaste, cRisk, cOpp, paybackMonths);
@@ -649,45 +665,194 @@
             const btn = document.getElementById('exportBtn');
             btn.disabled = true;
             btn.innerText = t('exportGenerating');
-
             await new Promise(r => setTimeout(r, 120));
 
-            const pdf     = new jsPDF('p', 'mm', 'a4');
-            const pageW   = 210, pageH = 295, margin = 8;
-            const usableW = pageW - margin * 2;
-            const usableH = pageH - margin * 2;
-            let   cursorY = margin;
+            const pdf    = new jsPDF('p', 'mm', 'a4');
+            const PW     = 210, PH = 297;
+            const ML     = 14, MR = 14, MT = 14;
+            const UW     = PW - ML - MR;
+            let   cy     = MT;
+            const L      = TRANSLATIONS[currentLang];
 
-            const blockIds = ['pdf-block-1','pdf-block-2','pdf-block-3','pdf-block-4','pdf-block-5','pdf-block-6'];
+            // ── helpers ────────────────────────────────────────────────────────
+            function newPage() { pdf.addPage(); cy = MT; }
+            function needSpace(h) { if (cy + h > PH - 10) newPage(); }
 
-            for (const id of blockIds) {
+            function drawRect(x, y, w, h, fill, stroke) {
+                if (fill)   { pdf.setFillColor(...fill);   pdf.rect(x, y, w, h, 'F'); }
+                if (stroke) { pdf.setDrawColor(...stroke); pdf.setLineWidth(0.3); pdf.rect(x, y, w, h, 'S'); }
+            }
+
+            function wrapText(text, x, maxW, lineH) {
+                // Returns array of lines
+                const words = String(text).split(' ');
+                const lines = [];
+                let cur = '';
+                words.forEach(w => {
+                    const test = cur ? cur + ' ' + w : w;
+                    if (pdf.getTextWidth(test) <= maxW) { cur = test; }
+                    else { if (cur) lines.push(cur); cur = w; }
+                });
+                if (cur) lines.push(cur);
+                return lines;
+            }
+
+            function textBlock(text, x, y, maxW, fontSize, color, bold) {
+                pdf.setFontSize(fontSize);
+                pdf.setFont('helvetica', bold ? 'bold' : 'normal');
+                pdf.setTextColor(...color);
+                const lines = wrapText(text, x, maxW, fontSize * 0.3528);
+                lines.forEach((line, i) => { pdf.text(line, x, y + i * (fontSize * 0.3528 * 1.35)); });
+                return lines.length * (fontSize * 0.3528 * 1.35);
+            }
+
+            // ── PAGE 1: Phase 1 header + all 10 questions ─────────────────────
+            // Header bar
+            drawRect(0, 0, PW, 12, [17, 24, 39]);
+            pdf.setFontSize(9); pdf.setFont('helvetica', 'bold');
+            pdf.setTextColor(6, 182, 212);
+            pdf.text('STRATEGIC BUSINESS CASE ENGINE', ML, 8);
+            pdf.setTextColor(148, 163, 184); pdf.setFont('helvetica', 'normal');
+            pdf.text(L.navSubtitle.toUpperCase(), PW - MR, 8, { align: 'right' });
+
+            cy = 20;
+            // Section title
+            drawRect(ML - 2, cy - 4, UW + 4, 10, [17, 24, 39]);
+            pdf.setFontSize(11); pdf.setFont('helvetica', 'bold'); pdf.setTextColor(226, 232, 240);
+            pdf.text(L.phase1Title.toUpperCase(), ML + 2, cy + 3);
+            cy += 14;
+
+            // Gather all questions
+            const qKeys = [
+                { label: L.q1label,  desc: L.q1desc,  id: 'q1',  type: 'number' },
+                { label: L.q2label,  desc: L.q2desc,  id: 'q2',  type: 'number' },
+                { label: L.q3label,  desc: L.q3desc,  id: 'q3',  type: 'slider', valId: 'q3Val', min: L.q3min, max: L.q3max },
+                { label: L.q4label,  desc: L.q4desc,  id: 'q4',  type: 'number' },
+                { label: L.q5label,  desc: L.q5desc,  id: 'q5',  type: 'number' },
+                { label: L.q6label,  desc: L.q6desc,  id: 'q6',  type: 'number' },
+                { label: L.q7label,  desc: L.q7desc,  id: 'q7',  type: 'number' },
+                { label: L.q8label,  desc: L.q8desc,  id: 'q8',  type: 'number' },
+                { label: L.q9label,  desc: L.q9desc,  id: 'q9',  type: 'slider', valId: 'q9Val' },
+                { label: L.q10label, desc: L.q10desc, id: 'q10', type: 'number' },
+            ];
+
+            // 2-column layout: left col x=ML, right col x=ML+UW/2+3
+            const colW  = UW / 2 - 3;
+            const cols  = [ML, ML + UW / 2 + 3];
+            const rowH  = 38; // fixed height per q-card
+
+            for (let i = 0; i < qKeys.length; i++) {
+                const q   = qKeys[i];
+                const col = i % 2;
+                const x   = cols[col];
+
+                // Start new row: only when left column starts
+                if (col === 0 && i > 0) { cy += rowH + 3; }
+                if (col === 0) { needSpace(rowH + 3); }
+
+                const val = document.getElementById(q.id).value;
+                const displayVal = q.type === 'slider'
+                    ? document.getElementById(q.valId).textContent
+                    : val;
+
+                // Card background
+                drawRect(x, cy, colW, rowH, [26, 37, 53], [30, 58, 82]);
+
+                // Cyan left accent bar
+                drawRect(x, cy, 2, rowH, [6, 182, 212]);
+
+                // Label
+                pdf.setFontSize(7); pdf.setFont('helvetica', 'bold'); pdf.setTextColor(125, 211, 252);
+                pdf.text(q.label.toUpperCase(), x + 5, cy + 6);
+
+                // Description — wrap inside card
+                pdf.setFontSize(6.2); pdf.setFont('helvetica', 'normal'); pdf.setTextColor(100, 116, 139);
+                const descLines = wrapText(q.desc, x + 5, colW - 10, 6.2 * 0.3528);
+                const maxDescLines = 3;
+                descLines.slice(0, maxDescLines).forEach((line, li) => {
+                    pdf.text(line, x + 5, cy + 12 + li * 4);
+                });
+
+                // Value box
+                const vBoxY = cy + rowH - 11;
+                drawRect(x + 5, vBoxY, colW - 10, 8, [15, 26, 42], [30, 58, 82]);
+                pdf.setFontSize(8); pdf.setFont('helvetica', 'bold'); pdf.setTextColor(226, 232, 240);
+                pdf.text(String(displayVal), x + 8, vBoxY + 5.5);
+
+                // Slider min/max labels
+                if (q.type === 'slider' && q.min) {
+                    pdf.setFontSize(5.5); pdf.setFont('helvetica', 'normal'); pdf.setTextColor(71, 85, 105);
+                    pdf.text(q.min, x + 5, vBoxY + 5.5);
+                    pdf.text(q.max, x + colW - 5, vBoxY + 5.5, { align: 'right' });
+                }
+            }
+
+            cy += rowH + 8; // after last row
+
+            // ── Screenshot blocks: investment, stats, charts, exec summary ─────
+            const screenshotIds = ['pdf-block-2','pdf-block-3','pdf-block-4','pdf-block-5','pdf-block-6'];
+
+            for (const id of screenshotIds) {
                 const el = document.getElementById(id);
                 if (!el || !el.offsetHeight) continue;
+
+                // html2canvas cannot render <input> values visibly on dark backgrounds.
+                // Swap every input inside this block to a styled <div> before capture,
+                // then restore afterwards.
+                const swaps = [];
+                el.querySelectorAll('input').forEach(input => {
+                    const proxy = document.createElement('div');
+                    // Mirror layout so the block doesn't reflow
+                    proxy.style.cssText = window.getComputedStyle(input).cssText;
+                    proxy.style.display = 'flex';
+                    proxy.style.alignItems = 'center';
+                    proxy.style.boxSizing = 'border-box';
+                    proxy.style.color = '#e2e8f0';
+                    proxy.style.fontWeight = '700';
+                    proxy.style.fontSize = '0.875rem';
+                    proxy.style.background = 'var(--bg-input, #0f1a2b)';
+                    proxy.style.border = '1px solid #1e3a52';
+                    proxy.style.borderRadius = '6px';
+                    proxy.style.padding = '0.5rem 0.75rem';
+                    proxy.style.width = input.offsetWidth + 'px';
+                    proxy.style.height = input.offsetHeight + 'px';
+                    proxy.style.minHeight = '36px';
+                    proxy.textContent = input.value;
+                    input.parentNode.insertBefore(proxy, input);
+                    input.style.display = 'none';
+                    swaps.push({ input, proxy });
+                });
 
                 const canvas = await html2canvas(el, {
                     scale: 2, useCORS: true, logging: false,
                     backgroundColor: '#111827',
-                    windowWidth:  document.documentElement.scrollWidth,
+                    windowWidth: 1400,
                     windowHeight: document.documentElement.scrollHeight
                 });
 
-                const imgData = canvas.toDataURL('image/png');
-                const blockH  = (canvas.height * usableW) / canvas.width;
+                // Restore original inputs
+                swaps.forEach(({ input, proxy }) => {
+                    input.style.display = '';
+                    proxy.remove();
+                });
 
-                if (blockH > usableH) {
-                    if (cursorY > margin) { pdf.addPage(); cursorY = margin; }
-                    const scaledH = usableH;
-                    const scaledW = (canvas.width * scaledH) / canvas.height;
-                    pdf.addImage(imgData, 'PNG', margin + (usableW - scaledW) / 2, margin, scaledW, scaledH);
-                    pdf.addPage(); cursorY = margin;
+                const imgData = canvas.toDataURL('image/png');
+                const bH = (canvas.height * UW) / canvas.width;
+
+                if (bH > PH - MT - 10) {
+                    if (cy > MT) newPage();
+                    const sH = PH - MT - 10;
+                    const sW = (canvas.width * sH) / canvas.height;
+                    pdf.addImage(imgData, 'PNG', ML + (UW - sW) / 2, cy, sW, sH);
+                    newPage();
                 } else {
-                    if (cursorY + blockH > pageH - margin) { pdf.addPage(); cursorY = margin; }
-                    pdf.addImage(imgData, 'PNG', margin, cursorY, usableW, blockH);
-                    cursorY += blockH + 5;
+                    if (cy + bH > PH - 10) newPage();
+                    pdf.addImage(imgData, 'PNG', ML, cy, UW, bH);
+                    cy += bH + 5;
                 }
             }
 
-            pdf.save('IT Process Debt & Chaos calculator.pdf');
+            pdf.save('Strategic-IT-Business-Case.pdf');
             btn.disabled = false;
             btn.innerText = t('exportBtn');
         }
