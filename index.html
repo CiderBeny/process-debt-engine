@@ -136,6 +136,29 @@
             </div>
         </section>
 
+        <!-- DORA BENCHMARK CONTEXT -->
+        <div id="dora-benchmark" class="card mb-8">
+            <div class="mb-4">
+                <h2 class="text-base font-black uppercase tracking-tight" style="font-family:'Space Grotesk',sans-serif;color:var(--text-primary);" data-i18n="doraTitle">DORA Benchmark Context</h2>
+                <p class="text-[10px] mt-1" style="color:var(--text-muted);" data-i18n="doraSubtitle">Where your inputs sit vs. industry research</p>
+            </div>
+            <div style="overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;">
+                    <thead>
+                        <tr style="border-bottom:1px solid var(--border);">
+                            <th style="text-align:left;padding:0.5rem 0.75rem;font-family:'Space Grotesk',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-label);">Metric</th>
+                            <th style="text-align:left;padding:0.5rem 0.75rem;font-family:'Space Grotesk',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-label);">Your Value</th>
+                            <th style="text-align:left;padding:0.5rem 0.75rem;font-family:'Space Grotesk',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-label);">DORA Band</th>
+                            <th style="text-align:left;padding:0.5rem 0.75rem;font-family:'Space Grotesk',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-label);">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="doraTableBody">
+                        <!-- Populated by updateDoraBenchmark() -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- BLOCK 2: INVESTMENT SIMULATOR -->
         <div id="pdf-block-2" class="card mb-8">
             <h3 class="text-xs font-black uppercase mb-5 text-center tracking-widest" data-i18n="simTitle">Investment & Simulation Parameters</h3>
@@ -144,6 +167,11 @@
                     <label class="label" data-i18n="autoLabel">Target Automation Level (%)</label>
                     <input type="range" id="autoLevel" min="0" max="100" value="40" class="slider" oninput="document.getElementById('autoLevelVal').innerText=this.value;calculate()">
                     <p class="text-center font-bold text-sm"><span id="autoLevelVal">40</span>% <span data-i18n="efficiencyGain">Efficiency Gain</span></p>
+                </div>
+                <div>
+                    <label class="label" data-i18n="teamSizeLabel">Team Size (engineers)</label>
+                    <input type="number" id="teamSize" value="10" class="input-field" oninput="calculate()">
+                    <span class="helper-text mt-1 block" data-i18n="teamSizeHelper">Total number of engineers affected by process debt.</span>
                 </div>
                 <div>
                     <label class="label" data-i18n="capexLabel">One-Time CAPEX Investment ($)</label>
@@ -159,23 +187,38 @@
             <!-- BLOCK 3: STAT CARDS -->
             <div id="pdf-block-3" class="grid grid-cols-1 md:grid-cols-5 gap-4">
                 <div class="card border-l-4 border-l-red-600">
-                    <p class="label" data-i18n="statWasteLabel">Annual OPEX Waste</p>
+                    <div class="label-row">
+                        <p class="label" data-i18n="statWasteLabel">Annual OPEX Waste</p>
+                        <span class="formula-tip" data-formula="(Manual hrs/yr + Manager chase hrs/yr) × Blended Rate × Team Size" data-i18n-formula="formulaWaste">ⓘ</span>
+                    </div>
                     <p class="text-3xl font-black mt-1" id="statWaste">$0</p>
                 </div>
                 <div class="card border-l-4 border-l-orange-500">
-                    <p class="label" data-i18n="statRiskLabel">Risk Exposure</p>
+                    <div class="label-row">
+                        <p class="label" data-i18n="statRiskLabel">Risk Exposure</p>
+                        <span class="formula-tip" data-formula="Annual failures × Downtime cost/hr × (Risk level / 5)" data-i18n-formula="formulaRisk">ⓘ</span>
+                    </div>
                     <p class="text-3xl font-black mt-1" id="statRisk">$0</p>
                 </div>
                 <div class="card border-l-4 border-l-purple-600">
-                    <p class="label" data-i18n="statOppLabel">Opportunity Loss</p>
+                    <div class="label-row">
+                        <p class="label" data-i18n="statOppLabel">Opportunity Loss</p>
+                        <span class="formula-tip" data-formula="(Opportunity margin × 0.25) + (OPEX Waste × 1.5)" data-i18n-formula="formulaOpp">ⓘ</span>
+                    </div>
                     <p class="text-3xl font-black mt-1" id="statOpp">$0</p>
                 </div>
                 <div class="card bg-slate-900">
-                    <p class="label" data-i18n="statTotalLabel">Total Debt Impact</p>
+                    <div class="label-row">
+                        <p class="label" data-i18n="statTotalLabel">Total Debt Impact</p>
+                        <span class="formula-tip" data-formula="OPEX Waste + Risk Exposure + Opportunity Loss" data-i18n-formula="formulaTotal">ⓘ</span>
+                    </div>
                     <p class="text-3xl font-black mt-1" id="totalImpact">$0</p>
                 </div>
                 <div class="card border-l-4 border-l-green-600">
-                    <p class="label" data-i18n="statNetLabel">Net Debt After Investment</p>
+                    <div class="label-row">
+                        <p class="label" data-i18n="statNetLabel">Net Debt After Investment</p>
+                        <span class="formula-tip" data-formula="Total Debt Impact − CAPEX Investment" data-i18n-formula="formulaNet">ⓘ</span>
+                    </div>
                     <p class="text-3xl font-black mt-1" id="statNet">$0</p>
                     <span class="helper-text" data-i18n="statNetHelper">Total impact minus CAPEX</span>
                 </div>
@@ -281,6 +324,8 @@
                 simTitle:       'Investment & Simulation Parameters',
                 autoLabel:      'Target Automation Level (%)',
                 efficiencyGain: 'Efficiency Gain',
+                teamSizeLabel:  'Team Size (engineers)',
+                teamSizeHelper: 'Total number of engineers affected by process debt.',
                 capexLabel:     'One-Time CAPEX Investment ($)',
                 capexHelper:    'Licenses, Implementation, and Training costs.',
                 statWasteLabel: 'Annual OPEX Waste',
@@ -289,6 +334,11 @@
                 statTotalLabel: 'Total Debt Impact',
                 statNetLabel:   'Net Debt After Investment',
                 statNetHelper:  'Total impact minus CAPEX',
+                formulaWaste: '(Manual hrs/yr + Manager chase hrs/yr) × Blended Rate × Team Size',
+                formulaRisk:  'Annual failures × Downtime cost/hr × (Risk level / 5)',
+                formulaOpp:   '(Opportunity margin × 0.25) + (OPEX Waste × 1.5)',
+                formulaTotal: 'OPEX Waste + Risk Exposure + Opportunity Loss',
+                formulaNet:   'Total Debt Impact − CAPEX Investment',
                 chart1Title: '1. Waterfall: Capacity Erosion',
                 chart1Sub:   'hrs / year',
                 chart2Title: '2. Strategic Debt Bridge',
@@ -332,6 +382,21 @@
                 verdictPaybackLabel:  'Investment Payback',
                 verdictPaybackUnit:   'months',
                 verdictNote: 'Prioritising the top 3 levers above delivers the fastest path to ROI. Begin with the lowest-effort items to build momentum before tackling strategic initiatives.',
+                doraTitle:    'DORA Benchmark Context',
+                doraSubtitle: 'Where your inputs sit vs. industry research',
+                doraMetricLeadTime:   'Lead Time',
+                doraMetricManual:     'Manual Effort',
+                doraMetricErrors:     'Human Error Rate (quarterly)',
+                doraBandElite:  'Elite',
+                doraBandHigh:   'High',
+                doraBandMedium: 'Medium',
+                doraBandLow:    'Low',
+                doraLeadTimeDesc:  (v) => `${v} hrs`,
+                doraManualDesc:    (v) => `${v}%`,
+                doraErrorsDesc:    (v) => `${v} incidents`,
+                doraLeadTimeBand:  'Elite <1h · High <24h · Medium <168h · Low >168h',
+                doraManualBand:    'Elite <5% · High <15% · Medium <30% · Low >30%',
+                doraErrorsBand:    'Elite 0 · High ≤1 · Medium ≤3 · Low >3',
             },
             pl: {
                 navSubtitle:      'Pełne Narzędzie Diagnostyczne i Finansowe',
@@ -363,6 +428,8 @@
                 simTitle:       'Parametry Inwestycji i Symulacji',
                 autoLabel:      'Docelowy Poziom Automatyzacji (%)',
                 efficiencyGain: 'Wzrost Efektywności',
+                teamSizeLabel:  'Liczba Inżynierów',
+                teamSizeHelper: 'Łączna liczba inżynierów dotkniętych długiem procesowym.',
                 capexLabel:     'Jednorazowa Inwestycja CAPEX ($)',
                 capexHelper:    'Licencje, wdrożenie i koszty szkoleń.',
                 statWasteLabel: 'Roczne Marnotrawstwo OPEX',
@@ -371,6 +438,11 @@
                 statTotalLabel: 'Całkowity Wpływ Długu',
                 statNetLabel:   'Dług Netto po Inwestycji',
                 statNetHelper:  'Całkowity wpływ minus CAPEX',
+                formulaWaste: '(Godz. manualne/rok + Godz. koordynacji/rok) × Stawka łączona × Liczba inżynierów',
+                formulaRisk:  'Roczne awarie × Koszt przestoju/godz. × (Poziom ryzyka / 5)',
+                formulaOpp:   '(Marża szans × 0,25) + (Marnotrawstwo OPEX × 1,5)',
+                formulaTotal: 'Marnotrawstwo OPEX + Ekspozycja na ryzyko + Utrata szans',
+                formulaNet:   'Całkowity wpływ długu − Inwestycja CAPEX',
                 chart1Title: '1. Wodospad: Erozja Pojemności',
                 chart1Sub:   'godz. / rok',
                 chart2Title: '2. Most Długu Strategicznego',
@@ -411,6 +483,21 @@
                 verdictPaybackLabel:  'Zwrot z Inwestycji',
                 verdictPaybackUnit:   'miesięcy',
                 verdictNote: 'Priorytetyzacja 3 powyższych dźwigni zapewnia najszybszą drogę do ROI. Zacznij od elementów o najniższym wysiłku, aby zbudować momentum przed podjęciem inicjatyw strategicznych.',
+                doraTitle:    'Kontekst Benchmarku DORA',
+                doraSubtitle: 'Gdzie są Twoje dane vs. badania branżowe',
+                doraMetricLeadTime:   'Czas Realizacji',
+                doraMetricManual:     'Wysiłek Manualny',
+                doraMetricErrors:     'Błędy Ludzkie (kwartalnie)',
+                doraBandElite:  'Elita',
+                doraBandHigh:   'Wysoki',
+                doraBandMedium: 'Średni',
+                doraBandLow:    'Niski',
+                doraLeadTimeDesc:  (v) => `${v} godz.`,
+                doraManualDesc:    (v) => `${v}%`,
+                doraErrorsDesc:    (v) => `${v} incydentów`,
+                doraLeadTimeBand:  'Elita <1h · Wysoki <24h · Średni <168h · Niski >168h',
+                doraManualBand:    'Elita <5% · Wysoki <15% · Średni <30% · Niski >30%',
+                doraErrorsBand:    'Elita 0 · Wysoki ≤1 · Średni ≤3 · Niski >3',
             }
         };
 
@@ -425,6 +512,11 @@
                 const key = el.getAttribute('data-i18n');
                 const val = TRANSLATIONS[currentLang][key];
                 if (val && typeof val === 'string') el.textContent = val;
+            });
+            document.querySelectorAll('[data-i18n-formula]').forEach(el => {
+                const key = el.getAttribute('data-i18n-formula');
+                const val = TRANSLATIONS[currentLang][key];
+                if (val && typeof val === 'string') el.setAttribute('data-formula', val);
             });
             document.documentElement.lang = currentLang;
         }
@@ -483,6 +575,7 @@
             const riskLevel      = parseFloat(document.getElementById('q9').value) || 1;
             const capex          = parseFloat(document.getElementById('capex').value) || 0;
             const autoLevel      = (parseFloat(document.getElementById('autoLevel').value) || 0) / 100;
+            const teamSize       = parseFloat(document.getElementById('teamSize').value) || 1;
 
             document.getElementById('autoLevelVal').innerText = Math.round(autoLevel * 100);
 
@@ -490,7 +583,7 @@
             const manualAnnualHrs  = totalAnnualHrs * (manualPercent / 100);
             const chasingAnnualHrs = managerHrs * 12;
 
-            const cWaste = (manualAnnualHrs + chasingAnnualHrs) * rate;
+            const cWaste = (manualAnnualHrs + chasingAnnualHrs) * rate * teamSize;
             const cRisk  = (failures * downCost) * (riskLevel / 5);
             const cOpp   = (opportunityVal * 0.25) + (cWaste * 1.5);
 
@@ -513,6 +606,7 @@
 
             updateCharts(totalAnnualHrs, manualAnnualHrs, chasingAnnualHrs, cWaste, capex, potentialSavings, riskLevel, manualPercent, autoLevel);
             updateRecs(cWaste, cRisk, cOpp, paybackMonths);
+            updateDoraBenchmark();
         }
 
         const CHART_OPTS = {
@@ -658,6 +752,78 @@
                         <p style="font-size:0.7rem;color:var(--text-secondary);margin:0;font-style:italic;">${L.verdictNote}</p>
                     </div>
                 </div>`;
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // DORA Benchmark helpers
+        // ═══════════════════════════════════════════════════════════════
+        function getDoraBand(metric, value) {
+            const L = TRANSLATIONS[currentLang];
+            const bands = {
+                leadTime: [
+                    { max: 1,        band: L.doraBandElite,  color: 'var(--green)'  },
+                    { max: 24,       band: L.doraBandHigh,   color: 'var(--accent)' },
+                    { max: 168,      band: L.doraBandMedium, color: 'var(--orange)' },
+                    { max: Infinity, band: L.doraBandLow,    color: 'var(--red)'    },
+                ],
+                manual: [
+                    { max: 5,        band: L.doraBandElite,  color: 'var(--green)'  },
+                    { max: 15,       band: L.doraBandHigh,   color: 'var(--accent)' },
+                    { max: 30,       band: L.doraBandMedium, color: 'var(--orange)' },
+                    { max: Infinity, band: L.doraBandLow,    color: 'var(--red)'    },
+                ],
+                errors: [
+                    { max: 0,        band: L.doraBandElite,  color: 'var(--green)'  },
+                    { max: 1,        band: L.doraBandHigh,   color: 'var(--accent)' },
+                    { max: 3,        band: L.doraBandMedium, color: 'var(--orange)' },
+                    { max: Infinity, band: L.doraBandLow,    color: 'var(--red)'    },
+                ],
+            };
+            const thresholds = bands[metric];
+            for (const t of thresholds) {
+                if (value <= t.max) return { band: t.band, color: t.color };
+            }
+            return { band: L.doraBandLow, color: 'var(--red)' };
+        }
+
+        function updateDoraBenchmark() {
+            const L = TRANSLATIONS[currentLang];
+            const q1 = parseFloat(document.getElementById('q1').value) || 0;
+            const q2 = parseFloat(document.getElementById('q2').value) || 0;
+            const q5 = parseFloat(document.getElementById('q5').value) || 0;
+
+            const rows = [
+                {
+                    metric:   L.doraMetricLeadTime,
+                    value:    L.doraLeadTimeDesc(q2),
+                    bandDesc: L.doraLeadTimeBand,
+                    result:   getDoraBand('leadTime', q2),
+                },
+                {
+                    metric:   L.doraMetricManual,
+                    value:    L.doraManualDesc(q1),
+                    bandDesc: L.doraManualBand,
+                    result:   getDoraBand('manual', q1),
+                },
+                {
+                    metric:   L.doraMetricErrors,
+                    value:    L.doraErrorsDesc(q5),
+                    bandDesc: L.doraErrorsBand,
+                    result:   getDoraBand('errors', q5),
+                },
+            ];
+
+            const tbody = document.getElementById('doraTableBody');
+            tbody.innerHTML = rows.map((r, i) => `
+                <tr style="border-bottom:1px solid var(--border-subtle);${i % 2 === 0 ? 'background:var(--bg-elevated);' : ''}">
+                    <td style="padding:0.65rem 0.75rem;font-size:0.75rem;font-weight:600;color:var(--text-primary);">${r.metric}</td>
+                    <td style="padding:0.65rem 0.75rem;font-size:0.75rem;font-family:'Space Grotesk',sans-serif;font-weight:700;color:var(--accent);">${r.value}</td>
+                    <td style="padding:0.65rem 0.75rem;font-size:0.6rem;color:var(--text-muted);line-height:1.5;">${r.bandDesc}</td>
+                    <td style="padding:0.65rem 0.75rem;">
+                        <span class="dora-badge" style="color:${r.result.color};border-color:${r.result.color};">${r.result.band}</span>
+                    </td>
+                </tr>
+            `).join('');
         }
 
         async function exportPDF() {

@@ -273,7 +273,9 @@ section h2 {
 }
 
 /* ── Stat cards ── */
-#pdf-block-3 .card { position: relative; overflow: hidden; }
+/* overflow:visible on both grid and cards so formula tooltips escape cleanly */
+#pdf-block-3 { overflow: visible; }
+#pdf-block-3 .card { position: relative; overflow: visible; }
 #pdf-block-3 .card::before {
   content: '';
   position: absolute;
@@ -370,6 +372,91 @@ section h2 {
 
 /* ── q-card description text ── */
 .q-card p { color: #ffffff  !important; }
+
+/* ── Stat card label + tooltip row ── */
+.label-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Formula tooltips ── */
+/*
+  Two root causes fixed vs the previous attempt:
+  1. `#pdf-block-3 .card` had `overflow:hidden` — clipped the tooltip before
+     it could render. Fixed above by switching to `overflow:visible`.
+  2. The old ::after had `white-space:nowrap` then immediately `white-space:normal`
+     in the same rule block — last-write wins, collapsing the box to a sliver.
+     Now there is one clean rule with `white-space:normal` + `min-width`.
+*/
+.formula-tip {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-left: 5px;
+  vertical-align: middle;
+}
+
+/* Tooltip bubble — pure CSS, no JS */
+.formula-tip::after {
+  content: attr(data-formula);
+  position: absolute;
+  bottom: calc(100% + 10px); /* float above the ⓘ icon */
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-elevated);
+  border: 1px solid var(--accent);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.55), 0 0 10px var(--accent-glow);
+  color: var(--text-secondary);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 400;
+  line-height: 1.55;
+  padding: 0.45rem 0.65rem;
+  border-radius: 6px;
+  white-space: normal;  /* allow wrapping */
+  min-width: 200px;
+  max-width: 260px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+  z-index: 9999;
+}
+
+/* Arrow pointing down toward the ⓘ icon */
+.formula-tip::before {
+  content: '';
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--accent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+  z-index: 9999;
+}
+
+.formula-tip:hover::after,
+.formula-tip:hover::before {
+  opacity: 1;
+}
+
+/* ── DORA badge ── */
+.dora-badge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid;
+  background: transparent;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: inline-block;
+}
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 6px; }
