@@ -224,6 +224,18 @@
                 </div>
             </div>
 
+            <!-- SCENARIO COMPARISON BLOCK -->
+            <div id="scenario-compare" class="card mb-6">
+                <div class="flex items-center gap-3 mb-5">
+                    <span style="background:var(--accent);color:#0a0f1e;border-radius:8px;padding:0.4rem 0.7rem;font-family:'Space Grotesk',sans-serif;font-size:0.65rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;">⚡</span>
+                    <div>
+                        <h2 style="font-family:'Space Grotesk',sans-serif;font-size:0.95rem;font-weight:800;text-transform:uppercase;letter-spacing:-0.02em;color:var(--text-primary);margin:0;" data-i18n="scenarioTitle">Investment Scenario Comparison</h2>
+                        <p style="font-size:0.62rem;color:var(--text-muted);margin:2px 0 0;" data-i18n="scenarioSubtitle">Three strategic paths — same debt, different outcomes</p>
+                    </div>
+                </div>
+                <div id="scenarioGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;"></div>
+            </div>
+
             <!-- BLOCK 4: CHARTS ROW 1 -->
             <div id="pdf-block-4" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="card">
@@ -397,6 +409,23 @@
                 doraLeadTimeBand:  'Elite <1h · High <24h · Medium <168h · Low >168h',
                 doraManualBand:    'Elite <5% · High <15% · Medium <30% · Low >30%',
                 doraErrorsBand:    'Elite 0 · High ≤1 · Medium ≤3 · Low >3',
+                // Scenario comparison
+                scenarioTitle:       'Investment Scenario Comparison',
+                scenarioSubtitle:    'Three strategic paths — same debt, different outcomes',
+                scenarioATitle:      'Do Nothing',
+                scenarioADesc:       'Status quo maintained. No investment, no automation.',
+                scenarioBTitle:      'Targeted Investment',
+                scenarioBDesc:       'Current automation level applied with your CAPEX budget.',
+                scenarioCTitle:      'Full Automation (80%)',
+                scenarioCDesc:       'Maximum recommended automation with scaled CAPEX.',
+                scenRecommended:     'RECOMMENDED',
+                scenLabelDebt:       'Total Debt Impact',
+                scenLabelInvestment: 'Investment (CAPEX)',
+                scenLabelNet:        'Net Recovery',
+                scenLabelPayback:    'Payback Period',
+                scenMonths:          'months',
+                scenInfinity:        '∞ No return',
+                scenNoInvestment:    'No investment',
             },
             pl: {
                 navSubtitle:      'Pełne Narzędzie Diagnostyczne i Finansowe',
@@ -498,6 +527,23 @@
                 doraLeadTimeBand:  'Elita <1h · Wysoki <24h · Średni <168h · Niski >168h',
                 doraManualBand:    'Elita <5% · Wysoki <15% · Średni <30% · Niski >30%',
                 doraErrorsBand:    'Elita 0 · Wysoki ≤1 · Średni ≤3 · Niski >3',
+                // Scenario comparison
+                scenarioTitle:       'Porównanie Scenariuszy Inwestycyjnych',
+                scenarioSubtitle:    'Trzy ścieżki strategiczne — ten sam dług, różne rezultaty',
+                scenarioATitle:      'Brak Działań',
+                scenarioADesc:       'Status quo. Brak inwestycji, brak automatyzacji.',
+                scenarioBTitle:      'Celowana Inwestycja',
+                scenarioBDesc:       'Obecny poziom automatyzacji z aktualnym budżetem CAPEX.',
+                scenarioCTitle:      'Pełna Automatyzacja (80%)',
+                scenarioCDesc:       'Maksymalna zalecana automatyzacja ze skalowanym CAPEX.',
+                scenRecommended:     'ZALECANE',
+                scenLabelDebt:       'Całkowity Dług',
+                scenLabelInvestment: 'Inwestycja (CAPEX)',
+                scenLabelNet:        'Odzysk Netto',
+                scenLabelPayback:    'Okres Zwrotu',
+                scenMonths:          'miesięcy',
+                scenInfinity:        '∞ Brak zwrotu',
+                scenNoInvestment:    'Brak inwestycji',
             }
         };
 
@@ -607,6 +653,7 @@
             updateCharts(totalAnnualHrs, manualAnnualHrs, chasingAnnualHrs, cWaste, capex, potentialSavings, riskLevel, manualPercent, autoLevel);
             updateRecs(cWaste, cRisk, cOpp, paybackMonths);
             updateDoraBenchmark();
+            updateScenarios(cWaste, cRisk, cOpp, capex, autoLevel, totalImpact);
         }
 
         const CHART_OPTS = {
@@ -786,6 +833,106 @@
             return { band: L.doraBandLow, color: 'var(--red)' };
         }
 
+        function updateScenarios(cWaste, cRisk, cOpp, capex, autoLevel, totalImpact) {
+            const L = TRANSLATIONS[currentLang];
+            const fmt = (n) => '$' + Math.round(Math.abs(n)).toLocaleString();
+
+            // Helper: compute net recovery and payback for a given autoLevel + capex
+            function scenCalc(al, cx) {
+                const savings = (cWaste + cRisk) * al;
+                const net     = savings - cx;
+                const pb      = savings > 0 ? (cx / (savings / 12)) : Infinity;
+                return { savings, net, pb };
+            }
+
+            const scenA = scenCalc(0,    0);
+            const scenB = scenCalc(autoLevel, capex);
+            const scenC = scenCalc(0.8,  capex * 1.5);
+
+            function netColor(val) { return val >= 0 ? 'var(--green)' : 'var(--red)'; }
+            function netSign(val)  { return val >= 0 ? '+' : '-'; }
+            function pbStr(pb) {
+                if (!isFinite(pb) || pb <= 0) return L.scenInfinity;
+                if (pb < 1) return '< 1 ' + L.scenMonths;
+                return pb.toFixed(1) + ' ' + L.scenMonths;
+            }
+            function pbColor(pb) {
+                if (!isFinite(pb) || pb <= 0) return 'var(--red)';
+                if (pb < 24) return 'var(--green)';
+                if (pb < 48) return 'var(--yellow)';
+                return 'var(--orange)';
+            }
+
+            function scenCard({ title, desc, accentColor, capexAmt, calcResult, showBadge, badgeText }) {
+                const recColor = netColor(calcResult.net);
+                const pb       = calcResult.pb;
+                const recLabel = calcResult.net >= 0 ? `${netSign(calcResult.net)}${fmt(calcResult.net)}` : `-${fmt(calcResult.net)}`;
+                const badgeHtml = showBadge
+                    ? `<span style="display:inline-block;font-size:0.55rem;font-weight:800;padding:2px 8px;border-radius:999px;border:1px solid ${accentColor};color:${accentColor};letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;">${badgeText}</span>`
+                    : '';
+
+                return `
+                <div style="
+                    background:var(--bg-elevated);
+                    border:1px solid var(--border);
+                    border-top:3px solid ${accentColor};
+                    border-radius:var(--radius-lg);
+                    padding:1.2rem;
+                    display:flex;
+                    flex-direction:column;
+                    gap:0.7rem;
+                    position:relative;
+                    overflow:hidden;
+                    transition:box-shadow 0.2s;
+                ">
+                    <div style="position:absolute;top:0;left:0;right:0;height:40px;background:linear-gradient(to bottom,${accentColor}10,transparent);pointer-events:none;border-radius:var(--radius-lg) var(--radius-lg) 0 0;"></div>
+                    <div>
+                        ${badgeHtml}
+                        <p style="font-family:'Space Grotesk',sans-serif;font-size:0.85rem;font-weight:800;color:var(--text-primary);margin:0;text-transform:uppercase;letter-spacing:-0.01em;">${title}</p>
+                        <p style="font-size:0.62rem;color:var(--text-muted);margin:3px 0 0;line-height:1.4;">${desc}</p>
+                    </div>
+                    <div style="border-top:1px solid var(--border-subtle);padding-top:0.7rem;display:flex;flex-direction:column;gap:0.55rem;">
+                        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+                            <span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);">${L.scenLabelDebt}</span>
+                            <span style="font-size:1rem;font-weight:900;color:var(--red);font-family:'Space Grotesk',sans-serif;">${fmt(totalImpact)}</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+                            <span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);">${L.scenLabelInvestment}</span>
+                            <span style="font-size:0.85rem;font-weight:700;color:var(--accent);">${capexAmt > 0 ? fmt(capexAmt) : L.scenNoInvestment}</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+                            <span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);">${L.scenLabelNet}</span>
+                            <span style="font-size:1.05rem;font-weight:900;color:${recColor};font-family:'Space Grotesk',sans-serif;">${calcResult.savings <= 0 ? '—' : recLabel}</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:baseline;border-top:1px dashed var(--border-subtle);padding-top:0.5rem;margin-top:0.1rem;">
+                            <span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);">${L.scenLabelPayback}</span>
+                            <span style="font-size:1rem;font-weight:900;color:${pbColor(pb)};font-family:'Space Grotesk',sans-serif;">${pbStr(pb)}</span>
+                        </div>
+                    </div>
+                </div>`;
+            }
+
+            const isRecommendedB = isFinite(scenB.pb) && scenB.pb < 24 && autoLevel > 0;
+            const isRecommendedC = !isRecommendedB && isFinite(scenC.pb) && scenC.pb < 24;
+
+            document.getElementById('scenarioGrid').innerHTML =
+                scenCard({
+                    title: L.scenarioATitle, desc: L.scenarioADesc,
+                    accentColor: 'var(--red)', capexAmt: 0,
+                    calcResult: scenA, showBadge: false, badgeText: ''
+                }) +
+                scenCard({
+                    title: L.scenarioBTitle, desc: L.scenarioBDesc,
+                    accentColor: 'var(--accent)', capexAmt: capex,
+                    calcResult: scenB, showBadge: isRecommendedB, badgeText: L.scenRecommended
+                }) +
+                scenCard({
+                    title: L.scenarioCTitle, desc: L.scenarioCDesc,
+                    accentColor: 'var(--green)', capexAmt: capex * 1.5,
+                    calcResult: scenC, showBadge: isRecommendedC, badgeText: L.scenRecommended
+                });
+        }
+
         function updateDoraBenchmark() {
             const L = TRANSLATIONS[currentLang];
             const q1 = parseFloat(document.getElementById('q1').value) || 0;
@@ -956,7 +1103,7 @@
             cy += rowH + 8; // after last row
 
             // ── Screenshot blocks: investment, stats, charts, exec summary ─────
-            const screenshotIds = ['pdf-block-2','pdf-block-3','pdf-block-4','pdf-block-5','pdf-block-6'];
+            const screenshotIds = ['pdf-block-2','pdf-block-3','scenario-compare','pdf-block-4','pdf-block-5','pdf-block-6'];
 
             for (const id of screenshotIds) {
                 const el = document.getElementById(id);
