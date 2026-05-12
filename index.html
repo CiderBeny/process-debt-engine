@@ -814,7 +814,7 @@
             if (cw > 100000) html += `<li>${L.recAutomation(Math.round(cw*0.3).toLocaleString())}</li>`;
             if (cr > 50000)  html += `<li>${L.recRisk()}</li>`;
             if (co > 150000) html += `<li>${L.recInnovation(Math.round(co*0.5).toLocaleString())}</li>`;
-            html += `<li class="mt-3 p-3 font-bold italic" style="background:var(--accent-dim);border-left:4px solid var(--accent);color:var(--accent);border-radius:0 6px 6px 0;">${L.recVerdict(pb.toFixed(1))}</li>`;
+            html += `<li class="mt-3 p-3 font-bold italic" style="background:var(--accent-dim);border-left:4px solid var(--accent);color:var(--accent);border-radius:0 6px 6px 0;">${L.recVerdict(pb < 1 ? '< 1' : pb.toFixed(1))}</li>`;
             engine.innerHTML = html + `</ul>`;
 
             // ── Block 6: Top 3 Financial Levers ─────────────────────────────
@@ -881,7 +881,7 @@
                     </div>
                     <div style="text-align:right;">
                         <p style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin:0 0 4px;">${L.verdictPaybackLabel}</p>
-                        <p style="font-size:1.5rem;font-weight:900;color:var(--text-primary);margin:0;">${pb.toFixed(1)} ${L.verdictPaybackUnit}</p>
+                        <p style="font-size:1.5rem;font-weight:900;color:var(--text-primary);margin:0;">${pb < 1 ? '< 1' : pb.toFixed(1)} ${L.verdictPaybackUnit}</p>
                     </div>
                     <div style="flex:1;min-width:200px;">
                         <p style="font-size:0.7rem;color:var(--text-secondary);margin:0;font-style:italic;">${L.verdictNote}</p>
