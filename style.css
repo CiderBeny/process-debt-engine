@@ -486,7 +486,33 @@ section h2 {
   box-shadow: 0 4px 24px rgba(0,0,0,0.4), 0 0 16px rgba(6,182,212,0.08);
 }
 
-/* ── Scrollbar ── */
+/* ── Roadmap Section ── */
+#roadmap-section {
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  padding-top: 1.25rem;
+}
+
+#roadmapGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  #roadmapGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+#roadmapGrid > div {
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+#roadmapGrid > div:hover {
+  box-shadow: var(--shadow-card), var(--shadow-glow);
+}
+
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg-base); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }

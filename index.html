@@ -296,6 +296,12 @@
                 </div>
                 <div id="leverCards" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"></div>
                 <div id="verdictBar" style="border-radius:8px;padding:1rem 1.25rem;background:var(--accent-dim);border-left:4px solid var(--accent);"></div>
+
+                <!-- ROADMAP SECTION -->
+                <div id="roadmap-section" style="margin-top:1.5rem;border-top:1px solid var(--border);padding-top:1.25rem;">
+                    <p class="label" style="color:var(--accent);font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;font-weight:700;margin-bottom:1rem;" data-i18n="roadmapTitle">Generated 90-Day Delivery Roadmap</p>
+                    <div id="roadmapGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;"></div>
+                </div>
             </div>
 
         </div>
@@ -394,6 +400,33 @@
                 verdictPaybackLabel:  'Investment Payback',
                 verdictPaybackUnit:   'months',
                 verdictNote: 'Prioritising the top 3 levers above delivers the fastest path to ROI. Begin with the lowest-effort items to build momentum before tackling strategic initiatives.',
+                roadmapTitle:    'Generated 90-Day Delivery Roadmap',
+                roadmapPhase1:   'Phase 1 — Month 1',
+                roadmapPhase1Sub:'Foundation & Quick Wins',
+                roadmapPhase2:   'Phase 2 — Month 2–3',
+                roadmapPhase2Sub:'Core Implementation',
+                roadmapPhase3:   'Phase 3 — Month 4–6',
+                roadmapPhase3Sub:'Scale & Optimise',
+                // Roadmap tasks — automation
+                rmAutomation_p1: ['Audit all manual deployment steps', 'Define CI/CD pipeline blueprint', 'Identify top 5 automation candidates', 'Baseline cycle time measurement'],
+                rmAutomation_p2: ['Implement first automated pipeline', 'Deploy self-service portal MVP', 'Automate regression test suite', 'Integrate with ticketing system'],
+                rmAutomation_p3: ['Extend automation to 80% of workflows', 'Measure cycle time reduction', 'Publish automation ROI report', 'Train all squads on new pipelines'],
+                // Roadmap tasks — risk
+                rmRisk_p1: ['Inventory all production systems', 'Define CMDB schema & ownership', 'Map critical failure blast radius', 'Baseline current MTTR metric'],
+                rmRisk_p2: ['Deploy Auto-Discovery tooling', 'Set alert thresholds & runbooks', 'Conduct first Game Day exercise', 'Integrate monitoring dashboards'],
+                rmRisk_p3: ['Achieve full CMDB coverage', 'Run MTTR reduction review', 'Automate incident response flows', 'Publish risk posture scorecard'],
+                // Roadmap tasks — innovation
+                rmInnovation_p1: ['Prioritise technical debt backlog', 'Map roadmap items blocked by debt', 'Estimate capacity freed per quarter', 'Align stakeholders on priority order'],
+                rmInnovation_p2: ['Retire top 3 legacy dependencies', 'Ship first deferred roadmap feature', 'Establish debt-prevention guidelines', 'Track opportunity recovery weekly'],
+                rmInnovation_p3: ['Achieve 50%+ backlog reduction', 'Launch 2 new revenue-generating features', 'Establish quarterly debt review cadence', 'Report innovation runway gained'],
+                // Roadmap tasks — mgmt
+                rmMgmt_p1: ['Survey managers on coordination pain', 'Map silo-chasing hotspots', 'Evaluate shared tooling options', 'Define cross-team communication charter'],
+                rmMgmt_p2: ['Deploy shared dashboards & wikis', 'Establish weekly cross-team standups', 'Reduce coordination meetings by 30%', 'Pilot inner-source documentation'],
+                rmMgmt_p3: ['Measure manager hours reclaimed', 'Roll out tooling org-wide', 'Publish efficiency benchmarks', 'Celebrate quick-win milestones'],
+                // Roadmap tasks — turnover
+                rmTurnover_p1: ['Run burnout risk survey by team', 'Identify highest toil workflows', 'Benchmark turnover vs. industry', 'Define retention KPIs'],
+                rmTurnover_p2: ['Eliminate top 3 toil sources', 'Launch engineering experience programme', 'Introduce on-call rotation fairness audit', 'Offer internal mobility pathways'],
+                rmTurnover_p3: ['Track monthly turnover delta', 'Calculate retention cost savings', 'Extend programme to all engineering', 'Publish culture & health report'],
                 doraTitle:    'DORA Benchmark Context',
                 doraSubtitle: 'Where your inputs sit vs. industry research',
                 doraMetricLeadTime:   'Lead Time',
@@ -512,6 +545,33 @@
                 verdictPaybackLabel:  'Zwrot z Inwestycji',
                 verdictPaybackUnit:   'miesięcy',
                 verdictNote: 'Priorytetyzacja 3 powyższych dźwigni zapewnia najszybszą drogę do ROI. Zacznij od elementów o najniższym wysiłku, aby zbudować momentum przed podjęciem inicjatyw strategicznych.',
+                roadmapTitle:    'Wygenerowany Plan Dostawy 90-Dniowy',
+                roadmapPhase1:   'Faza 1 — Miesiąc 1',
+                roadmapPhase1Sub:'Fundamenty i Szybkie Zwycięstwa',
+                roadmapPhase2:   'Faza 2 — Miesiąc 2–3',
+                roadmapPhase2Sub:'Główna Implementacja',
+                roadmapPhase3:   'Faza 3 — Miesiąc 4–6',
+                roadmapPhase3Sub:'Skalowanie i Optymalizacja',
+                // Roadmap tasks — automation (PL)
+                rmAutomation_p1: ['Zinwentaryzuj ręczne etapy wdrożeń', 'Zdefiniuj schemat pipeline\'u CI/CD', 'Wyznacz top 5 kandydatów do automatyzacji', 'Ustal bazowy pomiar czasu cyklu'],
+                rmAutomation_p2: ['Wdróż pierwszy automatyczny pipeline', 'Uruchom MVP portalu samoobsługowego', 'Zautomatyzuj zestaw testów regresji', 'Zintegruj z systemem ticketów'],
+                rmAutomation_p3: ['Rozszerz automatyzację na 80% procesów', 'Zmierz redukcję czasu cyklu', 'Opublikuj raport ROI automatyzacji', 'Przeszkol wszystkie zespoły z nowych pipeline\'ów'],
+                // Roadmap tasks — risk (PL)
+                rmRisk_p1: ['Zinwentaryzuj wszystkie systemy produkcyjne', 'Zdefiniuj schemat CMDB i właścicieli', 'Zmapuj zasięg awarii krytycznych', 'Ustal bazowy wskaźnik MTTR'],
+                rmRisk_p2: ['Wdróż narzędzie Auto-Discovery', 'Ustaw progi alertów i runbooki', 'Przeprowadź pierwsze ćwiczenie Game Day', 'Zintegruj dashboardy monitoringu'],
+                rmRisk_p3: ['Osiągnij pełne pokrycie CMDB', 'Przeprowadź przegląd redukcji MTTR', 'Zautomatyzuj przepływy reagowania na incydenty', 'Opublikuj kartę wyników pozycji ryzyka'],
+                // Roadmap tasks — innovation (PL)
+                rmInnovation_p1: ['Priorytetyzuj zaległości techniczne', 'Zmapuj elementy roadmapy zablokowane przez dług', 'Oszacuj uwolnioną pojemność na kwartał', 'Uzgodnij kolejność priorytetów z interesariuszami'],
+                rmInnovation_p2: ['Wycofaj 3 najważniejsze zależności legacy', 'Dostarcz pierwszą odłożoną funkcję roadmapy', 'Ustal wytyczne zapobiegania długowi', 'Śledź odzysk szans tygodniowo'],
+                rmInnovation_p3: ['Osiągnij redukcję zaległości o 50%+', 'Uruchom 2 nowe funkcje generujące przychód', 'Ustaw kwartalny cykl przeglądu długu', 'Raportuj zyskaną przestrzeń na innowacje'],
+                // Roadmap tasks — mgmt (PL)
+                rmMgmt_p1: ['Przeprowadź ankietę bólu koordynacyjnego wśród menedżerów', 'Zmapuj punkty zapalne silosów', 'Oceń opcje wspólnych narzędzi', 'Zdefiniuj kartę komunikacji między zespołami'],
+                rmMgmt_p2: ['Wdróż wspólne dashboardy i wiki', 'Ustal cotygodniowe spotkania cross-teamowe', 'Zredukuj spotkania koordynacyjne o 30%', 'Pilotuj wewnętrzną dokumentację open-source'],
+                rmMgmt_p3: ['Zmierz odzyskane godziny menedżerów', 'Wdróż narzędzia w całej organizacji', 'Opublikuj benchmarki efektywności', 'Świętuj osiągnięte kamienie milowe'],
+                // Roadmap tasks — turnover (PL)
+                rmTurnover_p1: ['Przeprowadź ankietę ryzyka wypalenia w zespołach', 'Zidentyfikuj najbardziej uciążliwe procesy', 'Porównaj rotację z branżą', 'Zdefiniuj KPI retencji'],
+                rmTurnover_p2: ['Wyeliminuj 3 główne źródła uciążliwości', 'Uruchom program doświadczeń inżynierskich', 'Przeprowadź audyt sprawiedliwości dyżurów', 'Zaoferuj ścieżki mobilności wewnętrznej'],
+                rmTurnover_p3: ['Śledź miesięczny wskaźnik rotacji', 'Oblicz oszczędności z retencji', 'Rozszerz program na całą inżynierię', 'Opublikuj raport kultury i zdrowia organizacji'],
                 doraTitle:    'Kontekst Benchmarku DORA',
                 doraSubtitle: 'Gdzie są Twoje dane vs. badania branżowe',
                 doraMetricLeadTime:   'Czas Realizacji',
@@ -764,6 +824,9 @@
             const totalRecovery = top3.reduce((s, l) => s + l.recovery, 0);
             const rankLabels = L.rankLabels;
 
+            // Generate roadmap for top 3 levers
+            updateRoadmap(top3);
+
             let cards = '';
             top3.forEach((l, i) => {
                 const badgeColor = effortMap[l.effort] || 'var(--green)';
@@ -799,6 +862,88 @@
                         <p style="font-size:0.7rem;color:var(--text-secondary);margin:0;font-style:italic;">${L.verdictNote}</p>
                     </div>
                 </div>`;
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // 90-Day Roadmap
+        // ═══════════════════════════════════════════════════════════════
+        function getRoadmapTasks() {
+            const L = TRANSLATIONS[currentLang];
+            return {
+                automation: {
+                    phase1: L.rmAutomation_p1,
+                    phase2: L.rmAutomation_p2,
+                    phase3: L.rmAutomation_p3,
+                },
+                risk: {
+                    phase1: L.rmRisk_p1,
+                    phase2: L.rmRisk_p2,
+                    phase3: L.rmRisk_p3,
+                },
+                innovation: {
+                    phase1: L.rmInnovation_p1,
+                    phase2: L.rmInnovation_p2,
+                    phase3: L.rmInnovation_p3,
+                },
+                mgmt: {
+                    phase1: L.rmMgmt_p1,
+                    phase2: L.rmMgmt_p2,
+                    phase3: L.rmMgmt_p3,
+                },
+                turnover: {
+                    phase1: L.rmTurnover_p1,
+                    phase2: L.rmTurnover_p2,
+                    phase3: L.rmTurnover_p3,
+                },
+            };
+        }
+
+        function updateRoadmap(top3) {
+            const L  = TRANSLATIONS[currentLang];
+            const MAX_PER_PHASE = 4;
+            const ROADMAP_TASKS = getRoadmapTasks();
+
+            // Collect merged tasks for each phase from top3 levers (in rank order)
+            const phases = ['phase1', 'phase2', 'phase3'];
+            const merged = { phase1: [], phase2: [], phase3: [] };
+
+            top3.forEach(lever => {
+                const tasks = ROADMAP_TASKS[lever.key];
+                if (!tasks) return;
+                phases.forEach(ph => {
+                    tasks[ph].forEach(task => {
+                        if (merged[ph].length < MAX_PER_PHASE) {
+                            merged[ph].push({ task, color: lever.color });
+                        }
+                    });
+                });
+            });
+
+            const phasesMeta = [
+                { id: 'phase1', titleKey: 'roadmapPhase1', subKey: 'roadmapPhase1Sub', accent: 'var(--accent)'  },
+                { id: 'phase2', titleKey: 'roadmapPhase2', subKey: 'roadmapPhase2Sub', accent: 'var(--purple)' },
+                { id: 'phase3', titleKey: 'roadmapPhase3', subKey: 'roadmapPhase3Sub', accent: 'var(--green)'  },
+            ];
+
+            let html = '';
+            phasesMeta.forEach(meta => {
+                const tasks = merged[meta.id];
+                const taskRows = tasks.map(({ task, color }) =>
+                    `<li style="display:flex;align-items:flex-start;gap:6px;margin-bottom:0.45rem;">
+                        <span style="color:${color};font-size:0.75rem;line-height:1.4;flex-shrink:0;">☐</span>
+                        <span style="font-size:0.72rem;color:var(--text-secondary);line-height:1.4;">${task}</span>
+                    </li>`
+                ).join('');
+
+                html += `
+                <div style="background:var(--bg-elevated);border:1px solid var(--border);border-top:3px solid ${meta.accent};border-radius:var(--radius-md);padding:1rem;">
+                    <p style="font-family:'Space Grotesk',sans-serif;font-size:0.62rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:${meta.accent};margin:0 0 2px;">${L[meta.titleKey]}</p>
+                    <p style="font-family:'Space Grotesk',sans-serif;font-size:0.8rem;font-weight:700;color:var(--text-primary);margin:0 0 0.75rem;">${L[meta.subKey]}</p>
+                    <ul style="list-style:none;margin:0;padding:0;">${taskRows || '<li style="font-size:0.72rem;color:var(--text-muted);">No tasks for selected levers.</li>'}</ul>
+                </div>`;
+            });
+
+            document.getElementById('roadmapGrid').innerHTML = html;
         }
 
         // ═══════════════════════════════════════════════════════════════
