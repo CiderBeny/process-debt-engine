@@ -32,6 +32,28 @@
             box-shadow: 0 0 10px var(--accent-glow);
         }
         #langBtn .flag { font-size: 1rem; line-height: 1; }
+
+        #copyLinkBtn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            padding: 0.35rem 0.85rem;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: border-color 0.2s, color 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        #copyLinkBtn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
     </style>
 </head>
 <body>
@@ -43,6 +65,7 @@
                 <p class="text-[10px] uppercase tracking-widest mt-0.5" data-i18n="navSubtitle">Full Diagnostic & Financial Strategy Engine</p>
             </div>
             <div class="flex items-center gap-3">
+                <button id="copyLinkBtn" onclick="copyShareLink()" data-i18n="copyLinkBtn">⧉ COPY LINK</button>
                 <button id="langBtn" onclick="toggleLang()">
                     <span class="flag" id="langFlag">🇵🇱</span>
                     <span id="langLabel">PL</span>
@@ -459,6 +482,7 @@
                 scenMonths:          'months',
                 scenInfinity:        '∞ No return',
                 scenNoInvestment:    'No investment',
+                copyLinkBtn:         '⧉ COPY LINK',
             },
             pl: {
                 navSubtitle:      'Pełne Narzędzie Diagnostyczne i Finansowe',
@@ -604,6 +628,7 @@
                 scenMonths:          'miesięcy',
                 scenInfinity:        '∞ Brak zwrotu',
                 scenNoInvestment:    'Brak inwestycji',
+                copyLinkBtn:         '⧉ KOPIUJ LINK',
             }
         };
 
@@ -1076,6 +1101,8 @@
                     accentColor: 'var(--green)', capexAmt: capex * 1.5,
                     calcResult: scenC, showBadge: isRecommendedC, badgeText: L.scenRecommended
                 });
+
+            encodeState();
         }
 
         function updateDoraBenchmark() {
@@ -1315,7 +1342,38 @@
             btn.innerText = t('exportBtn');
         }
 
-        window.onload = () => { applyTranslations(); calculate(); };
+        function encodeState() {
+            const ids = ['q1','q2','q3','q4','q5','q6','q7','q8','q9','q10','autoLevel','capex'];
+            const vals = ids.map(id => document.getElementById(id).value);
+            const hash = ids.map((id,i) => id+'='+encodeURIComponent(vals[i])).join('&');
+            history.replaceState(null, '', '#' + hash);
+        }
+
+        function decodeState() {
+            if (!location.hash || location.hash.length < 3) return;
+            const pairs = location.hash.slice(1).split('&');
+            pairs.forEach(pair => {
+                const [key, val] = pair.split('=');
+                const el = document.getElementById(key);
+                if (el) {
+                    el.value = decodeURIComponent(val);
+                    if (key === 'q3') document.getElementById('q3Val').innerText = el.value;
+                    if (key === 'q9') document.getElementById('q9Val').innerText = el.value;
+                    if (key === 'autoLevel') document.getElementById('autoLevelVal').innerText = el.value;
+                }
+            });
+        }
+
+        function copyShareLink() {
+            navigator.clipboard.writeText(location.href).then(() => {
+                const btn = document.getElementById('copyLinkBtn');
+                const orig = btn.innerText;
+                btn.innerText = '✓ COPIED';
+                setTimeout(() => btn.innerText = orig, 2000);
+            });
+        }
+
+        window.onload = () => { applyTranslations(); decodeState(); calculate(); };
     </script>
 </body>
 </html>
