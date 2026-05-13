@@ -131,7 +131,11 @@
                 <div class="q-card">
                     <label class="label" data-i18n="q3label">3. Documentation Standard (1–5)</label>
                     <p class="text-[10px] mb-2 leading-tight" data-i18n="q3desc">Does the organization maintain a unified process documentation standard, or is critical knowledge fragmented across tribal silos?</p>
-                    <input type="range" id="q3" min="1" max="5" value="2" class="slider" oninput="document.getElementById('q3Val').innerText=this.value;calculate()">
+                    <div class="slider-wrapper">
+                        <div class="slider-track-bg"></div>
+                        <div class="slider-track-fill" id="q3Fill"></div>
+                        <input type="range" id="q3" min="1" max="5" value="2" class="slider" oninput="document.getElementById('q3Val').innerText=this.value;calculate()">
+                    </div>
                     <div class="flex justify-between mt-1 px-0.5">
                         <span class="text-[10px]" style="color:var(--text-muted)" data-i18n="q3min">1 — Fragmented</span>
                         <span id="q3Val" class="text-xs font-bold">2</span>
@@ -172,7 +176,11 @@
                 <div class="q-card">
                     <label class="label" data-i18n="q9label">9. Scalability Bottleneck (1–5)</label>
                     <p class="text-[10px] mb-2 leading-tight italic" data-i18n="q9desc">Impact on ability to scale growth?</p>
-                    <input type="range" id="q9" min="1" max="5" value="4" class="slider" oninput="document.getElementById('q9Val').innerText=this.value;calculate()">
+                    <div class="slider-wrapper">
+                        <div class="slider-track-bg"></div>
+                        <div class="slider-track-fill" id="q9Fill"></div>
+                        <input type="range" id="q9" min="1" max="5" value="4" class="slider" oninput="document.getElementById('q9Val').innerText=this.value;calculate()">
+                    </div>
                     <div class="text-center mt-2">
                         <span id="q9Val" class="text-xs font-bold">4</span>
                         <span class="text-[10px]" style="color:var(--text-muted)">/ 5</span>
@@ -217,7 +225,11 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="space-y-3">
                     <label class="label" data-i18n="autoLabel">Target Automation Level (%)</label>
-                    <input type="range" id="autoLevel" min="0" max="100" value="40" class="slider" oninput="document.getElementById('autoLevelVal').innerText=this.value;calculate()">
+                    <div class="slider-wrapper">
+                        <div class="slider-track-bg"></div>
+                        <div class="slider-track-fill" id="autoLevelFill"></div>
+                        <input type="range" id="autoLevel" min="0" max="100" value="40" class="slider" oninput="document.getElementById('autoLevelVal').innerText=this.value;calculate()">
+                    </div>
                     <p class="text-center font-bold text-sm"><span id="autoLevelVal">40</span>% <span data-i18n="efficiencyGain">Efficiency Gain</span></p>
                 </div>
                 <div>
@@ -714,15 +726,20 @@
         let waterfallChart, bridgeChart, heatmapChart;
 
         function updateSliderFills() {
-            function setSliderFill(id, min, max) {
-                const el = document.getElementById(id);
-                if (!el) return;
-                const pct = ((el.value - min) / (max - min) * 100).toFixed(1) + '%';
-                el.style.setProperty('--val', pct);
+            // Cross-browser fix: directly set the width of the .slider-track-fill
+            // overlay div instead of updating a CSS custom property on the input.
+            // Firefox does not reliably repaint input backgrounds when custom
+            // properties change, so the old --val gradient approach was broken there.
+            function setSliderFill(inputId, fillId, min, max) {
+                const input = document.getElementById(inputId);
+                const fill  = document.getElementById(fillId);
+                if (!input || !fill) return;
+                const pct = ((input.value - min) / (max - min) * 100).toFixed(1) + '%';
+                fill.style.width = pct;
             }
-            setSliderFill('q3', 1, 5);
-            setSliderFill('q9', 1, 5);
-            setSliderFill('autoLevel', 0, 100);
+            setSliderFill('q3',        'q3Fill',        1, 5);
+            setSliderFill('q9',        'q9Fill',        1, 5);
+            setSliderFill('autoLevel', 'autoLevelFill', 0, 100);
         }
 
         function calculate() {
@@ -761,7 +778,7 @@
             document.getElementById('q9Val').innerText       = document.getElementById('q9').value;
             document.getElementById('q3Val').innerText       = document.getElementById('q3').value;
 
-            // Update slider track fill (--val CSS custom property drives the gradient)
+            // Update slider track fill (overlay div width approach — works in all browsers)
             updateSliderFills();
 
             updateCharts(totalAnnualHrs, manualAnnualHrs, chasingAnnualHrs, cWaste, capex, potentialSavings, riskLevel, manualPercent, autoLevel);

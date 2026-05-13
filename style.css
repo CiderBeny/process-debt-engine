@@ -197,7 +197,51 @@ section h2 {
 .input-field[type=number] { -moz-appearance: textfield; }
 
 /* ── Sliders ── */
+
+/*
+  Cross-browser track fill fix (Firefox + WebKit).
+  The old approach set a CSS custom property (--val) inside a linear-gradient
+  on the <input> element itself. Firefox does not repaint input backgrounds
+  reliably when custom properties change, so the filled portion was always
+  static. The fix uses a sibling <div class="slider-track-fill"> that is
+  absolutely positioned over the unfilled track and resized in JS.
+*/
+
+/* Wrapper must be relative so the overlay can be absolutely positioned */
+.slider-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 18px; /* tall enough to contain thumb */
+}
+
+/* The unfilled track background — sits behind everything */
+.slider-track-bg {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--border);
+  pointer-events: none;
+}
+
+/* The filled (cyan) portion — width is set by JS */
+.slider-track-fill {
+  position: absolute;
+  left: 0;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent);
+  pointer-events: none;
+  width: 0%; /* initial; overwritten immediately by updateSliderFills() */
+  transition: width 0.05s linear;
+}
+
+/* The <input type="range"> sits on top, fully transparent track */
 .slider {
+  position: relative;
   width: 100%;
   height: 6px !important;
   border-radius: 999px;
@@ -205,14 +249,9 @@ section h2 {
   -webkit-appearance: none;
   outline: none;
   cursor: pointer;
-  /* Track fill driven by --val, updated by JS on every input event */
-  background: linear-gradient(
-    90deg,
-    var(--accent) 0%,
-    var(--accent) var(--val, 25%),
-    var(--border) var(--val, 25%),
-    var(--border) 100%
-  ) !important;
+  background: transparent !important; /* track colour now comes from overlays */
+  z-index: 1;
+  margin: 0;
 }
 
 .slider::-webkit-slider-runnable-track {
