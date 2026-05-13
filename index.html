@@ -1579,12 +1579,52 @@
         }
 
         function copyShareLink() {
-            navigator.clipboard.writeText(location.href).then(() => {
-                const btn = document.getElementById('copyLinkBtn');
-                const orig = btn.innerText;
-                btn.innerText = '✓ COPIED';
-                setTimeout(() => btn.innerText = orig, 2000);
-            });
+            const btn  = document.getElementById('copyLinkBtn');
+            const orig = btn.textContent;
+            const url  = location.href;
+
+            // Tier 1 — Modern Clipboard API.
+            // Only available in secure contexts (HTTPS or localhost).
+            // Safari 13.0 and older also lack it; all modern browsers support it.
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(url)
+                    .then(() => flashBtn(btn, orig))
+                    .catch(() => fallbackCopy(btn, orig, url));
+                return;
+            }
+
+            // Tier 2 & 3 handled by fallback for HTTP / file:// / older Safari.
+            fallbackCopy(btn, orig, url);
+        }
+
+        function fallbackCopy(btn, orig, url) {
+            // Tier 2 — execCommand('copy').
+            // Deprecated but still widely supported. Requires a real DOM text node
+            // that can be selected; we create a temporary <textarea> off-screen.
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = url;
+                // Place off-screen so it doesn't cause a visible scroll jump.
+                ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+                document.body.appendChild(ta);
+                ta.focus();
+                ta.select();
+                const ok = document.execCommand('copy');
+                document.body.removeChild(ta);
+                if (ok) { flashBtn(btn, orig); return; }
+            } catch (_) {
+                // execCommand may throw in some sandboxed environments — fall through.
+            }
+
+            // Tier 3 — prompt() dialog.
+            // Works everywhere, including file://, HTTP, and very old browsers.
+            // The user can manually copy the pre-selected URL from the dialog.
+            prompt('Copy this link (Ctrl+C / ⌘+C):', url);
+        }
+
+        function flashBtn(btn, orig) {
+            btn.textContent = '✓ COPIED';
+            setTimeout(() => btn.textContent = orig, 2000);
         }
 
         window.onload = () => { applyTranslations(); decodeState(); calculate(); };
