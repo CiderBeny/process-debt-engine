@@ -11,29 +11,23 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
         /* ── Inline font bootstrap (runs before any stylesheet) ─────────────────
-           Fonts are embedded directly in style.css via download-fonts.js.
-           This script handles the progressive-enhancement layer:
+           On first load: fonts come from Google CDN (or system fallback).
+           prefetchFontsToBase64() fetches & base64-encodes every woff2, then
+           persists them to localStorage under the key 'fontCache_v1'.
 
-           On first load (download-fonts.js not yet run):
-             • style.css contains only a placeholder comment in FONT-EMBED-START.
-             • localStorage is empty.
-             • CDN link (below) loads fonts non-blocking; system stack renders first.
-             • prefetchFontsToBase64() fetches & caches fonts to localStorage.
+           On every subsequent load: THIS script reads localStorage and injects
+           a <style> tag with self-contained @font-face data: URIs directly into
+           <head> — before style.css, before the CDN link, before first paint.
+           The page renders with the correct fonts even with zero network access.
 
-           On every subsequent load (including fully offline):
-             • THIS script reads localStorage and injects a <style> tag with
-               self-contained @font-face data: URIs before first paint.
-             • Works even if style.css embed hasn't been run yet.
-
-           Once download-fonts.js has been run and style.css is committed:
-             • Fonts are in style.css from byte 0 — localStorage not needed.
-             • This script becomes a no-op (fast try/catch exit).
+           Cache invalidation: the key includes a version string. Bump
+           FONT_CACHE_VERSION to force a re-fetch after a font update.
         ────────────────────────────────────────────────────────────────────── */
         (function injectCachedFonts() {
             var FONT_CACHE_KEY = 'fontCache_v1';
             try {
                 var cached = localStorage.getItem(FONT_CACHE_KEY);
-                if (!cached) return;
+                if (!cached) return; // first load — nothing to inject yet
                 var faces = JSON.parse(cached);
                 if (!Array.isArray(faces) || faces.length === 0) return;
                 var css = faces.map(function(f) {
@@ -49,17 +43,11 @@
                 document.currentScript.parentNode.insertBefore(el, document.currentScript.nextSibling);
                 console.info('[Fonts] Injected ' + faces.length + ' face(s) from localStorage cache.');
             } catch(e) {
-                // localStorage unavailable (private browsing, quota) — silent fail.
+                // localStorage unavailable (private browsing, storage quota) — silent fail.
             }
         })();
     </script>
-    <!--
-        Progressive enhancement: CDN fonts load non-blocking after style.css.
-        If download-fonts.js has been run, style.css already has the fonts
-        embedded and this link is a silent no-op (browser gets 304 or ignores
-        duplicates). If not yet run, this provides real fonts on first load
-        for users on unrestricted networks.
-    -->
+    <!-- Tier 2: Google CDN — loaded after fonts.css so it wins the cascade -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet"
