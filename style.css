@@ -686,3 +686,14 @@ section h2 {
 ::-webkit-scrollbar-track { background: var(--bg-base); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ── Nav button row: wrap on narrow mobile viewports ── */
+@media (max-width: 480px) {
+    .flex.items-center.gap-3.flex-wrap.justify-end {
+        gap: 0.5rem;
+    }
+    .flex.items-center.gap-3.flex-wrap.justify-end button {
+        font-size: 0.65rem;
+        padding: 0.35rem 0.6rem;
+    }
+}
