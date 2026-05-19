@@ -183,7 +183,7 @@
                     <div class="slider-wrapper">
                         <div class="slider-track-bg"></div>
                         <div class="slider-track-fill" id="q3Fill"></div>
-                        <input type="range" id="q3" min="1" max="5" value="2" class="slider" oninput="document.getElementById('q3Val').innerText=this.value;calculate()">
+                        <input type="range" id="q3" min="1" max="5" value="2" class="slider" oninput="document.getElementById('q3Val').textContent=this.value;calculate()">
                     </div>
                     <div class="flex justify-between mt-1 px-0.5">
                         <span class="text-[10px]" style="color:var(--text-muted)" data-i18n="q3min">1 — Fragmented</span>
@@ -228,7 +228,7 @@
                     <div class="slider-wrapper">
                         <div class="slider-track-bg"></div>
                         <div class="slider-track-fill" id="q9Fill"></div>
-                        <input type="range" id="q9" min="1" max="5" value="4" class="slider" oninput="document.getElementById('q9Val').innerText=this.value;calculate()">
+                        <input type="range" id="q9" min="1" max="5" value="4" class="slider" oninput="document.getElementById('q9Val').textContent=this.value;calculate()">
                     </div>
                     <div class="text-center mt-2">
                         <span id="q9Val" class="text-xs font-bold">4</span>
@@ -277,7 +277,7 @@
                     <div class="slider-wrapper">
                         <div class="slider-track-bg"></div>
                         <div class="slider-track-fill" id="autoLevelFill"></div>
-                        <input type="range" id="autoLevel" min="0" max="100" value="40" class="slider" oninput="document.getElementById('autoLevelVal').innerText=this.value;calculate()">
+                        <input type="range" id="autoLevel" min="0" max="100" value="40" class="slider" oninput="document.getElementById('autoLevelVal').textContent=this.value;calculate()">
                     </div>
                     <p class="text-center font-bold text-sm"><span id="autoLevelVal">40</span>% <span data-i18n="efficiencyGain">Efficiency Gain</span></p>
                 </div>
@@ -803,7 +803,7 @@
             const autoLevel      = (parseFloat(document.getElementById('autoLevel').value) || 0) / 100;
             const teamSize       = parseFloat(document.getElementById('teamSize').value) || 1;
 
-            document.getElementById('autoLevelVal').innerText = Math.round(autoLevel * 100);
+            document.getElementById('autoLevelVal').textContent = Math.round(autoLevel * 100);
 
             const totalAnnualHrs   = 1800;
             const manualAnnualHrs  = totalAnnualHrs * (manualPercent / 100);
@@ -819,13 +819,13 @@
             const potentialSavings = (cWaste + cRisk) * autoLevel;
             const paybackMonths    = potentialSavings > 0 ? (capex / (potentialSavings / 12)) : 0;
 
-            document.getElementById('statWaste').innerText   = '$' + Math.round(cWaste).toLocaleString();
-            document.getElementById('statRisk').innerText    = '$' + Math.round(cRisk).toLocaleString();
-            document.getElementById('statOpp').innerText     = '$' + Math.round(cOpp).toLocaleString();
-            document.getElementById('totalImpact').innerText = '$' + Math.round(totalImpact).toLocaleString();
-            document.getElementById('statNet').innerText     = '$' + Math.round(netDebt).toLocaleString();
-            document.getElementById('q9Val').innerText       = document.getElementById('q9').value;
-            document.getElementById('q3Val').innerText       = document.getElementById('q3').value;
+            document.getElementById('statWaste').textContent   = '$' + Math.round(cWaste).toLocaleString();
+            document.getElementById('statRisk').textContent    = '$' + Math.round(cRisk).toLocaleString();
+            document.getElementById('statOpp').textContent     = '$' + Math.round(cOpp).toLocaleString();
+            document.getElementById('totalImpact').textContent = '$' + Math.round(totalImpact).toLocaleString();
+            document.getElementById('statNet').textContent     = '$' + Math.round(netDebt).toLocaleString();
+            document.getElementById('q9Val').textContent       = document.getElementById('q9').value;
+            document.getElementById('q3Val').textContent       = document.getElementById('q3').value;
 
             // Update slider track fill (overlay div width approach — works in all browsers)
             updateSliderFills();
@@ -1500,7 +1500,7 @@
             const { jsPDF } = window.jspdf;
             const btn = document.getElementById('exportBtn');
             btn.disabled = true;
-            btn.innerText = t('exportGenerating');
+            btn.textContent = t('exportGenerating');
             await new Promise(r => setTimeout(r, 120));
 
             const pdf    = new jsPDF('p', 'mm', 'a4');
@@ -1757,7 +1757,7 @@
 
             pdf.save('Strategic-IT-Business-Case.pdf');
             btn.disabled = false;
-            btn.innerText = t('exportBtn');
+            btn.textContent = t('exportBtn');
         }
 
         function encodeState() {
@@ -1775,9 +1775,9 @@
                 const el = document.getElementById(key);
                 if (el) {
                     el.value = decodeURIComponent(val);
-                    if (key === 'q3') document.getElementById('q3Val').innerText = el.value;
-                    if (key === 'q9') document.getElementById('q9Val').innerText = el.value;
-                    if (key === 'autoLevel') document.getElementById('autoLevelVal').innerText = el.value;
+                    if (key === 'q3') document.getElementById('q3Val').textContent = el.value;
+                    if (key === 'q9') document.getElementById('q9Val').textContent = el.value;
+                    if (key === 'autoLevel') document.getElementById('autoLevelVal').textContent = el.value;
                 }
             });
         }
