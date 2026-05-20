@@ -585,7 +585,11 @@ section h2 {
 }
 
 .formula-tip:hover::after,
-.formula-tip:hover::before {
+.formula-tip:hover::before,
+.formula-tip:focus::after,
+.formula-tip:focus::before,
+.formula-tip.tip-open::after,
+.formula-tip.tip-open::before {
   opacity: 1;
 }
 
