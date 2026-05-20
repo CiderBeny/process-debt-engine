@@ -299,7 +299,7 @@ section h2 {
 /* Remove number input spinners */
 .input-field::-webkit-outer-spin-button,
 .input-field::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-.input-field[type=number] { -moz-appearance: textfield; }
+.input-field[type=number] { -moz-appearance: textfield; appearance: textfield; }
 
 /* ── Sliders ── */
 
