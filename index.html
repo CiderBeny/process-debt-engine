@@ -4,11 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IT Process Debt & Chaos Calculator | Strategy Engine</title>
+    <!-- Tailwind CDN: runtime build, cannot be SRI-pinned by design.
+         For production, replace with a static build: https://tailwindcss.com/docs/installation -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Remaining scripts pinned to exact versions with SRI hashes (sha384) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.js"
+            integrity="sha384-G436+Z2nlA8+PNoeRvWdxKbvOf8E/y+lYxqht2iBwNHTQDV5CJr3+AGVj8fGZi5t"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"
+            integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+            integrity="sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"
+            integrity="sha384-vtjasyidUo0kW94K5MXDXntzOJpQgBKXmE7e2Ga4LG0skTTLeBi97eFAXsqewJjw"
+            crossorigin="anonymous"></script>
     <script>
         /* ── Inline font bootstrap (runs before any stylesheet) ─────────────────
            On first load: fonts come from Google CDN (or system fallback).
@@ -166,19 +177,19 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                 <div class="q-card">
-                    <label class="label" data-i18n="q1label">1. Manual Effort (%)</label>
+                    <label class="label" for="q1" data-i18n="q1label">1. Manual Effort (%)</label>
                     <p class="text-[10px] mb-2 leading-tight" data-i18n="q1desc">What percentage of the sprint capacity is consumed by repetitive manual tasks such as deployments, regression testing, or environment configuration?</p>
                     <input type="number" id="q1" value="40" class="input-field" oninput="calculate()">
                 </div>
 
                 <div class="q-card">
-                    <label class="label" data-i18n="q2label">2. Lead Time (Hrs)</label>
+                    <label class="label" for="q2" data-i18n="q2label">2. Lead Time (Hrs)</label>
                     <p class="text-[10px] mb-2 leading-tight" data-i18n="q2desc">What is the average 'Lead Time' for a single change, measured from the initial request or code commit to successful production deployment?</p>
                     <input type="number" id="q2" value="72" class="input-field" oninput="calculate()">
                 </div>
 
                 <div class="q-card">
-                    <label class="label" data-i18n="q3label">3. Documentation Standard (1–5)</label>
+                    <label class="label" for="q3" data-i18n="q3label">3. Documentation Standard (1–5)</label>
                     <p class="text-[10px] mb-2 leading-tight" data-i18n="q3desc">Does the organization maintain a unified process documentation standard, or is critical knowledge fragmented across tribal silos?</p>
                     <div class="slider-wrapper">
                         <div class="slider-track-bg"></div>
@@ -193,37 +204,37 @@
                 </div>
 
                 <div class="q-card">
-                    <label class="label" data-i18n="q4label">4. Downtime Cost ($/h)</label>
+                    <label class="label" for="q4" data-i18n="q4label">4. Downtime Cost ($/h)</label>
                     <p class="text-[10px] mb-2 leading-tight" data-i18n="q4desc">What is the estimated hourly revenue loss or operational penalty during a critical business system outage?</p>
                     <input type="number" id="q4" value="10000" class="input-field" oninput="calculate()">
                 </div>
 
                 <div class="q-card">
-                    <label class="label" data-i18n="q5label">5. Human Errors / Quarter</label>
+                    <label class="label" for="q5" data-i18n="q5label">5. Human Errors / Quarter</label>
                     <p class="text-[10px] mb-2 leading-tight" data-i18n="q5desc">How many production incidents or rollbacks in the last quarter were directly caused by human error during manual execution steps?</p>
                     <input type="number" id="q5" value="3" class="input-field" oninput="calculate()">
                 </div>
 
                 <div class="q-card">
-                    <label class="label" data-i18n="q6label">6. Blended Rate ($/h)</label>
+                    <label class="label" for="q6" data-i18n="q6label">6. Blended Rate ($/h)</label>
                     <p class="text-[10px] mb-2 leading-tight" data-i18n="q6desc">What is the average hourly cost (Blended Rate) of an engineer, including gross salary, benefits, hardware, and overhead?</p>
                     <input type="number" id="q6" value="150" class="input-field" oninput="calculate()">
                 </div>
 
                 <div class="q-card">
-                    <label class="label" data-i18n="q7label">7. Management Overhead (h/m)</label>
+                    <label class="label" for="q7" data-i18n="q7label">7. Management Overhead (h/m)</label>
                     <p class="text-[10px] mb-2 leading-tight" data-i18n="q7desc">How many hours per month do managers spend coordinating communication and "chasing people" due to siloed processes?</p>
                     <input type="number" id="q7" value="30" class="input-field" oninput="calculate()">
                 </div>
 
                 <div class="q-card">
-                    <label class="label" data-i18n="q8label">8. Opportunity Margin ($)</label>
+                    <label class="label" for="q8" data-i18n="q8label">8. Opportunity Margin ($)</label>
                     <p class="text-[10px] mb-2 leading-tight" data-i18n="q8desc">What is the projected gross margin from new projects or features that are currently delayed due to technical or process debt?</p>
                     <input type="number" id="q8" value="200000" class="input-field" oninput="calculate()">
                 </div>
 
                 <div class="q-card">
-                    <label class="label" data-i18n="q9label">9. Scalability Bottleneck (1–5)</label>
+                    <label class="label" for="q9" data-i18n="q9label">9. Scalability Bottleneck (1–5)</label>
                     <p class="text-[10px] mb-2 leading-tight italic" data-i18n="q9desc">Impact on ability to scale growth?</p>
                     <div class="slider-wrapper">
                         <div class="slider-track-bg"></div>
@@ -237,7 +248,7 @@
                 </div>
 
                 <div class="q-card">
-                    <label class="label" data-i18n="q10label">10. Employee Turnover (%)</label>
+                    <label class="label" for="q10" data-i18n="q10label">10. Employee Turnover (%)</label>
                     <p class="text-[10px] mb-2 leading-tight" data-i18n="q10desc">What is the annual turnover rate in teams heavily burdened by manual, repetitive work (burnout indicator)?</p>
                     <input type="number" id="q10" value="15" class="input-field" oninput="calculate()">
                 </div>
@@ -273,7 +284,7 @@
             <h3 class="text-xs font-black uppercase mb-5 text-center tracking-widest" data-i18n="simTitle">Investment & Simulation Parameters</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="space-y-3">
-                    <label class="label" data-i18n="autoLabel">Target Automation Level (%)</label>
+                    <label class="label" for="autoLevel" data-i18n="autoLabel">Target Automation Level (%)</label>
                     <div class="slider-wrapper">
                         <div class="slider-track-bg"></div>
                         <div class="slider-track-fill" id="autoLevelFill"></div>
@@ -282,12 +293,12 @@
                     <p class="text-center font-bold text-sm"><span id="autoLevelVal">40</span>% <span data-i18n="efficiencyGain">Efficiency Gain</span></p>
                 </div>
                 <div>
-                    <label class="label" data-i18n="teamSizeLabel">Team Size (engineers)</label>
+                    <label class="label" for="teamSize" data-i18n="teamSizeLabel">Team Size (engineers)</label>
                     <input type="number" id="teamSize" value="10" class="input-field" oninput="calculate()">
                     <span class="helper-text mt-1 block" data-i18n="teamSizeHelper">Total number of engineers affected by process debt.</span>
                 </div>
                 <div>
-                    <label class="label" data-i18n="capexLabel">One-Time CAPEX Investment ($)</label>
+                    <label class="label" for="capex" data-i18n="capexLabel">One-Time CAPEX Investment ($)</label>
                     <input type="number" id="capex" value="50000" class="input-field" oninput="calculate()">
                     <span class="helper-text mt-1 block" data-i18n="capexHelper">Licenses, Implementation, and Training costs.</span>
                 </div>
@@ -302,35 +313,35 @@
                 <div class="card border-l-4 border-l-red-600">
                     <div class="label-row">
                         <p class="label" data-i18n="statWasteLabel">Annual OPEX Waste</p>
-                        <span class="formula-tip" tabindex="0" role="button" data-formula="(Manual hrs/yr + Manager chase hrs/yr) × Blended Rate × Team Size" data-i18n-formula="formulaWaste">ⓘ</span>
+                        <span class="formula-tip" tabindex="0" role="button" data-formula="(Manual hrs/yr + Manager chase hrs/yr) × Blended Rate × Team Size" aria-label="Formula: (Manual hrs/yr + Manager chase hrs/yr) × Blended Rate × Team Size" data-i18n-formula="formulaWaste">ⓘ</span>
                     </div>
                     <p class="text-3xl font-black mt-1" id="statWaste">$0</p>
                 </div>
                 <div class="card border-l-4 border-l-orange-500">
                     <div class="label-row">
                         <p class="label" data-i18n="statRiskLabel">Risk Exposure</p>
-                        <span class="formula-tip" tabindex="0" role="button" data-formula="Annual failures × Downtime cost/hr × (Risk level / 5)" data-i18n-formula="formulaRisk">ⓘ</span>
+                        <span class="formula-tip" tabindex="0" role="button" data-formula="Annual failures × Downtime cost/hr × (Risk level / 5)" aria-label="Formula: Annual failures × Downtime cost/hr × (Risk level / 5)" data-i18n-formula="formulaRisk">ⓘ</span>
                     </div>
                     <p class="text-3xl font-black mt-1" id="statRisk">$0</p>
                 </div>
                 <div class="card border-l-4 border-l-purple-600">
                     <div class="label-row">
                         <p class="label" data-i18n="statOppLabel">Opportunity Loss</p>
-                        <span class="formula-tip" tabindex="0" role="button" data-formula="(Opportunity margin × 0.25) + (OPEX Waste × 1.5)" data-i18n-formula="formulaOpp">ⓘ</span>
+                        <span class="formula-tip" tabindex="0" role="button" data-formula="(Opportunity margin × 0.25) + (OPEX Waste × 1.5)" aria-label="Formula: (Opportunity margin × 0.25) + (OPEX Waste × 1.5)" data-i18n-formula="formulaOpp">ⓘ</span>
                     </div>
                     <p class="text-3xl font-black mt-1" id="statOpp">$0</p>
                 </div>
                 <div class="card bg-slate-900">
                     <div class="label-row">
                         <p class="label" data-i18n="statTotalLabel">Total Debt Impact</p>
-                        <span class="formula-tip" tabindex="0" role="button" data-formula="OPEX Waste + Risk Exposure + Opportunity Loss" data-i18n-formula="formulaTotal">ⓘ</span>
+                        <span class="formula-tip" tabindex="0" role="button" data-formula="OPEX Waste + Risk Exposure + Opportunity Loss" aria-label="Formula: OPEX Waste + Risk Exposure + Opportunity Loss" data-i18n-formula="formulaTotal">ⓘ</span>
                     </div>
                     <p class="text-3xl font-black mt-1" id="totalImpact">$0</p>
                 </div>
                 <div class="card border-l-4 border-l-green-600">
                     <div class="label-row">
                         <p class="label" data-i18n="statNetLabel">Net Debt After Investment</p>
-                        <span class="formula-tip" tabindex="0" role="button" data-formula="Total Debt Impact − CAPEX Investment" data-i18n-formula="formulaNet">ⓘ</span>
+                        <span class="formula-tip" tabindex="0" role="button" data-formula="Total Debt Impact − CAPEX Investment" aria-label="Formula: Total Debt Impact − CAPEX Investment" data-i18n-formula="formulaNet">ⓘ</span>
                     </div>
                     <p class="text-3xl font-black mt-1" id="statNet">$0</p>
                     <span class="helper-text" data-i18n="statNetHelper">Total impact minus CAPEX</span>
@@ -724,6 +735,23 @@
 
         let currentLang = 'en';
 
+        /* ── XSS guard ──────────────────────────────────────────────────────────
+           esc() escapes the five HTML-special characters before any string-typed
+           translation value is interpolated into an innerHTML template.
+           Numeric values (toLocaleString, toFixed) are inherently safe and do
+           not need escaping.  SVG icon literals are also excluded — they are
+           hardcoded constants, not user or translation input.
+           This closes the innerHTML XSS pattern flagged in Round 12 audit.
+        ─────────────────────────────────────────────────────────────────────── */
+        function esc(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
         function t(key) {
             return TRANSLATIONS[currentLang][key] ?? TRANSLATIONS.en[key] ?? key;
         }
@@ -737,7 +765,10 @@
             document.querySelectorAll('[data-i18n-formula]').forEach(el => {
                 const key = el.getAttribute('data-i18n-formula');
                 const val = TRANSLATIONS[currentLang][key];
-                if (val && typeof val === 'string') el.setAttribute('data-formula', val);
+                if (val && typeof val === 'string') {
+                    el.setAttribute('data-formula', val);
+                    el.setAttribute('aria-label', 'Formula: ' + val);
+                }
             });
             document.documentElement.lang = currentLang;
         }
@@ -909,7 +940,7 @@
             if (cw > 100000) html += `<li>${L.recAutomation(Math.round(cw*0.3).toLocaleString())}</li>`;
             if (cr > 50000)  html += `<li>${L.recRisk()}</li>`;
             if (co > 150000) html += `<li>${L.recInnovation(Math.round(co*0.5).toLocaleString())}</li>`;
-            html += `<li class="mt-3 p-3 font-bold italic" style="background:var(--accent-dim);border-left:4px solid var(--accent);color:var(--accent);border-radius:0 6px 6px 0;">${L.recVerdict(pb < 1 ? '< 1' : pb.toFixed(1))}</li>`;
+            html += `<li class="mt-3 p-3 font-bold italic" style="background:var(--accent-dim);border-left:4px solid var(--accent);color:var(--accent);border-radius:0 6px 6px 0;">${esc(L.recVerdict(pb < 1 ? '< 1' : pb.toFixed(1)))}</li>`;
             engine.innerHTML = html + `</ul>`;
 
             // ── Block 6: Top 3 Financial Levers ─────────────────────────────
@@ -954,15 +985,15 @@
                 <div style="background:var(--bg-elevated);border:1px solid var(--border);border-top:3px solid ${l.color};border-radius:10px;padding:1.1rem;display:flex;flex-direction:column;gap:0.6rem;">
                     <div style="display:flex;align-items:center;gap:8px;">
                         <span style="color:${l.color}">${l.icon}</span>
-                        <span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:${l.color};">${rankLabels[i]}</span>
+                        <span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:${l.color};">${esc(rankLabels[i])}</span>
                     </div>
-                    <p style="font-family:'Space Grotesk',sans-serif;font-size:0.85rem;font-weight:700;color:var(--text-primary);margin:0;">${l.title}</p>
+                    <p style="font-family:'Space Grotesk',sans-serif;font-size:0.85rem;font-weight:700;color:var(--text-primary);margin:0;">${esc(l.title)}</p>
                     <p style="font-size:1.6rem;font-weight:900;color:${l.color};margin:0;line-height:1;">$${l.recovery.toLocaleString()}</p>
-                    <p style="font-size:0.6rem;color:var(--text-muted);margin:0;">${L.estRecovery}</p>
-                    <p style="font-size:0.7rem;color:var(--text-secondary);line-height:1.4;margin:0;">${l.detail}</p>
+                    <p style="font-size:0.6rem;color:var(--text-muted);margin:0;">${esc(L.estRecovery)}</p>
+                    <p style="font-size:0.7rem;color:var(--text-secondary);line-height:1.4;margin:0;">${esc(l.detail)}</p>
                     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:6px;">
-                        <span style="font-size:0.58rem;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--bg-input);color:${badgeColor};border:1px solid ${badgeColor};">${L.effortLabel}: ${l.effort}</span>
-                        <span style="font-size:0.58rem;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--bg-input);color:var(--text-secondary);border:1px solid var(--border);">⏱ ${l.timeline}</span>
+                        <span style="font-size:0.58rem;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--bg-input);color:${badgeColor};border:1px solid ${badgeColor};">${esc(L.effortLabel)}: ${esc(l.effort)}</span>
+                        <span style="font-size:0.58rem;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--bg-input);color:var(--text-secondary);border:1px solid var(--border);">⏱ ${esc(l.timeline)}</span>
                     </div>
                 </div>`;
             });
@@ -971,15 +1002,15 @@
             document.getElementById('verdictBar').innerHTML = `
                 <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem;">
                     <div>
-                        <p style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin:0 0 4px;">${L.verdictRecoveryLabel}</p>
+                        <p style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin:0 0 4px;">${esc(L.verdictRecoveryLabel)}</p>
                         <p style="font-size:1.5rem;font-weight:900;color:var(--text-primary);margin:0;">$${totalRecovery.toLocaleString()}</p>
                     </div>
                     <div style="text-align:right;">
-                        <p style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin:0 0 4px;">${L.verdictPaybackLabel}</p>
-                        <p style="font-size:1.5rem;font-weight:900;color:var(--text-primary);margin:0;">${pb < 1 ? '< 1' : pb.toFixed(1)} ${L.verdictPaybackUnit}</p>
+                        <p style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin:0 0 4px;">${esc(L.verdictPaybackLabel)}</p>
+                        <p style="font-size:1.5rem;font-weight:900;color:var(--text-primary);margin:0;">${pb < 1 ? '< 1' : pb.toFixed(1)} ${esc(L.verdictPaybackUnit)}</p>
                     </div>
                     <div style="flex:1;min-width:200px;">
-                        <p style="font-size:0.7rem;color:var(--text-secondary);margin:0;font-style:italic;">${L.verdictNote}</p>
+                        <p style="font-size:0.7rem;color:var(--text-secondary);margin:0;font-style:italic;">${esc(L.verdictNote)}</p>
                     </div>
                 </div>`;
         }
@@ -1051,14 +1082,14 @@
                 const taskRows = tasks.map(({ task, color }) =>
                     `<li style="display:flex;align-items:flex-start;gap:6px;margin-bottom:0.45rem;">
                         <span style="color:${color};font-size:0.75rem;line-height:1.4;flex-shrink:0;">☐</span>
-                        <span style="font-size:0.72rem;color:var(--text-secondary);line-height:1.4;">${task}</span>
+                        <span style="font-size:0.72rem;color:var(--text-secondary);line-height:1.4;">${esc(task)}</span>
                     </li>`
                 ).join('');
 
                 html += `
                 <div style="background:var(--bg-elevated);border:1px solid var(--border);border-top:3px solid ${meta.accent};border-radius:var(--radius-md);padding:1rem;">
-                    <p style="font-family:'Space Grotesk',sans-serif;font-size:0.62rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:${meta.accent};margin:0 0 2px;">${L[meta.titleKey]}</p>
-                    <p style="font-family:'Space Grotesk',sans-serif;font-size:0.8rem;font-weight:700;color:var(--text-primary);margin:0 0 0.75rem;">${L[meta.subKey]}</p>
+                    <p style="font-family:'Space Grotesk',sans-serif;font-size:0.62rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:${meta.accent};margin:0 0 2px;">${esc(L[meta.titleKey])}</p>
+                    <p style="font-family:'Space Grotesk',sans-serif;font-size:0.8rem;font-weight:700;color:var(--text-primary);margin:0 0 0.75rem;">${esc(L[meta.subKey])}</p>
                     <ul style="list-style:none;margin:0;padding:0;">${taskRows || '<li style="font-size:0.72rem;color:var(--text-muted);">No tasks for selected levers.</li>'}</ul>
                 </div>`;
             });
@@ -1133,7 +1164,7 @@
                 const pb       = calcResult.pb;
                 const recLabel = calcResult.net >= 0 ? `${netSign(calcResult.net)}${fmt(calcResult.net)}` : `-${fmt(calcResult.net)}`;
                 const badgeHtml = showBadge
-                    ? `<span style="display:inline-block;font-size:0.55rem;font-weight:800;padding:2px 8px;border-radius:999px;border:1px solid ${accentColor};color:${accentColor};letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;">${badgeText}</span>`
+                    ? `<span style="display:inline-block;font-size:0.55rem;font-weight:800;padding:2px 8px;border-radius:999px;border:1px solid ${accentColor};color:${accentColor};letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;">${esc(badgeText)}</span>`
                     : '';
 
                 return `
@@ -1153,25 +1184,25 @@
                     <div style="position:absolute;top:0;left:0;right:0;height:40px;background:linear-gradient(to bottom,${accentColor}10,transparent);pointer-events:none;border-radius:var(--radius-lg) var(--radius-lg) 0 0;"></div>
                     <div>
                         ${badgeHtml}
-                        <p style="font-family:'Space Grotesk',sans-serif;font-size:0.85rem;font-weight:800;color:var(--text-primary);margin:0;text-transform:uppercase;letter-spacing:-0.01em;">${title}</p>
-                        <p style="font-size:0.62rem;color:var(--text-muted);margin:3px 0 0;line-height:1.4;">${desc}</p>
+                        <p style="font-family:'Space Grotesk',sans-serif;font-size:0.85rem;font-weight:800;color:var(--text-primary);margin:0;text-transform:uppercase;letter-spacing:-0.01em;">${esc(title)}</p>
+                        <p style="font-size:0.62rem;color:var(--text-muted);margin:3px 0 0;line-height:1.4;">${esc(desc)}</p>
                     </div>
                     <div style="border-top:1px solid var(--border-subtle);padding-top:0.7rem;display:flex;flex-direction:column;gap:0.55rem;">
                         <div style="display:flex;justify-content:space-between;align-items:baseline;">
-                            <span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);">${L.scenLabelDebt}</span>
+                            <span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);">${esc(L.scenLabelDebt)}</span>
                             <span style="font-size:1rem;font-weight:900;color:var(--red);font-family:'Space Grotesk',sans-serif;">${fmt(totalImpact)}</span>
                         </div>
                         <div style="display:flex;justify-content:space-between;align-items:baseline;">
-                            <span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);">${L.scenLabelInvestment}</span>
-                            <span style="font-size:0.85rem;font-weight:700;color:var(--accent);">${capexAmt > 0 ? fmt(capexAmt) : L.scenNoInvestment}</span>
+                            <span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);">${esc(L.scenLabelInvestment)}</span>
+                            <span style="font-size:0.85rem;font-weight:700;color:var(--accent);">${capexAmt > 0 ? fmt(capexAmt) : esc(L.scenNoInvestment)}</span>
                         </div>
                         <div style="display:flex;justify-content:space-between;align-items:baseline;">
-                            <span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);">${L.scenLabelNet}</span>
+                            <span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);">${esc(L.scenLabelNet)}</span>
                             <span style="font-size:1.05rem;font-weight:900;color:${recColor};font-family:'Space Grotesk',sans-serif;">${calcResult.savings <= 0 ? '—' : recLabel}</span>
                         </div>
                         <div style="display:flex;justify-content:space-between;align-items:baseline;border-top:1px dashed var(--border-subtle);padding-top:0.5rem;margin-top:0.1rem;">
-                            <span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);">${L.scenLabelPayback}</span>
-                            <span style="font-size:1rem;font-weight:900;color:${pbColor(pb)};font-family:'Space Grotesk',sans-serif;">${pbStr(pb)}</span>
+                            <span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);">${esc(L.scenLabelPayback)}</span>
+                            <span style="font-size:1rem;font-weight:900;color:${pbColor(pb)};font-family:'Space Grotesk',sans-serif;">${esc(pbStr(pb))}</span>
                         </div>
                     </div>
                 </div>`;
@@ -1230,11 +1261,11 @@
             const tbody = document.getElementById('doraTableBody');
             tbody.innerHTML = rows.map((r, i) => `
                 <tr style="border-bottom:1px solid var(--border-subtle);${i % 2 === 0 ? 'background:var(--bg-elevated);' : ''}">
-                    <td style="padding:0.65rem 0.75rem;font-size:0.75rem;font-weight:600;color:var(--text-primary);">${r.metric}</td>
-                    <td style="padding:0.65rem 0.75rem;font-size:0.75rem;font-family:'Space Grotesk',sans-serif;font-weight:700;color:var(--accent);">${r.value}</td>
-                    <td style="padding:0.65rem 0.75rem;font-size:0.6rem;color:var(--text-muted);line-height:1.5;">${r.bandDesc}</td>
+                    <td style="padding:0.65rem 0.75rem;font-size:0.75rem;font-weight:600;color:var(--text-primary);">${esc(r.metric)}</td>
+                    <td style="padding:0.65rem 0.75rem;font-size:0.75rem;font-family:'Space Grotesk',sans-serif;font-weight:700;color:var(--accent);">${esc(r.value)}</td>
+                    <td style="padding:0.65rem 0.75rem;font-size:0.6rem;color:var(--text-muted);line-height:1.5;">${esc(r.bandDesc)}</td>
                     <td style="padding:0.65rem 0.75rem;">
-                        <span class="dora-badge" style="color:${r.result.color};border-color:${r.result.color};">${r.result.band}</span>
+                        <span class="dora-badge" style="color:${r.result.color};border-color:${r.result.color};">${esc(r.result.band)}</span>
                     </td>
                 </tr>
             `).join('');
@@ -1892,9 +1923,16 @@
                     const resp = await fetch(url, { mode: 'cors', cache: 'force-cache' });
                     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
                     const buf = await resp.arrayBuffer();
-                    const b64 = btoa(
-                        new Uint8Array(buf).reduce((s, b) => s + String.fromCharCode(b), '')
-                    );
+                    // Chunked base64 encoding — avoids call-stack overflow on large
+                    // font buffers (>100 KB) that blow up btoa(Uint8Array.reduce…)
+                    // on mobile Safari and low-memory Android WebViews.
+                    const bytes = new Uint8Array(buf);
+                    const CHUNK = 8192;
+                    let binary = '';
+                    for (let i = 0; i < bytes.length; i += CHUNK) {
+                        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
+                    }
+                    const b64 = btoa(binary);
                     const fmt = url.endsWith('.woff2') ? 'woff2'
                               : url.endsWith('.woff')  ? 'woff' : 'truetype';
                     _fontCache.set(key, { b64, fmt, family, weight, style });
