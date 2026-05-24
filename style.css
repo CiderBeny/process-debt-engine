@@ -108,40 +108,46 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 :root {
-  --bg-base:       #D4A27F;
-  --bg-surface:    #C8926A;
-  --bg-elevated:   #DDB898;
-  --bg-hover:      #E5C8AE;
-  --bg-input:      #BF8A5E;
+  /* ── Backgrounds ── */
+  --bg-base:       #F5F0E8;   /* warm cream canvas */
+  --bg-surface:    #FDFAF5;   /* ivory card face */
+  --bg-elevated:   #FFFFFF;   /* pure white lift for active cards */
+  --bg-hover:      #F0EAE0;   /* warm hover state */
+  --bg-input:      #FAF7F2;   /* soft input well */
 
-  --border:        #b07848;
-  --border-focus:  #8b4513;
-  --border-subtle: #c9956d;
+  /* ── Borders ── */
+  --border:        #D6C9B8;   /* warm stone divider */
+  --border-focus:  #B45309;   /* amber focus ring */
+  --border-subtle: #E5DDD0;   /* barely-there lines */
 
-  --text-primary:  #1a0f0a;
-  --text-secondary:#4a2e1a;
-  --text-muted:    #7a5a42;
-  --text-label:    #5c3d22;
+  /* ── Typography ── */
+  --text-primary:  #1C1410;   /* deep espresso */
+  --text-secondary:#4A3F35;   /* warm dark brown */
+  --text-muted:    #8C7B6E;   /* warm mid-tone */
+  --text-label:    #7C4F22;   /* saddle-brown label */
 
-  --accent:        #8b4513;
-  --accent-bright: #a0522d;
-  --accent-glow:   rgba(139, 69, 19, 0.15);
-  --accent-dim:    rgba(139, 69, 19, 0.10);
+  /* ── Accent (Amber-Brown) ── */
+  --accent:        #B45309;   /* amber 700 */
+  --accent-bright: #92400E;   /* deeper hover */
+  --accent-glow:   rgba(180, 83, 9, 0.12);
+  --accent-dim:    rgba(180, 83, 9, 0.07);
 
-  --red:    #f87171;
-  --orange: #fb923c;
-  --amber:  #f59e0b;
-  --purple: #c084fc;
-  --green:  #34d399;
-  --yellow: #fbbf24;
-  --cyan:   #06b6d4;
+  /* ── Semantic colours ── */
+  --red:    #DC2626;
+  --orange: #EA580C;
+  --amber:  #D97706;
+  --purple: #7C3AED;
+  --green:  #16A34A;
+  --yellow: #CA8A04;
+  --cyan:   #0891B2;
 
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
 
-  --shadow-card: 0 4px 24px rgba(80,40,10,0.25);
-  --shadow-glow: 0 0 20px rgba(139,69,19,0.15);
+  --shadow-card: 0 2px 12px rgba(92, 60, 20, 0.10),
+                 0 1px 3px  rgba(92, 60, 20, 0.06);
+  --shadow-glow: 0 0 20px rgba(180, 83, 9, 0.10);
 }
 
 /* ── Global ── */
@@ -153,22 +159,22 @@ body {
   background: var(--bg-base);
   color: var(--text-primary);
   padding-bottom: 5rem;
-  /* Subtle dot grid background */
-  background-image: radial-gradient(circle, #1e3a52 1px, transparent 1px);
+  /* Soft warm dot grid */
+  background-image: radial-gradient(circle, #D6C9B8 1px, transparent 1px);
   background-size: 28px 28px;
 }
 
 /* ── Nav ── */
 nav {
-  background: rgba(180, 120, 70, 0.90) !important;
+  background: rgba(245, 240, 232, 0.92) !important;
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border) !important;
-  box-shadow: 0 1px 0 var(--border), 0 4px 20px rgba(80,40,10,0.2) !important;
+  box-shadow: 0 1px 0 var(--border), 0 4px 20px rgba(92, 60, 20, 0.08) !important;
 }
 
 @supports not (backdrop-filter: blur(1px)) {
   nav {
-    background: rgba(180, 120, 70, 0.97) !important;
+    background: rgba(245, 240, 232, 0.97) !important;
   }
 }
 
@@ -183,14 +189,14 @@ nav h1 span {
 }
 
 nav p {
-  color:#ffffff !important;
+  color: var(--text-secondary) !important;
   letter-spacing: 0.12em;
 }
 
 /* ── Export button ── */
 #exportBtn {
   background: var(--accent) !important;
-  color: #0a0f1e !important;
+  color: #FFFFFF !important;
   font-family: 'Space Grotesk', 'DM Sans', 'Nunito Sans', 'Trebuchet MS', ui-rounded, system-ui, sans-serif;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -240,7 +246,7 @@ section.card {
 /* ── Section headings ── */
 section .flex.items-center .bg-blue-600 {
   background: var(--accent) !important;
-  color: #0a0f1e !important;
+  color: #FFFFFF !important;
   box-shadow: 0 0 12px var(--accent-glow);
 }
 
@@ -437,18 +443,18 @@ section h2 {
 #statWaste   { color: var(--red)    !important; }
 #statRisk    { color: var(--orange) !important; }
 #statOpp     { color: var(--purple) !important; }
-#totalImpact { color: var(--accent) !important; font-family: 'Space Grotesk', 'DM Sans', 'Nunito Sans', 'Trebuchet MS', ui-rounded, system-ui, sans-serif; }
+#totalImpact { color: #FCD19C !important; font-family: 'Space Grotesk', 'DM Sans', 'Nunito Sans', 'Trebuchet MS', ui-rounded, system-ui, sans-serif; }
 #statNet     { color: var(--green)  !important; }
 
 /* Total Debt card dark override */
 .card.bg-slate-900 {
-  background: linear-gradient(135deg, #0d1f35 0%, #0a1628 100%) !important;
+  background: #2D1F0E !important;         /* dark espresso */
   border-color: var(--accent) !important;
   box-shadow: var(--shadow-card), 0 0 0 1px var(--accent-dim), var(--shadow-glow) !important;
 }
 
-.card.bg-slate-900 .label { color: var(--accent) !important; }
-.card.bg-slate-900 p      { color: var(--text-primary) !important; }
+.card.bg-slate-900 .label { color: #FCD19C !important; }
+.card.bg-slate-900 p      { color: #F5E6D0 !important; }
 
 /* Stat labels */
 #pdf-block-3 .label { color: var(--text-secondary) !important; }
@@ -486,7 +492,7 @@ section h2 {
 
 .card.border-2.border-blue-600 .bg-blue-600 {
   background: var(--accent) !important;
-  color: #0a0f1e !important;
+  color: #FFFFFF !important;
 }
 
 .card.border-2.border-blue-600 h3 {
@@ -517,7 +523,7 @@ section h2 {
 #q9Val { color: var(--accent) !important; }
 
 /* ── q-card description text ── */
-.q-card p { color: #ffffff  !important; }
+.q-card p { color: var(--text-secondary) !important; }
 
 /* ── Stat card label + tooltip row ── */
 .label-row {
