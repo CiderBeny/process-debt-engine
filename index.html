@@ -156,7 +156,7 @@
                     <span class="flag" id="langFlag">🇵🇱</span>
                     <span id="langLabel">PL</span>
                 </button>
-                <button id="exportExcelBtn" onclick="exportExcel()">
+                <button id="exportExcelBtn" onclick="exportExcel()" data-i18n="exportExcelBtn">
                     ⬇ EXPORT TO EXCEL
                 </button>
                 <button id="exportBtn" onclick="exportPDF()" data-i18n="exportBtn" title="">
@@ -584,6 +584,66 @@
                 scenInfinity:        '∞ No return',
                 scenNoInvestment:    'No investment',
                 copyLinkBtn:         '⧉ COPY LINK',
+                exportExcelBtn:      '⬇ EXPORT TO EXCEL',
+                exportExcelGenerating: '⏳ GENERATING...',
+                // Excel sheet titles & headers
+                xlsInputsTitle:      'IT Process Debt & Chaos Calculator — Diagnostic Inputs',
+                xlsGenerated:        'Generated',
+                xlsInputsHeaders:    ['#', 'Question', 'Value', 'Unit'],
+                xlsInputsRows: [
+                    ['Q1',  'Manual Effort',                  null, '%'        ],
+                    ['Q2',  'Lead Time',                      null, 'hrs'      ],
+                    ['Q3',  'Documentation Standard (1–5)',   null, '/5'       ],
+                    ['Q4',  'Downtime Cost',                  null, '$/hr'     ],
+                    ['Q5',  'Human Errors / Quarter',         null, 'incidents'],
+                    ['Q6',  'Blended Rate',                   null, '$/hr'     ],
+                    ['Q7',  'Management Overhead',            null, 'hrs/mo'   ],
+                    ['Q8',  'Opportunity Margin',             null, '$'        ],
+                    ['Q9',  'Scalability Bottleneck (1–5)',   null, '/5'       ],
+                    ['Q10', 'Employee Turnover',              null, '%/yr'     ],
+                ],
+                xlsSimParamsTitle:   'Simulation Parameters',
+                xlsAutoLevel:        'Target Automation Level',
+                xlsTeamSize:         'Team Size',
+                xlsTeamSizeUnit:     'engineers',
+                xlsCapex:            'One-Time CAPEX Investment',
+                xlsResultsTitle:     'IT Process Debt — Financial Results',
+                xlsResultsHeaders:   ['Metric', 'Formula', 'Value ($)'],
+                xlsResultsRows: [
+                    ['Annual OPEX Waste',        '(Manual hrs/yr + Chase hrs/yr) × Rate × Team',     null],
+                    ['Risk Exposure',             'Annual failures × Downtime $/hr × (Risk/5)',        null],
+                    ['Opportunity Loss',          '(Opportunity margin × 0.25) + (OPEX Waste × 1.5)', null],
+                    ['Total Debt Impact',         'OPEX + Risk + Opportunity',                         null],
+                    ['CAPEX Investment',          'User input',                                         null],
+                    ['Net Debt After Investment', 'Total Impact − CAPEX',                              null],
+                    ['Potential Annual Savings',  '(OPEX Waste + Risk) × Automation Level',           null],
+                    ['Payback Period',            'CAPEX / (Monthly Savings)',                          null],
+                ],
+                xlsResultsMonths:    'months',
+                xlsLeversTitle:      'Top 3 Financial Levers (sorted by estimated annual recovery)',
+                xlsLeversHeaders:    ['Rank', 'Lever', 'Est. Annual Recovery ($)', 'Effort', 'Timeline'],
+                xlsLeversTotalLabel: 'Total Recovery Potential',
+                xlsLeversPayback:    'Payback Period',
+                xlsScenariosTitle:   'Scenario Comparison',
+                xlsScenariosHeaders: ['Metric', 'A — No Action', 'B — Targeted Investment', 'C — Full Automation (80%)'],
+                xlsScenariosRows: [
+                    ['Total Debt ($)',       null, null, null],
+                    ['CAPEX Investment ($)', null, null, null],
+                    ['Net Recovery ($)',     null, null, null],
+                    ['Payback Period (mo)', null, null, null],
+                ],
+                xlsDoraTitle:    'DORA Benchmark Context',
+                xlsDoraHeaders:  ['Metric', 'Your Value', 'DORA Band (Reference)', 'Your Classification'],
+                xlsDoraRows: [
+                    ['Lead Time (hrs)',         null, 'Elite <1h · High <24h · Medium <168h · Low >168h', null],
+                    ['Manual Effort (%)',        null, 'Elite <5% · High <15% · Medium <30% · Low >30%',   null],
+                    ['Human Errors / Quarter',  null, 'Elite 0 · High ≤1 · Medium ≤3 · Low >3',            null],
+                ],
+                xlsSheetInputs:   'Inputs',
+                xlsSheetResults:  'Financial Results',
+                xlsSheetLevers:   'Top 3 Levers',
+                xlsSheetScenarios:'Scenarios',
+                xlsSheetDora:     'DORA Benchmark',
             },
             pl: {
                 navSubtitle:      'Pełne Narzędzie Diagnostyczne i Finansowe',
@@ -730,6 +790,65 @@
                 scenInfinity:        '∞ Brak zwrotu',
                 scenNoInvestment:    'Brak inwestycji',
                 copyLinkBtn:         '⧉ KOPIUJ LINK',
+                exportExcelBtn:      '⬇ EKSPORTUJ DO EXCEL',
+                exportExcelGenerating: '⏳ GENEROWANIE...',
+                xlsInputsTitle:      'Kalkulator Długu Procesowego IT — Dane Wejściowe Diagnostyki',
+                xlsGenerated:        'Wygenerowano',
+                xlsInputsHeaders:    ['#', 'Pytanie', 'Wartość', 'Jednostka'],
+                xlsInputsRows: [
+                    ['Q1',  'Wysiłek Manualny',                   null, '%'           ],
+                    ['Q2',  'Czas Realizacji',                    null, 'godz.'       ],
+                    ['Q3',  'Standard Dokumentacji (1–5)',        null, '/5'          ],
+                    ['Q4',  'Koszt Przestoju',                    null, '$/godz.'     ],
+                    ['Q5',  'Błędy Ludzkie / Kwartał',           null, 'incydenty'   ],
+                    ['Q6',  'Stawka Łączona',                    null, '$/godz.'     ],
+                    ['Q7',  'Narzut Zarządzania',                null, 'godz./mies.' ],
+                    ['Q8',  'Marża Szans',                       null, '$'           ],
+                    ['Q9',  'Wąskie Gardło Skalowalności (1–5)', null, '/5'          ],
+                    ['Q10', 'Rotacja Pracowników',                null, '%/rok'       ],
+                ],
+                xlsSimParamsTitle:   'Parametry Symulacji',
+                xlsAutoLevel:        'Docelowy Poziom Automatyzacji',
+                xlsTeamSize:         'Liczba Inżynierów',
+                xlsTeamSizeUnit:     'inżynierów',
+                xlsCapex:            'Jednorazowa Inwestycja CAPEX',
+                xlsResultsTitle:     'Dług Procesowy IT — Wyniki Finansowe',
+                xlsResultsHeaders:   ['Metryka', 'Formuła', 'Wartość ($)'],
+                xlsResultsRows: [
+                    ['Roczne Marnotrawstwo OPEX',      '(Godz. manualne/rok + Godz. koordynacji/rok) × Stawka × Zespół', null],
+                    ['Ekspozycja na Ryzyko',            'Roczne awarie × Koszt przestoju/godz. × (Ryzyko/5)',             null],
+                    ['Utrata Szans',                    '(Marża szans × 0,25) + (Marnotrawstwo OPEX × 1,5)',              null],
+                    ['Całkowity Wpływ Długu',           'OPEX + Ryzyko + Szanse',                                         null],
+                    ['Inwestycja CAPEX',                'Dane użytkownika',                                                null],
+                    ['Dług Netto po Inwestycji',        'Całkowity wpływ − CAPEX',                                        null],
+                    ['Potencjalne Roczne Oszczędności', '(Marnotrawstwo OPEX + Ryzyko) × Poziom Automatyzacji',          null],
+                    ['Okres Zwrotu',                    'CAPEX / (Miesięczne Oszczędności)',                               null],
+                ],
+                xlsResultsMonths:    'miesięcy',
+                xlsLeversTitle:      'Top 3 Dźwigni Finansowych (posortowane wg szacowanego rocznego odzysku)',
+                xlsLeversHeaders:    ['Pozycja', 'Dźwignia', 'Szac. Roczny Odzysk ($)', 'Wysiłek', 'Harmonogram'],
+                xlsLeversTotalLabel: 'Łączny Potencjał Odzysku',
+                xlsLeversPayback:    'Okres Zwrotu',
+                xlsScenariosTitle:   'Porównanie Scenariuszy',
+                xlsScenariosHeaders: ['Metryka', 'A — Brak Działań', 'B — Celowana Inwestycja', 'C — Pełna Automatyzacja (80%)'],
+                xlsScenariosRows: [
+                    ['Całkowity Dług ($)',   null, null, null],
+                    ['Inwestycja CAPEX ($)', null, null, null],
+                    ['Odzysk Netto ($)',     null, null, null],
+                    ['Okres Zwrotu (mies.)', null, null, null],
+                ],
+                xlsDoraTitle:    'Kontekst Benchmarku DORA',
+                xlsDoraHeaders:  ['Metryka', 'Twoja Wartość', 'Pasmo DORA (Odniesienie)', 'Twoja Klasyfikacja'],
+                xlsDoraRows: [
+                    ['Czas Realizacji (godz.)', null, 'Elita <1h · Wysoki <24h · Średni <168h · Niski >168h', null],
+                    ['Wysiłek Manualny (%)',    null, 'Elita <5% · Wysoki <15% · Średni <30% · Niski >30%',   null],
+                    ['Błędy Ludzkie / Kwartał',null, 'Elita 0 · Wysoki ≤1 · Średni ≤3 · Niski >3',            null],
+                ],
+                xlsSheetInputs:    'Dane Wejściowe',
+                xlsSheetResults:   'Wyniki Finansowe',
+                xlsSheetLevers:    'Top 3 Dźwignie',
+                xlsSheetScenarios: 'Scenariusze',
+                xlsSheetDora:      'Benchmark DORA',
             }
         };
 
@@ -1274,7 +1393,7 @@
         function exportExcel() {
             const btn = document.getElementById('exportExcelBtn');
             btn.disabled = true;
-            btn.textContent = '⏳ GENERATING...';
+            btn.textContent = t('exportExcelGenerating');
 
             setTimeout(() => {
                 try {
@@ -1283,8 +1402,6 @@
 
                     // ── helpers ──────────────────────────────────────────────
                     const v  = id => parseFloat(document.getElementById(id)?.value) || 0;
-                    const vt = id => document.getElementById(id)?.value || '';
-                    const fmt$ = n => '$' + Math.round(n).toLocaleString();
 
                     // ── raw inputs ───────────────────────────────────────────
                     const q1  = v('q1'),  q2  = v('q2'),  q3  = v('q3'),
@@ -1309,14 +1426,14 @@
                     const potSavings  = (cWaste + cRisk) * autoLvl;
                     const paybackMo   = potSavings > 0 ? (capex / (potSavings / 12)) : 0;
 
-                    // ── turnover / lever calcs ───────────────────────────────
+                    // ── turnover / lever calcs (Bug 2 fix: use L for titles & effort) ──
                     const turnoverCost = (q10 / 100) * 50 * 150 * 2000;
                     const leversRaw = [
-                        { title: 'Process Automation',   recovery: Math.round(cWaste * 0.3),         effort: 'Medium', timeline: '2–4 mo' },
-                        { title: 'Risk Reduction',        recovery: Math.round(cRisk  * 0.6),         effort: 'Low',    timeline: '1–2 mo' },
-                        { title: 'Innovation Space',      recovery: Math.round(cOpp   * 0.5),         effort: 'High',   timeline: '3–6 mo' },
-                        { title: 'Management Efficiency', recovery: Math.round(cWaste * 0.15),        effort: 'Low',    timeline: '1 mo'   },
-                        { title: 'Retention / Burnout',   recovery: Math.round(turnoverCost * 0.3),   effort: 'Medium', timeline: '3–5 mo' },
+                        { title: L.leverAutomationTitle, recovery: Math.round(cWaste * 0.3),       effort: L.effortMedium, timeline: '2–4 mo' },
+                        { title: L.leverRiskTitle,        recovery: Math.round(cRisk  * 0.6),       effort: L.effortLow,    timeline: '1–2 mo' },
+                        { title: L.leverInnovationTitle,  recovery: Math.round(cOpp   * 0.5),       effort: L.effortHigh,   timeline: '3–6 mo' },
+                        { title: L.leverMgmtTitle,        recovery: Math.round(cWaste * 0.15),      effort: L.effortLow,    timeline: '1 mo'   },
+                        { title: L.leverTurnoverTitle,    recovery: Math.round(turnoverCost * 0.3), effort: L.effortMedium, timeline: '3–5 mo' },
                     ];
                     leversRaw.sort((a, b) => b.recovery - a.recovery);
                     const top3 = leversRaw.slice(0, 3);
@@ -1332,100 +1449,95 @@
                     const scenC_net  = scenC_sav - scenC_cap;
                     const scenC_pb   = scenC_sav > 0 ? (scenC_cap / (scenC_sav / 12)) : Infinity;
 
-                    // ── Sheet 1: Inputs ──────────────────────────────────────
+                    // ── DORA band classification (uses translated band labels) ──
+                    const doraBandFn = (metric, val) => {
+                        const bands = { elite: L.doraBandElite, high: L.doraBandHigh, medium: L.doraBandMedium, low: L.doraBandLow };
+                        if (metric === 'leadTime')
+                            return val < 1 ? bands.elite : val < 24 ? bands.high : val < 168 ? bands.medium : bands.low;
+                        if (metric === 'manual')
+                            return val < 5 ? bands.elite : val < 15 ? bands.high : val < 30 ? bands.medium : bands.low;
+                        return val === 0 ? bands.elite : val <= 1 ? bands.high : val <= 3 ? bands.medium : bands.low;
+                    };
+
+                    // ── Sheet 1: Inputs (Bug 1 fix: all labels from L) ───────
+                    const inputQValues = [q1, q2, q3, q4, q5, q6, q7, q8, q9, q10];
                     const inputsData = [
-                        ['IT Process Debt & Chaos Calculator — Diagnostic Inputs'],
-                        ['Generated', new Date().toLocaleString()],
+                        [L.xlsInputsTitle],
+                        [L.xlsGenerated, new Date().toLocaleString()],
                         [],
-                        ['#', 'Question', 'Value', 'Unit'],
-                        ['Q1',  'Manual Effort',                   q1,      '%'       ],
-                        ['Q2',  'Lead Time',                       q2,      'hrs'     ],
-                        ['Q3',  'Documentation Standard (1–5)',    q3,      '/5'      ],
-                        ['Q4',  'Downtime Cost',                   q4,      '$/hr'    ],
-                        ['Q5',  'Human Errors / Quarter',          q5,      'incidents'],
-                        ['Q6',  'Blended Rate',                    q6,      '$/hr'    ],
-                        ['Q7',  'Management Overhead',             q7,      'hrs/mo'  ],
-                        ['Q8',  'Opportunity Margin',              q8,      '$'       ],
-                        ['Q9',  'Scalability Bottleneck (1–5)',    q9,      '/5'      ],
-                        ['Q10', 'Employee Turnover',               q10,     '%/yr'    ],
+                        L.xlsInputsHeaders,
+                        ...L.xlsInputsRows.map((row, i) => [row[0], row[1], inputQValues[i], row[3]]),
                         [],
-                        ['Simulation Parameters'],
-                        ['Target Automation Level',  autoLvl * 100,  '%'          ],
-                        ['Team Size',                teamSize,        'engineers'  ],
-                        ['One-Time CAPEX Investment', capex,          '$'          ],
+                        [L.xlsSimParamsTitle],
+                        [L.xlsAutoLevel,  autoLvl * 100, '%'              ],
+                        [L.xlsTeamSize,   teamSize,       L.xlsTeamSizeUnit],
+                        [L.xlsCapex,      capex,          '$'              ],
                     ];
                     const wsInputs = XLSX.utils.aoa_to_sheet(inputsData);
-                    wsInputs['!cols'] = [{wch:6},{wch:34},{wch:18},{wch:12}];
-                    XLSX.utils.book_append_sheet(wb, wsInputs, 'Inputs');
+                    wsInputs['!cols'] = [{wch:6},{wch:38},{wch:18},{wch:14}];
+                    XLSX.utils.book_append_sheet(wb, wsInputs, L.xlsSheetInputs);
 
                     // ── Sheet 2: Financial Results ───────────────────────────
+                    const resultValues = [
+                        Math.round(cWaste), Math.round(cRisk), Math.round(cOpp),
+                        Math.round(totalImpact), Math.round(capex), Math.round(netDebt),
+                        Math.round(potSavings), Math.round(paybackMo * 10) / 10,
+                    ];
                     const resultsData = [
-                        ['IT Process Debt — Financial Results'],
+                        [L.xlsResultsTitle],
                         [],
-                        ['Metric', 'Formula', 'Value ($)'],
-                        ['Annual OPEX Waste',       '(Manual hrs/yr + Chase hrs/yr) × Rate × Team',    Math.round(cWaste)      ],
-                        ['Risk Exposure',            'Annual failures × Downtime $/hr × (Risk/5)',       Math.round(cRisk)       ],
-                        ['Opportunity Loss',         '(Opportunity margin × 0.25) + (OPEX Waste × 1.5)',Math.round(cOpp)        ],
-                        ['Total Debt Impact',        'OPEX + Risk + Opportunity',                        Math.round(totalImpact) ],
-                        ['CAPEX Investment',         'User input',                                        Math.round(capex)       ],
-                        ['Net Debt After Investment','Total Impact − CAPEX',                              Math.round(netDebt)     ],
-                        [],
-                        ['Potential Annual Savings', '(OPEX Waste + Risk) × Automation Level',          Math.round(potSavings)  ],
-                        ['Payback Period',           'CAPEX / (Monthly Savings)',                         Math.round(paybackMo * 10) / 10],
-                        ['',                         '',                                                  'months'               ],
+                        L.xlsResultsHeaders,
+                        ...L.xlsResultsRows.map((row, i) => [row[0], row[1], resultValues[i]]),
+                        ['', '', L.xlsResultsMonths],
                     ];
                     const wsResults = XLSX.utils.aoa_to_sheet(resultsData);
-                    wsResults['!cols'] = [{wch:28},{wch:46},{wch:18}];
-                    XLSX.utils.book_append_sheet(wb, wsResults, 'Financial Results');
+                    wsResults['!cols'] = [{wch:32},{wch:50},{wch:18}];
+                    XLSX.utils.book_append_sheet(wb, wsResults, L.xlsSheetResults);
 
                     // ── Sheet 3: Top 3 Financial Levers ─────────────────────
                     const leversData = [
-                        ['Top 3 Financial Levers (sorted by estimated annual recovery)'],
+                        [L.xlsLeversTitle],
                         [],
-                        ['Rank', 'Lever', 'Est. Annual Recovery ($)', 'Effort', 'Timeline'],
-                        ...top3.map((l, i) => [`#${i+1}`, l.title, l.recovery, l.effort, l.timeline]),
+                        L.xlsLeversHeaders,
+                        ...top3.map((l, i) => [L.rankLabels[i], l.title, l.recovery, l.effort, l.timeline]),
                         [],
-                        ['Total Recovery Potential', '', totalRecovery, '', ''],
-                        ['Payback Period',           '', Math.round(paybackMo * 10) / 10, '', 'months'],
+                        [L.xlsLeversTotalLabel, '', totalRecovery, '', ''],
+                        [L.xlsLeversPayback,    '', Math.round(paybackMo * 10) / 10, '', L.xlsResultsMonths],
                     ];
                     const wsLevers = XLSX.utils.aoa_to_sheet(leversData);
-                    wsLevers['!cols'] = [{wch:6},{wch:28},{wch:28},{wch:10},{wch:14}];
-                    XLSX.utils.book_append_sheet(wb, wsLevers, 'Top 3 Levers');
+                    wsLevers['!cols'] = [{wch:22},{wch:32},{wch:28},{wch:12},{wch:14}];
+                    XLSX.utils.book_append_sheet(wb, wsLevers, L.xlsSheetLevers);
 
                     // ── Sheet 4: Scenario Comparison ─────────────────────────
+                    const scenValues = [
+                        [Math.round(scenA_net), Math.round(totalImpact), Math.round(totalImpact)],
+                        [0,                     Math.round(capex),       Math.round(scenC_cap)  ],
+                        [0,                     Math.round(scenB_net),   Math.round(scenC_net)  ],
+                        ['∞',
+                         isFinite(scenB_pb) ? Math.round(scenB_pb * 10)/10 : '∞',
+                         isFinite(scenC_pb) ? Math.round(scenC_pb * 10)/10 : '∞'],
+                    ];
                     const scenData = [
-                        ['Scenario Comparison'],
+                        [L.xlsScenariosTitle],
                         [],
-                        ['Metric',               'A — No Action',       'B — Targeted Investment',    'C — Full Automation (80%)'],
-                        ['Total Debt ($)',        Math.round(scenA_net), Math.round(totalImpact),      Math.round(totalImpact)            ],
-                        ['CAPEX Investment ($)',  0,                     Math.round(capex),             Math.round(scenC_cap)              ],
-                        ['Net Recovery ($)',      0,                     Math.round(scenB_net),         Math.round(scenC_net)              ],
-                        ['Payback Period (mo)',   '∞',                   isFinite(scenB_pb) ? Math.round(scenB_pb * 10)/10 : '∞',
-                                                                         isFinite(scenC_pb) ? Math.round(scenC_pb * 10)/10 : '∞'         ],
+                        L.xlsScenariosHeaders,
+                        ...L.xlsScenariosRows.map((row, i) => [row[0], scenValues[i][0], scenValues[i][1], scenValues[i][2]]),
                     ];
                     const wsScen = XLSX.utils.aoa_to_sheet(scenData);
-                    wsScen['!cols'] = [{wch:22},{wch:20},{wch:28},{wch:28}];
-                    XLSX.utils.book_append_sheet(wb, wsScen, 'Scenarios');
+                    wsScen['!cols'] = [{wch:24},{wch:20},{wch:28},{wch:28}];
+                    XLSX.utils.book_append_sheet(wb, wsScen, L.xlsSheetScenarios);
 
                     // ── Sheet 5: DORA Benchmark ──────────────────────────────
-                    const doraBandFn = (metric, val) => {
-                        if (metric === 'leadTime')
-                            return val < 1 ? 'Elite' : val < 24 ? 'High' : val < 168 ? 'Medium' : 'Low';
-                        if (metric === 'manual')
-                            return val < 5 ? 'Elite' : val < 15 ? 'High' : val < 30 ? 'Medium' : 'Low';
-                        return val === 0 ? 'Elite' : val <= 1 ? 'High' : val <= 3 ? 'Medium' : 'Low';
-                    };
+                    const doraValues = [q2, q1, q5];
                     const doraData = [
-                        ['DORA Benchmark Context'],
+                        [L.xlsDoraTitle],
                         [],
-                        ['Metric', 'Your Value', 'DORA Band (Reference)', 'Your Classification'],
-                        ['Lead Time (hrs)',           q2,         'Elite <1h · High <24h · Medium <168h · Low >168h',  doraBandFn('leadTime', q2) ],
-                        ['Manual Effort (%)',         q1,         'Elite <5% · High <15% · Medium <30% · Low >30%',    doraBandFn('manual', q1)   ],
-                        ['Human Errors / Quarter',   q5,         'Elite 0 · High ≤1 · Medium ≤3 · Low >3',             doraBandFn('errors', q5)   ],
+                        L.xlsDoraHeaders,
+                        ...L.xlsDoraRows.map((row, i) => [row[0], doraValues[i], row[2], doraBandFn(['leadTime','manual','errors'][i], doraValues[i])]),
                     ];
                     const wsDora = XLSX.utils.aoa_to_sheet(doraData);
-                    wsDora['!cols'] = [{wch:24},{wch:14},{wch:50},{wch:20}];
-                    XLSX.utils.book_append_sheet(wb, wsDora, 'DORA Benchmark');
+                    wsDora['!cols'] = [{wch:28},{wch:14},{wch:52},{wch:20}];
+                    XLSX.utils.book_append_sheet(wb, wsDora, L.xlsSheetDora);
 
                     // ── write & download ─────────────────────────────────────
                     XLSX.writeFile(wb, 'IT-Debt-Calculator.xlsx');
@@ -1434,7 +1546,7 @@
                     alert('Export failed: ' + err.message);
                 } finally {
                     btn.disabled = false;
-                    btn.textContent = '⬇ EXPORT TO EXCEL';
+                    btn.textContent = t('exportExcelBtn');  // Bug 3 fix: use translated label
                 }
             }, 80);
         }
