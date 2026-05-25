@@ -1686,18 +1686,24 @@
             }
 
             // ── PAGE 1: Phase 1 header + all 10 questions ─────────────────────
-            // Header bar
-            drawRect(0, 0, PW, 12, [17, 24, 39]);
+            // Colour palette matching the webpage's warm amber/cream theme:
+            // --bg-base: #F5F0E8, --bg-surface: #FDFAF5, --bg-elevated: #FFFFFF
+            // --accent: #B45309 (amber-700), --text-primary: #1C1410
+            // --text-label: #7C4F22, --text-secondary: #4A3F35, --text-muted: #8C7B6E
+            // --border: #D6C9B8
+
+            // Header bar — warm amber-brown
+            drawRect(0, 0, PW, 12, [92, 64, 18]);
             pdf.setFontSize(9); pdf.setFont('helvetica', 'bold');
-            pdf.setTextColor(6, 182, 212);
+            pdf.setTextColor(253, 245, 230);  // warm cream text
             pdf.text('STRATEGIC BUSINESS CASE ENGINE', ML, 8);
-            pdf.setTextColor(148, 163, 184); pdf.setFont('helvetica', 'normal');
+            pdf.setTextColor(214, 201, 184); pdf.setFont('helvetica', 'normal');
             pdf.text(L.navSubtitle.toUpperCase(), PW - MR, 8, { align: 'right' });
 
             cy = 20;
-            // Section title
-            drawRect(ML - 2, cy - 4, UW + 4, 10, [17, 24, 39]);
-            pdf.setFontSize(11); pdf.setFont('helvetica', 'bold'); pdf.setTextColor(226, 232, 240);
+            // Section title — amber-700 accent bar
+            drawRect(ML - 2, cy - 4, UW + 4, 10, [180, 83, 9]);
+            pdf.setFontSize(11); pdf.setFont('helvetica', 'bold'); pdf.setTextColor(255, 255, 255);
             pdf.text(L.phase1Title.toUpperCase(), ML + 2, cy + 3);
             cy += 14;
 
@@ -1734,33 +1740,34 @@
                     ? document.getElementById(q.valId).textContent
                     : val;
 
-                // Card background
-                drawRect(x, cy, colW, rowH, [26, 37, 53], [30, 58, 82]);
+                // Card background — ivory surface with warm stone border (matches .q-card)
+                drawRect(x, cy, colW, rowH, [255, 255, 255], [214, 201, 184]);
 
-                // Cyan left accent bar
-                drawRect(x, cy, 2, rowH, [6, 182, 212]);
+                // Amber-700 left accent bar (matches .q-card:focus-within border-left)
+                drawRect(x, cy, 2, rowH, [180, 83, 9]);
 
-                // Label
-                pdf.setFontSize(7); pdf.setFont('helvetica', 'bold'); pdf.setTextColor(125, 211, 252);
+                // Label — saddle-brown (#7C4F22, matches --text-label)
+                pdf.setFontSize(7); pdf.setFont('helvetica', 'bold'); pdf.setTextColor(124, 79, 34);
                 pdf.text(q.label.toUpperCase(), x + 5, cy + 6);
 
-                // Description — wrap inside card
-                pdf.setFontSize(6.2); pdf.setFont('helvetica', 'normal'); pdf.setTextColor(100, 116, 139);
+                // Description — warm mid-tone (#8C7B6E, matches --text-muted)
+                pdf.setFontSize(6.2); pdf.setFont('helvetica', 'normal'); pdf.setTextColor(140, 123, 110);
                 const descLines = wrapText(q.desc, x + 5, colW - 10, 6.2 * 0.3528);
                 const maxDescLines = 3;
                 descLines.slice(0, maxDescLines).forEach((line, li) => {
                     pdf.text(line, x + 5, cy + 12 + li * 4);
                 });
 
-                // Value box
+                // Value box — soft input well (#FAF7F2) with warm stone border
                 const vBoxY = cy + rowH - 11;
-                drawRect(x + 5, vBoxY, colW - 10, 8, [15, 26, 42], [30, 58, 82]);
-                pdf.setFontSize(8); pdf.setFont('helvetica', 'bold'); pdf.setTextColor(226, 232, 240);
+                drawRect(x + 5, vBoxY, colW - 10, 8, [250, 247, 242], [214, 201, 184]);
+                // Value text — deep espresso (#1C1410, matches --text-primary)
+                pdf.setFontSize(8); pdf.setFont('helvetica', 'bold'); pdf.setTextColor(28, 20, 16);
                 pdf.text(String(displayVal), x + 8, vBoxY + 5.5);
 
-                // Slider min/max labels
+                // Slider min/max labels — warm mid-tone
                 if (q.type === 'slider' && q.min) {
-                    pdf.setFontSize(5.5); pdf.setFont('helvetica', 'normal'); pdf.setTextColor(71, 85, 105);
+                    pdf.setFontSize(5.5); pdf.setFont('helvetica', 'normal'); pdf.setTextColor(140, 123, 110);
                     pdf.text(q.min, x + 5, vBoxY + 5.5);
                     pdf.text(q.max, x + colW - 5, vBoxY + 5.5, { align: 'right' });
                 }
