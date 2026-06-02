@@ -34,6 +34,48 @@
            Cache invalidation: the key includes a version string. Bump
            FONT_CACHE_VERSION to force a re-fetch after a font update.
         ────────────────────────────────────────────────────────────────────── */
+        /* ── Font-cache entry validator ─────────────────────────────────────────
+           validateFontFace(f) — called at every read path before any field from
+           localStorage is used in a CSS string or stored in _fontCache.
+
+           Attack surface: localStorage is writable by any same-origin script,
+           browser extension, or XSS payload. Without validation, poisoned entries
+           can inject arbitrary CSS rules via the @font-face src / font-family fields.
+
+           Defence layers:
+             1. family  — exact-match allowlist (no substring / regex tricks)
+             2. weight  — digits-only, value in [100, 900]
+             3. style   — exact-match allowlist
+             4. fmt     — exact-match allowlist
+             5. b64     — base64 alphabet only; 500 KB ceiling (≈ 375 KB binary)
+                          largest real woff2 in the set is ~120 KB, so 500 KB
+                          gives a safe headroom while blocking megabyte bombs.
+
+           Returns the validated entry or null. Callers MUST discard null.
+        ────────────────────────────────────────────────────────────────────── */
+        var _FONT_ALLOWED_FAMILIES = { 'Space Grotesk': true, 'Inter': true };
+        var _FONT_ALLOWED_STYLES   = { 'normal': true, 'italic': true, 'oblique': true };
+        var _FONT_ALLOWED_FMTS     = { 'woff2': true, 'woff': true, 'truetype': true };
+        var _FONT_B64_RE           = /^[A-Za-z0-9+/]+=*$/;
+        var _FONT_B64_MAX_LEN      = 700000; // ~512 KB binary ceiling
+
+        function validateFontFace(f) {
+            if (!f || typeof f !== 'object')                          return null;
+            if (!_FONT_ALLOWED_FAMILIES[f.family])                    return null;
+            if (!/^\d+$/.test(String(f.weight)))                      return null;
+            var w = parseInt(f.weight, 10);
+            if (w < 100 || w > 900 || w % 100 !== 0)                 return null;
+            if (!_FONT_ALLOWED_STYLES[f.style])                       return null;
+            if (!_FONT_ALLOWED_FMTS[f.fmt])                           return null;
+            if (typeof f.b64 !== 'string')                            return null;
+            if (f.b64.length === 0 || f.b64.length > _FONT_B64_MAX_LEN) return null;
+            if (!_FONT_B64_RE.test(f.b64))                            return null;
+            // Return a new object containing only the known-safe fields —
+            // drops any extra keys an attacker may have added to the entry.
+            return { family: f.family, weight: String(w), style: f.style,
+                     fmt: f.fmt, b64: f.b64 };
+        }
+
         (function injectCachedFonts() {
             var FONT_CACHE_KEY = 'fontCache_v1';
             try {
@@ -41,7 +83,13 @@
                 if (!cached) return; // first load — nothing to inject yet
                 var faces = JSON.parse(cached);
                 if (!Array.isArray(faces) || faces.length === 0) return;
-                var css = faces.map(function(f) {
+                var valid = [];
+                for (var i = 0; i < faces.length; i++) {
+                    var f = validateFontFace(faces[i]);
+                    if (f) valid.push(f);
+                }
+                if (valid.length === 0) return;
+                var css = valid.map(function(f) {
                     return "@font-face{font-family:'" + f.family + "';"
                          + "font-weight:" + f.weight + ";"
                          + "font-style:" + f.style + ";"
@@ -52,7 +100,7 @@
                 el.id = 'font-cache-inject';
                 el.textContent = css;
                 document.currentScript.parentNode.insertBefore(el, document.currentScript.nextSibling);
-                console.info('[Fonts] Injected ' + faces.length + ' face(s) from localStorage cache.');
+                console.info('[Fonts] Injected ' + valid.length + ' face(s) from localStorage cache.');
             } catch(e) {
                 // localStorage unavailable (private browsing, storage quota) — silent fail.
             }
@@ -942,16 +990,16 @@
         }
 
         function calculate() {
-            const manualPercent  = parseFloat(document.getElementById('q1').value) || 0;
-            const downCost       = parseFloat(document.getElementById('q4').value) || 0;
-            const failures       = (parseFloat(document.getElementById('q5').value) || 0) * 4;
-            const rate           = parseFloat(document.getElementById('q6').value) || 0;
-            const managerHrs     = parseFloat(document.getElementById('q7').value) || 0;
-            const opportunityVal = parseFloat(document.getElementById('q8').value) || 0;
-            const riskLevel      = parseFloat(document.getElementById('q9').value) || 1;
-            const capex          = parseFloat(document.getElementById('capex').value) || 0;
-            const autoLevel      = (parseFloat(document.getElementById('autoLevel').value) || 0) / 100;
-            const teamSize       = parseFloat(document.getElementById('teamSize').value) || 1;
+            const manualPercent  = clamp('q1');
+            const downCost       = clamp('q4');
+            const failures       = clamp('q5') * 4;
+            const rate           = clamp('q6');
+            const managerHrs     = clamp('q7');
+            const opportunityVal = clamp('q8');
+            const riskLevel      = clamp('q9');
+            const capex          = clamp('capex');
+            const autoLevel      = clamp('autoLevel') / 100;
+            const teamSize       = clamp('teamSize');
 
             document.getElementById('autoLevelVal').textContent = Math.round(autoLevel * 100);
 
@@ -967,7 +1015,11 @@
             const netDebt     = totalImpact - capex;
 
             const potentialSavings = (cWaste + cRisk) * autoLevel;
-            const paybackMonths    = potentialSavings > 0 ? (capex / (potentialSavings / 12)) : 0;
+            // Guard: floor monthly savings at $1 to prevent IEEE 754 underflow
+            // producing Infinity when potentialSavings is a subnormal positive float.
+            const paybackMonths    = potentialSavings > 0
+                ? capex / Math.max(1, potentialSavings / 12)
+                : 0;
 
             document.getElementById('statWaste').textContent   = '$' + Math.round(cWaste).toLocaleString();
             document.getElementById('statRisk').textContent    = '$' + Math.round(cRisk).toLocaleString();
@@ -1401,16 +1453,19 @@
                     const wb = XLSX.utils.book_new();
 
                     // ── helpers ──────────────────────────────────────────────
-                    const v  = id => parseFloat(document.getElementById(id)?.value) || 0;
+                    // clamp() reads each field and enforces the same HASH_CONSTRAINTS
+                    // bounds used by calculate() — prevents Infinity / NaN in cells.
+                    // q2, q3 are display-only in this export but still clamped for
+                    // consistency (they appear verbatim in the Inputs sheet).
 
                     // ── raw inputs ───────────────────────────────────────────
-                    const q1  = v('q1'),  q2  = v('q2'),  q3  = v('q3'),
-                          q4  = v('q4'),  q5  = v('q5'),  q6  = v('q6'),
-                          q7  = v('q7'),  q8  = v('q8'),  q9  = v('q9'),
-                          q10 = v('q10');
-                    const autoLvl  = v('autoLevel') / 100;
-                    const capex    = v('capex');
-                    const teamSize = v('teamSize') || 1;
+                    const q1  = clamp('q1'),  q2  = clamp('q2'),  q3  = clamp('q3'),
+                          q4  = clamp('q4'),  q5  = clamp('q5'),  q6  = clamp('q6'),
+                          q7  = clamp('q7'),  q8  = clamp('q8'),  q9  = clamp('q9'),
+                          q10 = clamp('q10');
+                    const autoLvl  = clamp('autoLevel') / 100;
+                    const capex    = clamp('capex');
+                    const teamSize = clamp('teamSize');
 
                     // ── derived financials ───────────────────────────────────
                     const totalAnnualHrs  = 1800;
@@ -1424,7 +1479,9 @@
                     const totalImpact = cWaste + cRisk + cOpp;
                     const netDebt     = totalImpact - capex;
                     const potSavings  = (cWaste + cRisk) * autoLvl;
-                    const paybackMo   = potSavings > 0 ? (capex / (potSavings / 12)) : 0;
+                    const paybackMo   = potSavings > 0
+                        ? capex / Math.max(1, potSavings / 12)
+                        : 0;
 
                     // ── turnover / lever calcs (Bug 2 fix: use L for titles & effort) ──
                     const turnoverCost = (q10 / 100) * 50 * 150 * 2000;
@@ -1910,8 +1967,54 @@
             btn.textContent = t('exportBtn');
         }
 
+        /* ── Hash state security constraints ───────────────────────────────────
+           ALLOWED_HASH_KEYS:  explicit allowlist — any key not in this set is
+                               silently dropped, preventing arbitrary-ID targeting.
+           HASH_CONSTRAINTS:   numeric min/max per field — non-finite values and
+                               out-of-range payloads are rejected before touching
+                               the DOM, closing the URL-hash injection vector.
+        ────────────────────────────────────────────────────────────────────── */
+        const ALLOWED_HASH_KEYS = new Set(
+            ['q1','q2','q3','q4','q5','q6','q7','q8','q9','q10','autoLevel','capex']
+        );
+
+        const HASH_CONSTRAINTS = {
+            q1:        { min: 0,   max: 100   },  // manual effort %
+            q2:        { min: 0,   max: 8760  },  // lead time hours (≤ 1 year)
+            q3:        { min: 1,   max: 5     },  // documentation scale
+            q4:        { min: 0,   max: 1e7   },  // downtime cost $/h
+            q5:        { min: 0,   max: 9999  },  // human errors / quarter
+            q6:        { min: 0,   max: 5000  },  // blended rate $/h
+            q7:        { min: 0,   max: 744   },  // management overhead h/m (≤ 1 month)
+            q8:        { min: 0,   max: 1e9   },  // opportunity margin $
+            q9:        { min: 1,   max: 5     },  // scalability bottleneck scale
+            q10:       { min: 0,   max: 100   },  // turnover %
+            autoLevel: { min: 0,   max: 100   },  // automation level %
+            capex:     { min: 0,   max: 1e9   },  // CAPEX investment $
+            teamSize:  { min: 1,   max: 10000 },  // F9 fix: was missing, allowing unbounded values
+        };
+
+        /* ── clamp(id) ──────────────────────────────────────────────────────────
+           Reads a field by element ID, validates it is a finite number, and
+           clamps it to the bounds defined in HASH_CONSTRAINTS.
+           Used by both calculate() and exportExcel() so every numeric input
+           is sanitised before it participates in any financial formula.
+
+           - Non-finite results (NaN, Infinity) from parseFloat fall back to min,
+             preventing Infinity / NaN from propagating into chart data or exports.
+           - Negative values and out-of-range extremes are silently clamped rather
+             than thrown, keeping the UX non-disruptive while blocking corrupt output.
+        ────────────────────────────────────────────────────────────────────── */
+        function clamp(id) {
+            const c = HASH_CONSTRAINTS[id];
+            const raw = parseFloat(document.getElementById(id)?.value);
+            if (!c) return isFinite(raw) ? raw : 0;   // unknown id — best-effort
+            if (!isFinite(raw)) return c.min;          // NaN / Infinity → floor
+            return Math.min(c.max, Math.max(c.min, raw));
+        }
+
         function encodeState() {
-            const ids = ['q1','q2','q3','q4','q5','q6','q7','q8','q9','q10','autoLevel','capex'];
+            const ids = [...ALLOWED_HASH_KEYS];
             const vals = ids.map(id => document.getElementById(id).value);
             const hash = ids.map((id,i) => id+'='+encodeURIComponent(vals[i])).join('&');
             history.replaceState(null, '', '#' + hash);
@@ -1921,14 +2024,31 @@
             if (!location.hash || location.hash.length < 3) return;
             const pairs = location.hash.slice(1).split('&');
             pairs.forEach(pair => {
-                const [key, val] = pair.split('=');
+                // Guard: split on first '=' only so values containing '=' are safe
+                const eqIdx = pair.indexOf('=');
+                if (eqIdx === -1) return;
+                const key = pair.slice(0, eqIdx);
+                const raw = pair.slice(eqIdx + 1);
+
+                // 1. Allowlist check — reject any key not explicitly permitted
+                if (!ALLOWED_HASH_KEYS.has(key)) return;
+
+                // 2. Numeric validation — reject non-finite and non-numeric payloads
+                const num = parseFloat(decodeURIComponent(raw));
+                if (!isFinite(num)) return;
+
+                // 3. Range clamping — silently clamp to the field's valid bounds
+                const { min, max } = HASH_CONSTRAINTS[key];
+                const safe = Math.min(max, Math.max(min, num));
+
                 const el = document.getElementById(key);
-                if (el) {
-                    el.value = decodeURIComponent(val);
-                    if (key === 'q3') document.getElementById('q3Val').textContent = el.value;
-                    if (key === 'q9') document.getElementById('q9Val').textContent = el.value;
-                    if (key === 'autoLevel') document.getElementById('autoLevelVal').textContent = el.value;
-                }
+                if (!el) return;
+                el.value = safe;
+
+                // Update companion display spans (textContent only — never innerHTML)
+                if (key === 'q3')        document.getElementById('q3Val').textContent        = safe;
+                if (key === 'q9')        document.getElementById('q9Val').textContent        = safe;
+                if (key === 'autoLevel') document.getElementById('autoLevelVal').textContent = safe;
             });
         }
 
@@ -1991,14 +2111,23 @@
         const _fontCache = new Map();
 
         /* Seed _fontCache from localStorage on startup so PDF export works
-           immediately even before prefetchFontsToBase64() finishes.          */
+           immediately even before prefetchFontsToBase64() finishes.
+           Each entry is passed through validateFontFace() before being stored —
+           the in-memory Map therefore only ever contains validated data.       */
         (function seedFontCacheFromStorage() {
             try {
                 const stored = localStorage.getItem(FONT_CACHE_KEY);
                 if (!stored) return;
                 const faces = JSON.parse(stored);
-                faces.forEach(f => _fontCache.set(`${f.family}||${f.weight}||${f.style}`, f));
-                console.info(`[PDF fonts] Seeded ${_fontCache.size} face(s) from localStorage.`);
+                if (!Array.isArray(faces)) return;
+                let seeded = 0;
+                faces.forEach(raw => {
+                    const f = validateFontFace(raw);
+                    if (!f) return;
+                    _fontCache.set(`${f.family}||${f.weight}||${f.style}`, f);
+                    seeded++;
+                });
+                console.info(`[PDF fonts] Seeded ${seeded} face(s) from localStorage.`);
             } catch(e) { /* localStorage unavailable — silent */ }
         })();
 
@@ -2075,13 +2204,20 @@
         }
 
         /* Build a complete @font-face CSS block from the cache for injection
-           into the html2canvas clone document.                              */
+           into the html2canvas clone document.
+           Entries are re-validated here as defence-in-depth: _fontCache should
+           only ever hold validated data (written by prefetchFontsToBase64 from
+           live CSSOM, or by seedFontCacheFromStorage via validateFontFace), but
+           an explicit check at the CSS-generation site means a future write path
+           that skips validation cannot silently introduce a CSS injection.     */
         function buildFontFaceCSS() {
             let css = '';
-            for (const { b64, fmt, family, weight, style } of _fontCache.values()) {
-                css += `@font-face{font-family:'${family}';font-weight:${weight};`
-                     + `font-style:${style};`
-                     + `src:url('data:font/${fmt};base64,${b64}') format('${fmt}');}\n`;
+            for (const raw of _fontCache.values()) {
+                const f = validateFontFace(raw);
+                if (!f) continue; // skip any entry that fails re-validation
+                css += `@font-face{font-family:'${f.family}';font-weight:${f.weight};`
+                     + `font-style:${f.style};`
+                     + `src:url('data:font/${f.fmt};base64,${f.b64}') format('${f.fmt}');}\n`;
             }
             return css;
         }
