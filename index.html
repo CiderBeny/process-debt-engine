@@ -3,21 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IT Process Debt & Chaos Calculator | Strategy Engine</title>
-    <!-- Tailwind CDN: runtime build, cannot be SRI-pinned by design.
-         For production, replace with a static build: https://tailwindcss.com/docs/installation -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Remaining scripts pinned to exact versions with SRI hashes (sha384) -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.js"
+    <title>IT Process Debt &amp; Chaos Calculator | Strategy Engine</title>
+    <link rel="stylesheet" href="output.css">
+        <!-- Remaining scripts pinned to exact versions with SRI hashes (sha384) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.js"
             integrity="sha384-G436+Z2nlA8+PNoeRvWdxKbvOf8E/y+lYxqht2iBwNHTQDV5CJr3+AGVj8fGZi5t"
             crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"
             integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk"
             crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
             integrity="sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H"
             crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"
             integrity="sha384-vtjasyidUo0kW94K5MXDXntzOJpQgBKXmE7e2Ga4LG0skTTLeBi97eFAXsqewJjw"
             crossorigin="anonymous"></script>
     <script>
@@ -195,19 +193,19 @@
     <nav class="sticky top-0 z-50 p-4">
         <div class="container mx-auto flex justify-between items-center max-w-7xl">
             <div>
-                <h1 class="text-xl font-bold tracking-tighter italic uppercase">IT Process Debt <span>& Chaos calculator</span></h1>
+                <h1 class="text-xl font-bold tracking-tighter italic uppercase">IT Process Debt <span>&amp; Chaos calculator</span></h1>
                 <p class="text-[10px] uppercase tracking-widest mt-0.5" data-i18n="navSubtitle">Full Diagnostic & Financial Strategy Engine</p>
             </div>
             <div class="flex items-center gap-3 flex-wrap justify-end">
-                <button id="copyLinkBtn" onclick="copyShareLink()" data-i18n="copyLinkBtn">⧉ COPY LINK</button>
-                <button id="langBtn" onclick="toggleLang()">
+                <button id="copyLinkBtn" data-i18n="copyLinkBtn">⧉ COPY LINK</button>
+                <button id="langBtn">
                     <span class="flag" id="langFlag">🇵🇱</span>
                     <span id="langLabel">PL</span>
                 </button>
-                <button id="exportExcelBtn" onclick="exportExcel()" data-i18n="exportExcelBtn">
+                <button id="exportExcelBtn" data-i18n="exportExcelBtn">
                     ⬇ EXPORT TO EXCEL
                 </button>
-                <button id="exportBtn" onclick="exportPDF()" data-i18n="exportBtn" title="">
+                <button id="exportBtn" data-i18n="exportBtn">
                     EXPORT STRATEGIC REPORT (PDF)
                 </button>
             </div>
@@ -227,13 +225,13 @@
                 <div class="q-card">
                     <label class="label" for="q1" data-i18n="q1label">1. Manual Effort (%)</label>
                     <p class="text-[10px] mb-2 leading-tight" data-i18n="q1desc">What percentage of the sprint capacity is consumed by repetitive manual tasks such as deployments, regression testing, or environment configuration?</p>
-                    <input type="number" id="q1" value="40" class="input-field" oninput="calculate()">
+                    <input type="number" id="q1" value="40" class="input-field">
                 </div>
 
                 <div class="q-card">
                     <label class="label" for="q2" data-i18n="q2label">2. Lead Time (Hrs)</label>
                     <p class="text-[10px] mb-2 leading-tight" data-i18n="q2desc">What is the average 'Lead Time' for a single change, measured from the initial request or code commit to successful production deployment?</p>
-                    <input type="number" id="q2" value="72" class="input-field" oninput="calculate()">
+                    <input type="number" id="q2" value="72" class="input-field">
                 </div>
 
                 <div class="q-card">
@@ -242,7 +240,7 @@
                     <div class="slider-wrapper">
                         <div class="slider-track-bg"></div>
                         <div class="slider-track-fill" id="q3Fill"></div>
-                        <input type="range" id="q3" min="1" max="5" value="2" class="slider" oninput="document.getElementById('q3Val').textContent=this.value;calculate()">
+                        <input type="range" id="q3" min="1" max="5" value="2" class="slider">
                     </div>
                     <div class="flex justify-between mt-1 px-0.5">
                         <span class="text-[10px]" style="color:var(--text-muted)" data-i18n="q3min">1 — Fragmented</span>
@@ -254,31 +252,31 @@
                 <div class="q-card">
                     <label class="label" for="q4" data-i18n="q4label">4. Downtime Cost ($/h)</label>
                     <p class="text-[10px] mb-2 leading-tight" data-i18n="q4desc">What is the estimated hourly revenue loss or operational penalty during a critical business system outage?</p>
-                    <input type="number" id="q4" value="10000" class="input-field" oninput="calculate()">
+                    <input type="number" id="q4" value="10000" class="input-field">
                 </div>
 
                 <div class="q-card">
                     <label class="label" for="q5" data-i18n="q5label">5. Human Errors / Quarter</label>
                     <p class="text-[10px] mb-2 leading-tight" data-i18n="q5desc">How many production incidents or rollbacks in the last quarter were directly caused by human error during manual execution steps?</p>
-                    <input type="number" id="q5" value="3" class="input-field" oninput="calculate()">
+                    <input type="number" id="q5" value="3" class="input-field">
                 </div>
 
                 <div class="q-card">
                     <label class="label" for="q6" data-i18n="q6label">6. Blended Rate ($/h)</label>
                     <p class="text-[10px] mb-2 leading-tight" data-i18n="q6desc">What is the average hourly cost (Blended Rate) of an engineer, including gross salary, benefits, hardware, and overhead?</p>
-                    <input type="number" id="q6" value="150" class="input-field" oninput="calculate()">
+                    <input type="number" id="q6" value="150" class="input-field">
                 </div>
 
                 <div class="q-card">
                     <label class="label" for="q7" data-i18n="q7label">7. Management Overhead (h/m)</label>
                     <p class="text-[10px] mb-2 leading-tight" data-i18n="q7desc">How many hours per month do managers spend coordinating communication and "chasing people" due to siloed processes?</p>
-                    <input type="number" id="q7" value="30" class="input-field" oninput="calculate()">
+                    <input type="number" id="q7" value="30" class="input-field">
                 </div>
 
                 <div class="q-card">
                     <label class="label" for="q8" data-i18n="q8label">8. Opportunity Margin ($)</label>
                     <p class="text-[10px] mb-2 leading-tight" data-i18n="q8desc">What is the projected gross margin from new projects or features that are currently delayed due to technical or process debt?</p>
-                    <input type="number" id="q8" value="200000" class="input-field" oninput="calculate()">
+                    <input type="number" id="q8" value="200000" class="input-field">
                 </div>
 
                 <div class="q-card">
@@ -287,7 +285,7 @@
                     <div class="slider-wrapper">
                         <div class="slider-track-bg"></div>
                         <div class="slider-track-fill" id="q9Fill"></div>
-                        <input type="range" id="q9" min="1" max="5" value="4" class="slider" oninput="document.getElementById('q9Val').textContent=this.value;calculate()">
+                        <input type="range" id="q9" min="1" max="5" value="4" class="slider">
                     </div>
                     <div class="text-center mt-2">
                         <span id="q9Val" class="text-xs font-bold">4</span>
@@ -298,7 +296,7 @@
                 <div class="q-card">
                     <label class="label" for="q10" data-i18n="q10label">10. Employee Turnover (%)</label>
                     <p class="text-[10px] mb-2 leading-tight" data-i18n="q10desc">What is the annual turnover rate in teams heavily burdened by manual, repetitive work (burnout indicator)?</p>
-                    <input type="number" id="q10" value="15" class="input-field" oninput="calculate()">
+                    <input type="number" id="q10" value="15" class="input-field">
                 </div>
 
             </div>
@@ -336,18 +334,18 @@
                     <div class="slider-wrapper">
                         <div class="slider-track-bg"></div>
                         <div class="slider-track-fill" id="autoLevelFill"></div>
-                        <input type="range" id="autoLevel" min="0" max="100" value="40" class="slider" oninput="document.getElementById('autoLevelVal').textContent=this.value;calculate()">
+                        <input type="range" id="autoLevel" min="0" max="100" value="40" class="slider">
                     </div>
                     <p class="text-center font-bold text-sm"><span id="autoLevelVal">40</span>% <span data-i18n="efficiencyGain">Efficiency Gain</span></p>
                 </div>
                 <div>
                     <label class="label" for="teamSize" data-i18n="teamSizeLabel">Team Size (engineers)</label>
-                    <input type="number" id="teamSize" value="10" class="input-field" oninput="calculate()">
+                    <input type="number" id="teamSize" value="10" class="input-field">
                     <span class="helper-text mt-1 block" data-i18n="teamSizeHelper">Total number of engineers affected by process debt.</span>
                 </div>
                 <div>
                     <label class="label" for="capex" data-i18n="capexLabel">One-Time CAPEX Investment ($)</label>
-                    <input type="number" id="capex" value="50000" class="input-field" oninput="calculate()">
+                    <input type="number" id="capex" value="50000" class="input-field">
                     <span class="helper-text mt-1 block" data-i18n="capexHelper">Licenses, Implementation, and Training costs.</span>
                 </div>
             </div>
@@ -966,9 +964,7 @@
             navy:   '#1e293b',
         };
 
-        Chart.defaults.color           = DARK.text;
-        Chart.defaults.borderColor     = DARK.grid;
-        Chart.defaults.backgroundColor = DARK.navy;
+        
 
         let waterfallChart, bridgeChart, heatmapChart;
 
@@ -2248,6 +2244,26 @@
                 });
             });
 
+            
+            // -- Input event listeners -> recalculate (input)
+            const calcIds = ['q1','q2','q3','q4','q5','q6','q7','q8','q9','q10','autoLevel','teamSize','capex'];
+            calcIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('input', calculate);
+            });
+
+            // -- Button click listeners (click)
+            const copyBtn = document.getElementById('copyLinkBtn');
+            if (copyBtn) copyBtn.addEventListener('click', copyShareLink);
+
+            const langButton = document.getElementById('langBtn');
+            if (langButton) langButton.addEventListener('click', toggleLang);
+
+            const excelBtn = document.getElementById('exportExcelBtn');
+            if (excelBtn) excelBtn.addEventListener('click', exportExcel);
+
+            const pdfBtn = document.getElementById('exportBtn');
+            if (pdfBtn) pdfBtn.addEventListener('click', exportPDF);
             // Dismiss open tooltip when clicking anywhere outside
             document.addEventListener('click', e => {
                 if (!e.target.classList.contains('formula-tip')) {
@@ -2257,6 +2273,9 @@
         });
 
         window.onload = () => {
+            Chart.defaults.color           = DARK.text;
+            Chart.defaults.borderColor     = DARK.grid;
+            Chart.defaults.backgroundColor = DARK.navy;
             applyTranslations();
             decodeState();
             calculate();
@@ -2283,3 +2302,19 @@
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

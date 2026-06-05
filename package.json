@@ -1,0 +1,25 @@
+{
+  "name": "kalkulator-dlugu-procesowego-it",
+  "version": "1.0.0",
+  "description": "[PL] **IT Process Debt & Chaos Calculator** to narzędzie typu SPA (Single Page Application) zaprojektowane dla IT Managerów i liderów operacyjnych. Pozwala na kwantyfikację finansową nieefektywności w procesach IT (tzw. długu procesowego) i przekłada zmarnowane roboczogodziny na realne straty budżetowe.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CiderBeny/Kalkulator-dlugu-procesowego-IT.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/CiderBeny/Kalkulator-dlugu-procesowego-IT/issues"
+  },
+  "homepage": "https://github.com/CiderBeny/Kalkulator-dlugu-procesowego-IT#readme",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.0",
+    "tailwindcss": "^4.3.0"
+  }
+}

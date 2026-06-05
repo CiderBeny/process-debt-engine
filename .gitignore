@@ -21,3 +21,7 @@ temp/
 # Optional: Local environment files (if you ever add them)
 .env
 .env.local
+# Node.js
+node_modules/
+package-lock.json
+src/
