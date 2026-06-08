@@ -109,7 +109,6 @@
                 el.id = 'font-cache-inject';
                 el.textContent = css;
                 document.currentScript.parentNode.insertBefore(el, document.currentScript.nextSibling);
-                console.info('[Fonts] Injected ' + valid.length + ' face(s) from localStorage cache.');
             } catch(e) {
                 // localStorage unavailable (private browsing, storage quota) — silent fail.
             }
@@ -1928,11 +1927,6 @@
                         //   • No CORS restriction — data: URIs are same-origin by spec
                         const fontFaceCSS = buildFontFaceCSS();
 
-                        if (_fontCache.size === 0) {
-                            console.warn('[PDF] Font cache empty — text will use system fallback fonts. '
-                                + 'Fonts may have been blocked by the network or not yet loaded.');
-                        }
-
                         // ── 3. Inject combined <style> at top of clone <head> ────
                         const style = clonedDoc.createElement('style');
                         style.textContent = `:root{${decls}}\n${fontFaceCSS}`;
@@ -2147,7 +2141,6 @@
                     _fontCache.set(`${f.family}||${f.weight}||${f.style}`, f);
                     seeded++;
                 });
-                console.info(`[PDF fonts] Seeded ${seeded} face(s) from localStorage.`);
             } catch(e) { /* localStorage unavailable — silent */ }
         })();
 
@@ -2180,7 +2173,6 @@
             }
 
             if (urlsByRule.length === 0) {
-                console.info('[PDF fonts] All faces already in cache — no fetch needed.');
                 return;
             }
 
@@ -2205,7 +2197,6 @@
                               : url.endsWith('.woff')  ? 'woff' : 'truetype';
                     _fontCache.set(key, { b64, fmt, family, weight, style });
                 } catch (e) {
-                    console.warn('[PDF fonts] Could not prefetch', family, weight, e.message);
                 }
             }));
 
@@ -2214,13 +2205,10 @@
             try {
                 const faces = Array.from(_fontCache.values());
                 localStorage.setItem(FONT_CACHE_KEY, JSON.stringify(faces));
-                console.info(`[PDF fonts] Persisted ${faces.length} face(s) to localStorage.`);
             } catch(e) {
                 // Quota exceeded or private browsing — in-memory cache still works for PDF.
-                console.warn('[PDF fonts] Could not persist to localStorage:', e.message);
             }
 
-            console.info(`[PDF fonts] Cache ready: ${_fontCache.size} face(s) total.`);
         }
 
         /* Build a complete @font-face CSS block from the cache for injection
