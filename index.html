@@ -3,6 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+        font-src 'self' data: https://fonts.gstatic.com;
+        img-src 'self' data:;
+        connect-src 'self' data: https://fonts.gstatic.com https://fonts.googleapis.com;
+        frame-ancestors 'none';
+        form-action 'none';
+        base-uri 'self';
+    ">
     <title>IT Process Debt &amp; Chaos Calculator | Strategy Engine</title>
     <link rel="stylesheet" href="output.css">
         <!-- Remaining scripts pinned to exact versions with SRI hashes (sha384) -->
@@ -98,7 +109,6 @@
                 el.id = 'font-cache-inject';
                 el.textContent = css;
                 document.currentScript.parentNode.insertBefore(el, document.currentScript.nextSibling);
-                console.info('[Fonts] Injected ' + valid.length + ' face(s) from localStorage cache.');
             } catch(e) {
                 // localStorage unavailable (private browsing, storage quota) — silent fail.
             }
@@ -107,10 +117,10 @@
     <!-- Tier 2: Google CDN — loaded after fonts.css so it wins the cascade -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet"
+    <link rel="stylesheet" id="googleFontsSheet"
           href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;600;700;900&display=swap"
           crossorigin
-          media="print" onload="this.media='all'">
+          media="print">
     <noscript>
         <link rel="stylesheet"
               href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;600;700;900&display=swap">
@@ -1454,6 +1464,19 @@
                     // q2, q3 are display-only in this export but still clamped for
                     // consistency (they appear verbatim in the Inputs sheet).
 
+                    // sanitizeCell — defence-in-depth against Excel formula injection.
+                    // Any string starting with =, +, -, @, tab, or CR is prefixed
+                    // with a single quote so Excel treats it as literal text.
+                    const sanitizeCell = v =>
+                        typeof v === 'string' && /^[=+\-@\t\r]/.test(v) ? "'" + v : v;
+
+                    // sanitizeSheetData — recursively walk array-of-arrays and
+                    // sanitize every leaf cell.
+                    const sanitizeSheetData = data =>
+                        data.map(row => Array.isArray(row)
+                            ? row.map(cell => sanitizeCell(cell))
+                            : sanitizeCell(row));
+
                     // ── raw inputs ───────────────────────────────────────────
                     const q1  = clamp('q1'),  q2  = clamp('q2'),  q3  = clamp('q3'),
                           q4  = clamp('q4'),  q5  = clamp('q5'),  q6  = clamp('q6'),
@@ -1526,7 +1549,7 @@
                         [L.xlsTeamSize,   teamSize,       L.xlsTeamSizeUnit],
                         [L.xlsCapex,      capex,          '$'              ],
                     ];
-                    const wsInputs = XLSX.utils.aoa_to_sheet(inputsData);
+                    const wsInputs = XLSX.utils.aoa_to_sheet(sanitizeSheetData(inputsData));
                     wsInputs['!cols'] = [{wch:6},{wch:38},{wch:18},{wch:14}];
                     XLSX.utils.book_append_sheet(wb, wsInputs, L.xlsSheetInputs);
 
@@ -1543,7 +1566,7 @@
                         ...L.xlsResultsRows.map((row, i) => [row[0], row[1], resultValues[i]]),
                         ['', '', L.xlsResultsMonths],
                     ];
-                    const wsResults = XLSX.utils.aoa_to_sheet(resultsData);
+                    const wsResults = XLSX.utils.aoa_to_sheet(sanitizeSheetData(resultsData));
                     wsResults['!cols'] = [{wch:32},{wch:50},{wch:18}];
                     XLSX.utils.book_append_sheet(wb, wsResults, L.xlsSheetResults);
 
@@ -1557,7 +1580,7 @@
                         [L.xlsLeversTotalLabel, '', totalRecovery, '', ''],
                         [L.xlsLeversPayback,    '', isFinite(paybackMo) ? Math.round(paybackMo * 10) / 10 : L.scenInfinity, '', L.xlsResultsMonths],
                     ];
-                    const wsLevers = XLSX.utils.aoa_to_sheet(leversData);
+                    const wsLevers = XLSX.utils.aoa_to_sheet(sanitizeSheetData(leversData));
                     wsLevers['!cols'] = [{wch:22},{wch:32},{wch:28},{wch:12},{wch:14}];
                     XLSX.utils.book_append_sheet(wb, wsLevers, L.xlsSheetLevers);
 
@@ -1576,7 +1599,7 @@
                         L.xlsScenariosHeaders,
                         ...L.xlsScenariosRows.map((row, i) => [row[0], scenValues[i][0], scenValues[i][1], scenValues[i][2]]),
                     ];
-                    const wsScen = XLSX.utils.aoa_to_sheet(scenData);
+                    const wsScen = XLSX.utils.aoa_to_sheet(sanitizeSheetData(scenData));
                     wsScen['!cols'] = [{wch:24},{wch:20},{wch:28},{wch:28}];
                     XLSX.utils.book_append_sheet(wb, wsScen, L.xlsSheetScenarios);
 
@@ -1588,7 +1611,7 @@
                         L.xlsDoraHeaders,
                         ...L.xlsDoraRows.map((row, i) => [row[0], doraValues[i], row[2], doraBandFn(['leadTime','manual','errors'][i], doraValues[i])]),
                     ];
-                    const wsDora = XLSX.utils.aoa_to_sheet(doraData);
+                    const wsDora = XLSX.utils.aoa_to_sheet(sanitizeSheetData(doraData));
                     wsDora['!cols'] = [{wch:28},{wch:14},{wch:52},{wch:20}];
                     XLSX.utils.book_append_sheet(wb, wsDora, L.xlsSheetDora);
 
@@ -1904,11 +1927,6 @@
                         //   • No CORS restriction — data: URIs are same-origin by spec
                         const fontFaceCSS = buildFontFaceCSS();
 
-                        if (_fontCache.size === 0) {
-                            console.warn('[PDF] Font cache empty — text will use system fallback fonts. '
-                                + 'Fonts may have been blocked by the network or not yet loaded.');
-                        }
-
                         // ── 3. Inject combined <style> at top of clone <head> ────
                         const style = clonedDoc.createElement('style');
                         style.textContent = `:root{${decls}}\n${fontFaceCSS}`;
@@ -2123,7 +2141,6 @@
                     _fontCache.set(`${f.family}||${f.weight}||${f.style}`, f);
                     seeded++;
                 });
-                console.info(`[PDF fonts] Seeded ${seeded} face(s) from localStorage.`);
             } catch(e) { /* localStorage unavailable — silent */ }
         })();
 
@@ -2156,7 +2173,6 @@
             }
 
             if (urlsByRule.length === 0) {
-                console.info('[PDF fonts] All faces already in cache — no fetch needed.');
                 return;
             }
 
@@ -2181,7 +2197,6 @@
                               : url.endsWith('.woff')  ? 'woff' : 'truetype';
                     _fontCache.set(key, { b64, fmt, family, weight, style });
                 } catch (e) {
-                    console.warn('[PDF fonts] Could not prefetch', family, weight, e.message);
                 }
             }));
 
@@ -2190,13 +2205,10 @@
             try {
                 const faces = Array.from(_fontCache.values());
                 localStorage.setItem(FONT_CACHE_KEY, JSON.stringify(faces));
-                console.info(`[PDF fonts] Persisted ${faces.length} face(s) to localStorage.`);
             } catch(e) {
                 // Quota exceeded or private browsing — in-memory cache still works for PDF.
-                console.warn('[PDF fonts] Could not persist to localStorage:', e.message);
             }
 
-            console.info(`[PDF fonts] Cache ready: ${_fontCache.size} face(s) total.`);
         }
 
         /* Build a complete @font-face CSS block from the cache for injection
@@ -2223,6 +2235,10 @@
            user clicks elsewhere — making tooltips work on touch & keyboard.
         ─────────────────────────────────────────────────────────────────── */
         document.addEventListener('DOMContentLoaded', () => {
+            // Activate Google Fonts stylesheet (loaded with media="print")
+            const gFont = document.getElementById('googleFontsSheet');
+            if (gFont) gFont.media = 'all';
+
             document.querySelectorAll('.formula-tip').forEach(el => {
                 el.addEventListener('click', e => {
                     e.stopPropagation();
