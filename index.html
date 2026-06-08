@@ -3,6 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+        font-src 'self' data: https://fonts.gstatic.com;
+        img-src 'self' data:;
+        connect-src 'self' data: https://fonts.gstatic.com https://fonts.googleapis.com;
+        frame-ancestors 'none';
+        form-action 'none';
+        base-uri 'self';
+    ">
     <title>IT Process Debt &amp; Chaos Calculator | Strategy Engine</title>
     <link rel="stylesheet" href="output.css">
         <!-- Remaining scripts pinned to exact versions with SRI hashes (sha384) -->
@@ -107,10 +118,10 @@
     <!-- Tier 2: Google CDN — loaded after fonts.css so it wins the cascade -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet"
+    <link rel="stylesheet" id="googleFontsSheet"
           href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;600;700;900&display=swap"
           crossorigin
-          media="print" onload="this.media='all'">
+          media="print">
     <noscript>
         <link rel="stylesheet"
               href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;600;700;900&display=swap">
@@ -2223,6 +2234,10 @@
            user clicks elsewhere — making tooltips work on touch & keyboard.
         ─────────────────────────────────────────────────────────────────── */
         document.addEventListener('DOMContentLoaded', () => {
+            // Activate Google Fonts stylesheet (loaded with media="print")
+            const gFont = document.getElementById('googleFontsSheet');
+            if (gFont) gFont.media = 'all';
+
             document.querySelectorAll('.formula-tip').forEach(el => {
                 el.addEventListener('click', e => {
                     e.stopPropagation();
