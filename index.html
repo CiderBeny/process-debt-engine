@@ -1612,7 +1612,7 @@
         ────────────────────────────────────────────────────────────────────── */
         function isMobileBrowser() {
             const ua = navigator.userAgent || '';
-            return /iPhone|iPad|iPod|Android/i.test(ua)
+            return /iPhone|iPad|iPod|Android|webOS|BlackBerry|Windows Phone|IEMobile|Opera Mini/i.test(ua)
                 || (navigator.maxTouchPoints > 1 && /Macintosh/i.test(ua)); // iPadOS
         }
 
