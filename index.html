@@ -1465,6 +1465,19 @@
                     // q2, q3 are display-only in this export but still clamped for
                     // consistency (they appear verbatim in the Inputs sheet).
 
+                    // sanitizeCell — defence-in-depth against Excel formula injection.
+                    // Any string starting with =, +, -, @, tab, or CR is prefixed
+                    // with a single quote so Excel treats it as literal text.
+                    const sanitizeCell = v =>
+                        typeof v === 'string' && /^[=+\-@\t\r]/.test(v) ? "'" + v : v;
+
+                    // sanitizeSheetData — recursively walk array-of-arrays and
+                    // sanitize every leaf cell.
+                    const sanitizeSheetData = data =>
+                        data.map(row => Array.isArray(row)
+                            ? row.map(cell => sanitizeCell(cell))
+                            : sanitizeCell(row));
+
                     // ── raw inputs ───────────────────────────────────────────
                     const q1  = clamp('q1'),  q2  = clamp('q2'),  q3  = clamp('q3'),
                           q4  = clamp('q4'),  q5  = clamp('q5'),  q6  = clamp('q6'),
@@ -1537,7 +1550,7 @@
                         [L.xlsTeamSize,   teamSize,       L.xlsTeamSizeUnit],
                         [L.xlsCapex,      capex,          '$'              ],
                     ];
-                    const wsInputs = XLSX.utils.aoa_to_sheet(inputsData);
+                    const wsInputs = XLSX.utils.aoa_to_sheet(sanitizeSheetData(inputsData));
                     wsInputs['!cols'] = [{wch:6},{wch:38},{wch:18},{wch:14}];
                     XLSX.utils.book_append_sheet(wb, wsInputs, L.xlsSheetInputs);
 
@@ -1554,7 +1567,7 @@
                         ...L.xlsResultsRows.map((row, i) => [row[0], row[1], resultValues[i]]),
                         ['', '', L.xlsResultsMonths],
                     ];
-                    const wsResults = XLSX.utils.aoa_to_sheet(resultsData);
+                    const wsResults = XLSX.utils.aoa_to_sheet(sanitizeSheetData(resultsData));
                     wsResults['!cols'] = [{wch:32},{wch:50},{wch:18}];
                     XLSX.utils.book_append_sheet(wb, wsResults, L.xlsSheetResults);
 
@@ -1568,7 +1581,7 @@
                         [L.xlsLeversTotalLabel, '', totalRecovery, '', ''],
                         [L.xlsLeversPayback,    '', isFinite(paybackMo) ? Math.round(paybackMo * 10) / 10 : L.scenInfinity, '', L.xlsResultsMonths],
                     ];
-                    const wsLevers = XLSX.utils.aoa_to_sheet(leversData);
+                    const wsLevers = XLSX.utils.aoa_to_sheet(sanitizeSheetData(leversData));
                     wsLevers['!cols'] = [{wch:22},{wch:32},{wch:28},{wch:12},{wch:14}];
                     XLSX.utils.book_append_sheet(wb, wsLevers, L.xlsSheetLevers);
 
@@ -1587,7 +1600,7 @@
                         L.xlsScenariosHeaders,
                         ...L.xlsScenariosRows.map((row, i) => [row[0], scenValues[i][0], scenValues[i][1], scenValues[i][2]]),
                     ];
-                    const wsScen = XLSX.utils.aoa_to_sheet(scenData);
+                    const wsScen = XLSX.utils.aoa_to_sheet(sanitizeSheetData(scenData));
                     wsScen['!cols'] = [{wch:24},{wch:20},{wch:28},{wch:28}];
                     XLSX.utils.book_append_sheet(wb, wsScen, L.xlsSheetScenarios);
 
@@ -1599,7 +1612,7 @@
                         L.xlsDoraHeaders,
                         ...L.xlsDoraRows.map((row, i) => [row[0], doraValues[i], row[2], doraBandFn(['leadTime','manual','errors'][i], doraValues[i])]),
                     ];
-                    const wsDora = XLSX.utils.aoa_to_sheet(doraData);
+                    const wsDora = XLSX.utils.aoa_to_sheet(sanitizeSheetData(doraData));
                     wsDora['!cols'] = [{wch:28},{wch:14},{wch:52},{wch:20}];
                     XLSX.utils.book_append_sheet(wb, wsDora, L.xlsSheetDora);
 
