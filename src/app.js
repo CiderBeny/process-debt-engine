@@ -479,9 +479,10 @@
             calculate(); // re-render dynamic content (charts labels, levers, rec engine)
             const footerEl = document.getElementById('nbpFooter');
             if (footerEl) {
+                const t = TRANSLATIONS[currentLang];
                 footerEl.textContent = nbpDate
-                    ? L.nbpFooter(new Date(nbpDate).toLocaleDateString(currentLang === 'pl' ? 'pl-PL' : 'en-US'))
-                    : L.nbpFooter('—');
+                    ? t.nbpFooter(new Date(nbpDate).toLocaleDateString(currentLang === 'pl' ? 'pl-PL' : 'en-US'))
+                    : t.nbpFooter('—');
             }
         }
 
@@ -1900,7 +1901,7 @@
 
                 nbpDate = data[0].effectiveDate;
                 const footerEl = document.getElementById('nbpFooter');
-                if (footerEl) footerEl.textContent = L.nbpFooter(new Date(nbpDate).toLocaleDateString(currentLang === 'pl' ? 'pl-PL' : 'en-US'));
+                if (footerEl) footerEl.textContent = TRANSLATIONS[currentLang].nbpFooter(new Date(nbpDate).toLocaleDateString(currentLang === 'pl' ? 'pl-PL' : 'en-US'));
 
                 if (currentCurrency !== 'USD') calculate();
             } catch (e) { console.error('NBP API fetch failed:', e); }
@@ -1914,7 +1915,7 @@
             }
             document.getElementById('currencySelect').value = currentCurrency;
             applyTranslations();
-            document.getElementById('nbpFooter').textContent = L.nbpFooter('—');
+            document.getElementById('nbpFooter').textContent = TRANSLATIONS[currentLang].nbpFooter('—');
             decodeState();
             calculate();
             requestAnimationFrame(() => { calculate(); });
