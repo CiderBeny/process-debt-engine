@@ -420,7 +420,7 @@
 
         let currentLang = 'en';
         let currentCurrency = 'USD';
-        const EXCHANGE_RATES = { USD: 1, EUR: 0.92, PLN: 4.0, GBP: 0.79 };
+        const EXCHANGE_RATES = { USD: 1, EUR: 0.87, PLN: 3.67, GBP: 0.75 };
         const CURRENCY_SYMBOLS = { USD: '$', EUR: '€', PLN: 'zł', GBP: '£' };
 
         /* ── XSS guard ──────────────────────────────────────────────────────────
@@ -1866,16 +1866,23 @@
 
         async function fetchNbpRates() {
             try {
-                const res = await fetch('https://latest.currency-api.pages.dev/v1/currencies/usd.json');
+                const res = await fetch('https://api.nbp.pl/api/exchangerates/tables/A/today?format=json');
                 const data = await res.json();
-                EXCHANGE_RATES['PLN'] = data.usd.pln;
-                EXCHANGE_RATES['EUR'] = data.usd.eur;
-                EXCHANGE_RATES['GBP'] = data.usd.gbp;
+                const rates = data[0].rates;
+                const getMid = (code) => rates.find(r => r.code === code).mid;
+
+                const plnPerUsd = getMid('USD');
+                const plnPerEur = getMid('EUR');
+                const plnPerGbp = getMid('GBP');
+
+                EXCHANGE_RATES['PLN'] = plnPerUsd;
+                EXCHANGE_RATES['EUR'] = plnPerUsd / plnPerEur;
+                EXCHANGE_RATES['GBP'] = plnPerUsd / plnPerGbp;
                 EXCHANGE_RATES['USD'] = 1;
 
-                const dateStr = new Date(data.date).toLocaleDateString('pl-PL');
+                const dateStr = new Date(data[0].effectiveDate).toLocaleDateString('pl-PL');
                 const footerEl = document.getElementById('nbpFooter');
-                if (footerEl) footerEl.textContent = `Kursy walut na podstawie NBP (z dnia ${dateStr})`;
+                if (footerEl) footerEl.textContent = `Kursy walut NBP tabela A (z dnia ${dateStr})`;
 
                 if (currentCurrency !== 'USD') calculate();
             } catch (e) { /* silent — hardcoded rates remain */ }
