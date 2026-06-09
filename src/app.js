@@ -624,6 +624,13 @@
             const valDelivery = total - manual - chase;
             const L = TRANSLATIONS[currentLang];
 
+            const sizeCanvas = (id) => {
+                const c = document.getElementById(id);
+                const p = c.parentElement;
+                c.width = p.clientWidth || 300;
+                c.height = p.clientHeight || 200;
+            };
+            sizeCanvas('waterfallChart');
             const ctx1 = document.getElementById('waterfallChart').getContext('2d');
             if (waterfallChart) waterfallChart.destroy();
             waterfallChart = new Chart(ctx1, {
@@ -639,6 +646,7 @@
                 options: { ...CHART_OPTS, indexAxis: 'y' }
             });
 
+            sizeCanvas('bridgeChart');
             const ctx2 = document.getElementById('bridgeChart').getContext('2d');
             if (bridgeChart) bridgeChart.destroy();
             bridgeChart = new Chart(ctx2, {
@@ -654,6 +662,7 @@
                 options: { ...CHART_OPTS }
             });
 
+            sizeCanvas('heatmapChart');
             const ctx3 = document.getElementById('heatmapChart').getContext('2d');
             if (heatmapChart) heatmapChart.destroy();
             heatmapChart = new Chart(ctx3, {
@@ -1894,7 +1903,7 @@
                 if (footerEl) footerEl.textContent = L.nbpFooter(new Date(nbpDate).toLocaleDateString(currentLang === 'pl' ? 'pl-PL' : 'en-US'));
 
                 if (currentCurrency !== 'USD') calculate();
-            } catch (e) { /* silent — hardcoded rates remain */ }
+            } catch (e) { console.error('NBP API fetch failed:', e); }
         }
 
         window.onload = () => {
@@ -1907,6 +1916,7 @@
             applyTranslations();
             document.getElementById('nbpFooter').textContent = L.nbpFooter('—');
             decodeState();
+            calculate();
             requestAnimationFrame(() => { calculate(); });
             fetchNbpRates();
 
