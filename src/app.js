@@ -1857,9 +1857,11 @@
 
         async function fetchNbpRates() {
             try {
-                const res = await fetch('https://api.frankfurter.dev/latest?from=USD&to=PLN,EUR,GBP');
+                const res = await fetch('https://latest.currency-api.pages.dev/v1/currencies/usd.json');
                 const data = await res.json();
-                Object.assign(EXCHANGE_RATES, data.rates);
+                EXCHANGE_RATES['PLN'] = data.usd.pln;
+                EXCHANGE_RATES['EUR'] = data.usd.eur;
+                EXCHANGE_RATES['GBP'] = data.usd.gbp;
                 EXCHANGE_RATES['USD'] = 1;
 
                 const dateStr = new Date(data.date).toLocaleDateString('pl-PL');
