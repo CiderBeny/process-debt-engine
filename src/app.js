@@ -507,7 +507,7 @@
                     const valInPrev = parseFloat(el.value) || 0;
                     const valInUSD = valInPrev / prevRate;
                     const valInNew = valInUSD * newRate;
-                    el.value = Math.round(valInNew * 100) / 100;
+                    el.value = (Math.round(valInNew * 100) / 100).toFixed(2);
                 }
             });
             currentCurrency = currency;
@@ -1629,7 +1629,8 @@
 
                 const el = document.getElementById(key);
                 if (!el) return;
-                el.value = safe;
+                const monetaryIds = ['q4', 'q6', 'q8', 'capex'];
+                el.value = monetaryIds.includes(key) ? safe.toFixed(2) : safe;
 
                 // Update companion display spans (textContent only — never innerHTML)
                 if (key === 'q3')        document.getElementById('q3Val').textContent        = safe;
