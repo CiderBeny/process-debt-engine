@@ -507,7 +507,7 @@
                     const valInPrev = parseFloat(el.value) || 0;
                     const valInUSD = valInPrev / prevRate;
                     const valInNew = valInUSD * newRate;
-                    el.value = Math.round(valInNew);
+                    el.value = Math.round(valInNew * 100) / 100;
                 }
             });
             currentCurrency = currency;
