@@ -1,8 +1,8 @@
-# IT Process Debt & Chaos Calculator
+# Process Debt Engine
 
-[PL] **IT Process Debt & Chaos Calculator** to narzędzie typu SPA (Single Page Application) zaprojektowane dla IT Managerów i liderów operacyjnych. Pozwala na kwantyfikację finansową nieefektywności w procesach IT (tzw. długu procesowego) i przekłada zmarnowane roboczogodziny na realne straty budżetowe.
+[PL] **Process Debt Engine** to narzędzie typu SPA (Single Page Application) zaprojektowane dla IT Managerów i liderów operacyjnych. Pozwala na kwantyfikację finansową nieefektywności w procesach IT (tzw. długu procesowego) i przekłada zmarnowane roboczogodziny na realne straty budżetowe.
 
-[EN] **IT Process Debt & Chaos Calculator** is a Single Page Application (SPA) designed for IT Managers and operational leaders. It enables the financial quantification of IT process inefficiencies (Process Debt) and translates wasted man-hours into tangible budgetary losses.
+[EN] **Process Debt Engine** is a Single Page Application (SPA) designed for IT Managers and operational leaders. It enables the financial quantification of IT process inefficiencies (Process Debt) and translates wasted man-hours into tangible budgetary losses.
 
 ---
 

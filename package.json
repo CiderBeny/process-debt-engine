@@ -1,7 +1,7 @@
 {
-  "name": "kalkulator-dlugu-procesowego-it",
+  "name": "process-debt-engine",
   "version": "1.0.0",
-  "description": "[PL] **IT Process Debt & Chaos Calculator** to narzędzie typu SPA (Single Page Application) zaprojektowane dla IT Managerów i liderów operacyjnych. Pozwala na kwantyfikację finansową nieefektywności w procesach IT (tzw. długu procesowego) i przekłada zmarnowane roboczogodziny na realne straty budżetowe.",
+  "description": "IT Process Efficiency & Financial Strategy Engine — quantify process debt and simulate ROI of automation investments.",
   "main": "index.js",
   "scripts": {
     "test": "node src/security.test.js"
