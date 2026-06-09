@@ -210,6 +210,7 @@
                 xlsSheetLevers:   'Top 3 Levers',
                 xlsSheetScenarios:'Scenarios',
                 xlsSheetDora:     'DORA Benchmark',
+                nbpFooter:        (date) => `NBP exchange rates table A (as of ${date})`,
             },
             pl: {
                 navSubtitle:      'Silnik Efektywności Procesów IT i Strategii Finansowej',
@@ -415,11 +416,13 @@
                 xlsSheetLevers:    'Top 3 Dźwignie',
                 xlsSheetScenarios: 'Scenariusze',
                 xlsSheetDora:      'Benchmark DORA',
+                nbpFooter:         (date) => `Kursy walut NBP tabela A (z dnia ${date})`,
             }
         };
 
         let currentLang = 'en';
         let currentCurrency = 'USD';
+        let nbpDate = null;
         const EXCHANGE_RATES = { USD: 1, EUR: 0.87, PLN: 3.67, GBP: 0.75 };
         const CURRENCY_SYMBOLS = { USD: '$', EUR: '€', PLN: 'zł', GBP: '£' };
 
@@ -474,6 +477,10 @@
             applyTranslations();
             updateSliderFills();
             calculate(); // re-render dynamic content (charts labels, levers, rec engine)
+            if (nbpDate) {
+                const footerEl = document.getElementById('nbpFooter');
+                if (footerEl) footerEl.textContent = L.nbpFooter(new Date(nbpDate).toLocaleDateString(currentLang === 'pl' ? 'pl-PL' : 'en-US'));
+            }
         }
 
         function formatCurrency(amountUSD) {
@@ -1880,9 +1887,9 @@
                 EXCHANGE_RATES['GBP'] = plnPerUsd / plnPerGbp;
                 EXCHANGE_RATES['USD'] = 1;
 
-                const dateStr = new Date(data[0].effectiveDate).toLocaleDateString('pl-PL');
+                nbpDate = data[0].effectiveDate;
                 const footerEl = document.getElementById('nbpFooter');
-                if (footerEl) footerEl.textContent = `Kursy walut NBP tabela A (z dnia ${dateStr})`;
+                if (footerEl) footerEl.textContent = L.nbpFooter(new Date(nbpDate).toLocaleDateString(currentLang === 'pl' ? 'pl-PL' : 'en-US'));
 
                 if (currentCurrency !== 'USD') calculate();
             } catch (e) { /* silent — hardcoded rates remain */ }
