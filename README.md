@@ -67,4 +67,3 @@ In the world of IT Service Management, it's often difficult to convince the boar
 
 ## 👤 Autor / Author
 **Senior IT Service Manager**
-*Portfolio Project for GitHub*
