@@ -482,8 +482,8 @@
             return new Intl.NumberFormat(locale, {
                 style: 'currency',
                 currency: currentCurrency,
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
             }).format(converted);
         }
 
@@ -1374,9 +1374,17 @@
                 if (col === 0) { needSpace(rowH + 3); }
 
                 const val = document.getElementById(q.id).value;
+                const monetaryIds = ['q4', 'q6', 'q8'];
                 const displayVal = q.type === 'slider'
                     ? document.getElementById(q.valId).textContent
-                    : val;
+                    : monetaryIds.includes(q.id)
+                        ? new Intl.NumberFormat(currentLang === 'pl' ? 'pl-PL' : 'en-US', {
+                            style: 'currency',
+                            currency: currentCurrency,
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                          }).format(parseFloat(val) || 0)
+                        : val;
 
                 // Card background — ivory surface with warm stone border (matches .q-card)
                 drawRect(x, cy, colW, rowH, [255, 255, 255], [214, 201, 184]);
@@ -1588,7 +1596,7 @@
             if (!isFinite(raw)) return c.min;
             const minInCurrency = c.min * EXCHANGE_RATES[currentCurrency];
             const maxInCurrency = c.max * EXCHANGE_RATES[currentCurrency];
-            return Math.min(maxInCurrency, Math.max(minInCurrency, raw));
+            return Math.round(Math.min(maxInCurrency, Math.max(minInCurrency, raw)) * 100) / 100;
         }
 
         function encodeState() {
