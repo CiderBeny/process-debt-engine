@@ -3,7 +3,7 @@
         // ═══════════════════════════════════════════════════════════════
         const TRANSLATIONS = {
             en: {
-                navSubtitle:      'Full Diagnostic & Financial Strategy Engine',
+                navSubtitle:      'IT Process Efficiency & Financial Strategy Engine',
                 exportBtn:        'EXPORT STRATEGIC REPORT (PDF)',
                 exportGenerating: 'Generating PDF…',
                 phase1Title:      'Phase 1: Strategic Diagnostic Questionnaire',
@@ -153,7 +153,7 @@
                 exportExcelBtn:      '⬇ EXPORT TO EXCEL',
                 exportExcelGenerating: '⏳ GENERATING...',
                 // Excel sheet titles & headers
-                xlsInputsTitle:      'IT Process Debt & Chaos Calculator — Diagnostic Inputs',
+                xlsInputsTitle:      'Process Debt Engine — Diagnostic Inputs',
                 xlsGenerated:        'Generated',
                 xlsInputsHeaders:    ['#', 'Question', 'Value', 'Unit'],
                 xlsInputsRows: [
@@ -173,7 +173,7 @@
                 xlsTeamSize:         'Team Size',
                 xlsTeamSizeUnit:     'engineers',
                 xlsCapex:            'One-Time CAPEX Investment',
-                xlsResultsTitle:     'IT Process Debt — Financial Results',
+                xlsResultsTitle:     'Process Debt Engine — Financial Results',
                 xlsResultsHeaders:   ['Metric', 'Formula', 'Value ($)'],
                 xlsResultsRows: [
                     ['Annual OPEX Waste',        '(Manual hrs/yr + Chase hrs/yr) × Rate × Team',     null],
@@ -212,7 +212,7 @@
                 xlsSheetDora:     'DORA Benchmark',
             },
             pl: {
-                navSubtitle:      'Pełne Narzędzie Diagnostyczne i Finansowe',
+                navSubtitle:      'Silnik Efektywności Procesów IT i Strategii Finansowej',
                 exportBtn:        'EKSPORTUJ RAPORT STRATEGICZNY (PDF)',
                 exportGenerating: 'Generowanie PDF…',
                 phase1Title:      'Faza 1: Strategiczny Kwestionariusz Diagnostyczny',
@@ -358,7 +358,7 @@
                 copyLinkBtn:         '⧉ KOPIUJ LINK',
                 exportExcelBtn:      '⬇ EKSPORTUJ DO EXCEL',
                 exportExcelGenerating: '⏳ GENEROWANIE...',
-                xlsInputsTitle:      'Kalkulator Długu Procesowego IT — Dane Wejściowe Diagnostyki',
+                xlsInputsTitle:      'Process Debt Engine — Dane Wejściowe Diagnostyki',
                 xlsGenerated:        'Wygenerowano',
                 xlsInputsHeaders:    ['#', 'Pytanie', 'Wartość', 'Jednostka'],
                 xlsInputsRows: [
@@ -378,7 +378,7 @@
                 xlsTeamSize:         'Liczba Inżynierów',
                 xlsTeamSizeUnit:     'inżynierów',
                 xlsCapex:            'Jednorazowa Inwestycja CAPEX',
-                xlsResultsTitle:     'Dług Procesowy IT — Wyniki Finansowe',
+                xlsResultsTitle:     'Process Debt Engine — Wyniki Finansowe',
                 xlsResultsHeaders:   ['Metryka', 'Formuła', 'Wartość ($)'],
                 xlsResultsRows: [
                     ['Roczne Marnotrawstwo OPEX',      '(Godz. manualne/rok + Godz. koordynacji/rok) × Stawka × Zespół', null],
@@ -1126,7 +1126,7 @@
                     XLSX.utils.book_append_sheet(wb, wsDora, L.xlsSheetDora);
 
                     // ── write & download ─────────────────────────────────────
-                    XLSX.writeFile(wb, 'IT-Debt-Calculator.xlsx');
+                    XLSX.writeFile(wb, 'Process-Debt-Engine.xlsx');
                 } catch(err) {
                     console.error('Excel export error:', err);
                     alert('Export failed: ' + err.message);
@@ -1486,7 +1486,7 @@
                 }
             }
 
-            pdf.save('Strategic-IT-Business-Case.pdf');
+            pdf.save('Process-Debt-Engine.pdf');
             btn.disabled = false;
             btn.textContent = t('exportBtn');
         }
