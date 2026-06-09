@@ -1898,14 +1898,16 @@
         }
 
         window.onload = () => {
-            Chart.defaults.color           = DARK.text;
-            Chart.defaults.borderColor     = DARK.grid;
-            Chart.defaults.backgroundColor = DARK.navy;
+            if (typeof Chart !== 'undefined') {
+                Chart.defaults.color           = DARK.text;
+                Chart.defaults.borderColor     = DARK.grid;
+                Chart.defaults.backgroundColor = DARK.navy;
+            }
             document.getElementById('currencySelect').value = currentCurrency;
             applyTranslations();
             document.getElementById('nbpFooter').textContent = L.nbpFooter('—');
             decodeState();
-            calculate();
+            requestAnimationFrame(() => { calculate(); });
             fetchNbpRates();
 
             // ── Mobile PDF export guard (visual) ──────────────────────────────
