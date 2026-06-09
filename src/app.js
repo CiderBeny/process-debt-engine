@@ -15,15 +15,15 @@
                 q3desc:   'Does the organization maintain a unified process documentation standard, or is critical knowledge fragmented across tribal silos?',
                 q3min:    '1 — Fragmented',
                 q3max:    '5 — Unified',
-                q4label:  '4. Downtime Cost ($/h)',
+                q4label:  '4. Downtime Cost ({C}/h)',
                 q4desc:   'What is the estimated hourly revenue loss or operational penalty during a critical business system outage?',
                 q5label:  '5. Human Errors / Quarter',
                 q5desc:   'How many production incidents or rollbacks in the last quarter were directly caused by human error during manual execution steps?',
-                q6label:  '6. Blended Rate ($/h)',
+                q6label:  '6. Blended Rate ({C}/h)',
                 q6desc:   'What is the average hourly cost (Blended Rate) of an engineer, including gross salary, benefits, hardware, and overhead?',
                 q7label:  '7. Management Overhead (h/m)',
                 q7desc:   'How many hours per month do managers spend coordinating communication and "chasing people" due to siloed processes?',
-                q8label:  '8. Opportunity Margin ($)',
+                q8label:  '8. Opportunity Margin ({C})',
                 q8desc:   'What is the projected gross margin from new projects or features that are currently delayed due to technical or process debt?',
                 q9label:  '9. Scalability Bottleneck (1–5)',
                 q9desc:   'Impact on ability to scale growth?',
@@ -34,7 +34,7 @@
                 efficiencyGain: 'Efficiency Gain',
                 teamSizeLabel:  'Team Size (engineers)',
                 teamSizeHelper: 'Total number of engineers affected by process debt.',
-                capexLabel:     'One-Time CAPEX Investment ($)',
+                capexLabel:     'One-Time CAPEX Investment ({C})',
                 capexHelper:    'Licenses, Implementation, and Training costs.',
                 statWasteLabel: 'Annual OPEX Waste',
                 statRiskLabel:  'Risk Exposure',
@@ -50,7 +50,7 @@
                 chart1Title: '1. Waterfall: Capacity Erosion',
                 chart1Sub:   'hrs / year',
                 chart2Title: '2. Strategic Debt Bridge',
-                chart2Sub:   'financial $',
+                chart2Sub:   'financial ({C})',
                 chart3Title: '3. Risk Heatmap',
                 chart3Sub:   'shift analysis',
                 execTitle:    'Executive Summary & Top Levers',
@@ -65,9 +65,9 @@
                 chartEffortAxis:      'Effort Leakage %',
                 chartRiskAxis:        'Risk Level',
                 // rec engine
-                recAutomation: (val) => `<strong style="color:var(--red)">Automation Lever:</strong> High manual overhead. A Self-Service Portal could recover <strong>$${val}</strong> in labor costs.`,
+                recAutomation: (val) => `<strong style="color:var(--red)">Automation Lever:</strong> High manual overhead. A Self-Service Portal could recover <strong>${formatCurrency(val)}</strong> in labor costs.`,
                 recRisk:        () => `<strong style="color:var(--orange)">Risk Lever:</strong> Critical risk exposure. Auto-Discovery (CMDB) reduces MTTR and safeguards revenue.`,
-                recInnovation: (val) => `<strong style="color:var(--purple)">Innovation Lever:</strong> Debt backlog is blocking roadmap. Resolving it unlocks <strong>$${val}</strong> in project margin.`,
+                recInnovation: (val) => `<strong style="color:var(--purple)">Innovation Lever:</strong> Debt backlog is blocking roadmap. Resolving it unlocks <strong>${formatCurrency(val)}</strong> in project margin.`,
                 recVerdict:    (pb)  => `Financial Verdict: Payback period — ${pb} months.`,
                 // lever titles & details
                 leverAutomationTitle:  'Process Automation',
@@ -160,11 +160,11 @@
                     ['Q1',  'Manual Effort',                  null, '%'        ],
                     ['Q2',  'Lead Time',                      null, 'hrs'      ],
                     ['Q3',  'Documentation Standard (1–5)',   null, '/5'       ],
-                    ['Q4',  'Downtime Cost',                  null, '$/hr'     ],
+                    ['Q4',  'Downtime Cost',                  null, '{C}/hr'   ],
                     ['Q5',  'Human Errors / Quarter',         null, 'incidents'],
-                    ['Q6',  'Blended Rate',                   null, '$/hr'     ],
+                    ['Q6',  'Blended Rate',                   null, '{C}/hr'   ],
                     ['Q7',  'Management Overhead',            null, 'hrs/mo'   ],
-                    ['Q8',  'Opportunity Margin',             null, '$'        ],
+                    ['Q8',  'Opportunity Margin',             null, '{C}'      ],
                     ['Q9',  'Scalability Bottleneck (1–5)',   null, '/5'       ],
                     ['Q10', 'Employee Turnover',              null, '%/yr'     ],
                 ],
@@ -174,10 +174,10 @@
                 xlsTeamSizeUnit:     'engineers',
                 xlsCapex:            'One-Time CAPEX Investment',
                 xlsResultsTitle:     'Process Debt Engine — Financial Results',
-                xlsResultsHeaders:   ['Metric', 'Formula', 'Value ($)'],
+                xlsResultsHeaders:   ['Metric', 'Formula', 'Value ({CC})'],
                 xlsResultsRows: [
                     ['Annual OPEX Waste',        '(Manual hrs/yr + Chase hrs/yr) × Rate × Team',     null],
-                    ['Risk Exposure',             'Annual failures × Downtime $/hr × (Risk/5)',        null],
+                    ['Risk Exposure',             'Annual failures × Downtime {C}/hr × (Risk/5)',        null],
                     ['Opportunity Loss',          '(Opportunity margin × 0.25) + (OPEX Waste × 1.5)', null],
                     ['Total Debt Impact',         'OPEX + Risk + Opportunity',                         null],
                     ['CAPEX Investment',          'User input',                                         null],
@@ -187,15 +187,15 @@
                 ],
                 xlsResultsMonths:    'months',
                 xlsLeversTitle:      'Top 3 Financial Levers (sorted by estimated annual recovery)',
-                xlsLeversHeaders:    ['Rank', 'Lever', 'Est. Annual Recovery ($)', 'Effort', 'Timeline'],
+                xlsLeversHeaders:    ['Rank', 'Lever', 'Est. Annual Recovery ({CC})', 'Effort', 'Timeline'],
                 xlsLeversTotalLabel: 'Total Recovery Potential',
                 xlsLeversPayback:    'Payback Period',
                 xlsScenariosTitle:   'Scenario Comparison',
                 xlsScenariosHeaders: ['Metric', 'A — No Action', 'B — Targeted Investment', 'C — Full Automation (80%)'],
                 xlsScenariosRows: [
-                    ['Total Debt ($)',       null, null, null],
-                    ['CAPEX Investment ($)', null, null, null],
-                    ['Net Recovery ($)',     null, null, null],
+                    ['Total Debt ({CC})',       null, null, null],
+                    ['CAPEX Investment ({CC})', null, null, null],
+                    ['Net Recovery ({CC})',     null, null, null],
                     ['Payback Period (mo)', null, null, null],
                 ],
                 xlsDoraTitle:    'DORA Benchmark Context',
@@ -210,6 +210,7 @@
                 xlsSheetLevers:   'Top 3 Levers',
                 xlsSheetScenarios:'Scenarios',
                 xlsSheetDora:     'DORA Benchmark',
+                nbpFooter:        (date) => `NBP exchange rates table A (as of ${date})`,
             },
             pl: {
                 navSubtitle:      'Silnik Efektywności Procesów IT i Strategii Finansowej',
@@ -224,15 +225,15 @@
                 q3desc:   'Czy organizacja utrzymuje jednolity standard dokumentacji procesów, czy wiedza kluczowa jest rozproszona w silosach?',
                 q3min:    '1 — Fragmentaryczna',
                 q3max:    '5 — Zunifikowana',
-                q4label:  '4. Koszt Przestoju ($/h)',
+                q4label:  '4. Koszt Przestoju ({C}/h)',
                 q4desc:   'Jaka jest szacowana strata przychodów lub kara operacyjna za godzinę awarii krytycznego systemu biznesowego?',
                 q5label:  '5. Błędy Ludzkie / Kwartał',
                 q5desc:   'Ile incydentów produkcyjnych lub wycofań zmian w ostatnim kwartale było bezpośrednio spowodowanych błędami ludzkimi?',
-                q6label:  '6. Stawka Łączona ($/h)',
+                q6label:  '6. Stawka Łączona ({C}/h)',
                 q6desc:   'Jaki jest średni koszt godzinowy (stawka łączona) inżyniera, uwzględniając wynagrodzenie brutto, benefity, sprzęt i koszty ogólne?',
                 q7label:  '7. Narzut Zarządzania (godz./mies.)',
                 q7desc:   'Ile godzin miesięcznie menedżerowie poświęcają na koordynację i „gonienie ludzi" z powodu silosowych procesów?',
-                q8label:  '8. Marża Szans ($)',
+                q8label:  '8. Marża Szans ({C})',
                 q8desc:   'Jaka jest prognozowana marża brutto z nowych projektów lub funkcji, które są opóźnione z powodu długu technicznego lub procesowego?',
                 q9label:  '9. Wąskie Gardło Skalowalności (1–5)',
                 q9desc:   'Wpływ na zdolność do skalowania wzrostu?',
@@ -243,7 +244,7 @@
                 efficiencyGain: 'Wzrost Efektywności',
                 teamSizeLabel:  'Liczba Inżynierów',
                 teamSizeHelper: 'Łączna liczba inżynierów dotkniętych długiem procesowym.',
-                capexLabel:     'Jednorazowa Inwestycja CAPEX ($)',
+                capexLabel:     'Jednorazowa Inwestycja CAPEX ({C})',
                 capexHelper:    'Licencje, wdrożenie i koszty szkoleń.',
                 statWasteLabel: 'Roczne Marnotrawstwo OPEX',
                 statRiskLabel:  'Ekspozycja na Ryzyko',
@@ -259,7 +260,7 @@
                 chart1Title: '1. Wodospad: Erozja Pojemności',
                 chart1Sub:   'godz. / rok',
                 chart2Title: '2. Most Długu Strategicznego',
-                chart2Sub:   'finanse $',
+                chart2Sub:   'finanse ({C})',
                 chart3Title: '3. Mapa Ryzyka',
                 chart3Sub:   'analiza przesunięcia',
                 execTitle:    'Podsumowanie Wykonawcze i Dźwignie',
@@ -272,9 +273,9 @@
                 chartTargetState:     'Stan Docelowy',
                 chartEffortAxis:      'Wyciek Wysiłku %',
                 chartRiskAxis:        'Poziom Ryzyka',
-                recAutomation: (val) => `<strong style="color:var(--red)">Dźwignia Automatyzacji:</strong> Wysoki narzut manualny. Portal samoobsługowy może odzyskać <strong>$${val}</strong> kosztów pracy.`,
+                recAutomation: (val) => `<strong style="color:var(--red)">Dźwignia Automatyzacji:</strong> Wysoki narzut manualny. Portal samoobsługowy może odzyskać <strong>${formatCurrency(val)}</strong> kosztów pracy.`,
                 recRisk:        () => `<strong style="color:var(--orange)">Dźwignia Ryzyka:</strong> Krytyczna ekspozycja na ryzyko. Auto-Discovery (CMDB) skraca MTTR i chroni przychody.`,
-                recInnovation: (val) => `<strong style="color:var(--purple)">Dźwignia Innowacji:</strong> Zaległości blokują roadmapę. Ich usunięcie odblokowuje <strong>$${val}</strong> marży projektowej.`,
+                recInnovation: (val) => `<strong style="color:var(--purple)">Dźwignia Innowacji:</strong> Zaległości blokują roadmapę. Ich usunięcie odblokowuje <strong>${formatCurrency(val)}</strong> marży projektowej.`,
                 recVerdict:    (pb)  => `Werdykt Finansowy: Zwrot z inwestycji w ciągu — ${pb} miesięcy.`,
                 leverAutomationTitle:  'Automatyzacja Procesów',
                 leverAutomationDetail: (pct) => `Automatyzacja ${pct}% manualnej pracy w sprincie za pomocą pipeline'ów CI/CD i portali samoobsługowych eliminuje powtarzalne zadania i przyspiesza dostarczanie.`,
@@ -365,11 +366,11 @@
                     ['Q1',  'Wysiłek Manualny',                   null, '%'           ],
                     ['Q2',  'Czas Realizacji',                    null, 'godz.'       ],
                     ['Q3',  'Standard Dokumentacji (1–5)',        null, '/5'          ],
-                    ['Q4',  'Koszt Przestoju',                    null, '$/godz.'     ],
+                    ['Q4',  'Koszt Przestoju',                    null, '{C}/godz.'   ],
                     ['Q5',  'Błędy Ludzkie / Kwartał',           null, 'incydenty'   ],
-                    ['Q6',  'Stawka Łączona',                    null, '$/godz.'     ],
+                    ['Q6',  'Stawka Łączona',                    null, '{C}/godz.'   ],
                     ['Q7',  'Narzut Zarządzania',                null, 'godz./mies.' ],
-                    ['Q8',  'Marża Szans',                       null, '$'           ],
+                    ['Q8',  'Marża Szans',                       null, '{C}'         ],
                     ['Q9',  'Wąskie Gardło Skalowalności (1–5)', null, '/5'          ],
                     ['Q10', 'Rotacja Pracowników',                null, '%/rok'       ],
                 ],
@@ -379,7 +380,7 @@
                 xlsTeamSizeUnit:     'inżynierów',
                 xlsCapex:            'Jednorazowa Inwestycja CAPEX',
                 xlsResultsTitle:     'Process Debt Engine — Wyniki Finansowe',
-                xlsResultsHeaders:   ['Metryka', 'Formuła', 'Wartość ($)'],
+                xlsResultsHeaders:   ['Metryka', 'Formuła', 'Wartość ({CC})'],
                 xlsResultsRows: [
                     ['Roczne Marnotrawstwo OPEX',      '(Godz. manualne/rok + Godz. koordynacji/rok) × Stawka × Zespół', null],
                     ['Ekspozycja na Ryzyko',            'Roczne awarie × Koszt przestoju/godz. × (Ryzyko/5)',             null],
@@ -392,15 +393,15 @@
                 ],
                 xlsResultsMonths:    'miesięcy',
                 xlsLeversTitle:      'Top 3 Dźwigni Finansowych (posortowane wg szacowanego rocznego odzysku)',
-                xlsLeversHeaders:    ['Pozycja', 'Dźwignia', 'Szac. Roczny Odzysk ($)', 'Wysiłek', 'Harmonogram'],
+                xlsLeversHeaders:    ['Pozycja', 'Dźwignia', 'Szac. Roczny Odzysk ({CC})', 'Wysiłek', 'Harmonogram'],
                 xlsLeversTotalLabel: 'Łączny Potencjał Odzysku',
                 xlsLeversPayback:    'Okres Zwrotu',
                 xlsScenariosTitle:   'Porównanie Scenariuszy',
                 xlsScenariosHeaders: ['Metryka', 'A — Brak Działań', 'B — Celowana Inwestycja', 'C — Pełna Automatyzacja (80%)'],
                 xlsScenariosRows: [
-                    ['Całkowity Dług ($)',   null, null, null],
-                    ['Inwestycja CAPEX ($)', null, null, null],
-                    ['Odzysk Netto ($)',     null, null, null],
+                    ['Całkowity Dług ({CC})',   null, null, null],
+                    ['Inwestycja CAPEX ({CC})', null, null, null],
+                    ['Odzysk Netto ({CC})',     null, null, null],
                     ['Okres Zwrotu (mies.)', null, null, null],
                 ],
                 xlsDoraTitle:    'Kontekst Benchmarku DORA',
@@ -415,10 +416,15 @@
                 xlsSheetLevers:    'Top 3 Dźwignie',
                 xlsSheetScenarios: 'Scenariusze',
                 xlsSheetDora:      'Benchmark DORA',
+                nbpFooter:         (date) => `Kursy walut NBP tabela A (z dnia ${date})`,
             }
         };
 
         let currentLang = 'en';
+        let currentCurrency = 'USD';
+        let nbpDate = null;
+        const EXCHANGE_RATES = { USD: 1, EUR: 0.87, PLN: 3.67, GBP: 0.75 };
+        const CURRENCY_SYMBOLS = { USD: '$', EUR: '€', PLN: 'zł', GBP: '£' };
 
         /* ── XSS guard ──────────────────────────────────────────────────────────
            esc() escapes the five HTML-special characters before any string-typed
@@ -438,18 +444,23 @@
         }
 
         function t(key) {
-            return TRANSLATIONS[currentLang][key] ?? TRANSLATIONS.en[key] ?? key;
+            let val = TRANSLATIONS[currentLang][key] ?? TRANSLATIONS.en[key] ?? key;
+            if (typeof val === 'string') {
+                val = val.replace('{C}', CURRENCY_SYMBOLS[currentCurrency])
+                         .replace('{CC}', currentCurrency);
+            }
+            return val;
         }
 
         function applyTranslations() {
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                const val = TRANSLATIONS[currentLang][key];
+                const val = t(key);
                 if (val && typeof val === 'string') el.textContent = val;
             });
             document.querySelectorAll('[data-i18n-formula]').forEach(el => {
                 const key = el.getAttribute('data-i18n-formula');
-                const val = TRANSLATIONS[currentLang][key];
+                const val = t(key);
                 if (val && typeof val === 'string') {
                     el.setAttribute('data-formula', val);
                     el.setAttribute('aria-label', 'Formula: ' + val);
@@ -466,6 +477,53 @@
             applyTranslations();
             updateSliderFills();
             calculate(); // re-render dynamic content (charts labels, levers, rec engine)
+            const footerEl = document.getElementById('nbpFooter');
+            if (footerEl) {
+                const t = TRANSLATIONS[currentLang];
+                footerEl.textContent = nbpDate
+                    ? t.nbpFooter(new Date(nbpDate).toLocaleDateString(currentLang === 'pl' ? 'pl-PL' : 'en-US'))
+                    : t.nbpFooter('—');
+            }
+        }
+
+        function formatCurrency(amountUSD) {
+            const converted = amountUSD * EXCHANGE_RATES[currentCurrency];
+            const locale = currentLang === 'pl' ? 'pl-PL' : 'en-US';
+            return new Intl.NumberFormat(locale, {
+                style: 'currency',
+                currency: currentCurrency,
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            }).format(converted);
+        }
+
+        function usdToCurrency(amountUSD) {
+            return amountUSD * EXCHANGE_RATES[currentCurrency];
+        }
+
+        function currencyToUsd(amount) {
+            return amount / EXCHANGE_RATES[currentCurrency];
+        }
+
+        function toggleCurrency(currency) {
+            if (currency === currentCurrency) return;
+            const prevCurrency = currentCurrency;
+            const monetaryIds = ['q4', 'q6', 'q8', 'capex'];
+            const prevRate = EXCHANGE_RATES[prevCurrency];
+            const newRate = EXCHANGE_RATES[currency];
+            monetaryIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    const valInPrev = parseFloat(el.value) || 0;
+                    const valInUSD = valInPrev / prevRate;
+                    const valInNew = valInUSD * newRate;
+                    el.value = (Math.round(valInNew * 100) / 100).toFixed(2);
+                }
+            });
+            currentCurrency = currency;
+            document.getElementById('currencySelect').value = currency;
+            applyTranslations();
+            calculate();
         }
 
         // ═══════════════════════════════════════════════════════════════
@@ -507,13 +565,13 @@
 
         function calculate() {
             const manualPercent  = clamp('q1');
-            const downCost       = clamp('q4');
+            const downCost       = currencyToUsd(clamp('q4'));
             const failures       = clamp('q5') * 4;
-            const rate           = clamp('q6');
+            const rate           = currencyToUsd(clamp('q6'));
             const managerHrs     = clamp('q7');
-            const opportunityVal = clamp('q8');
+            const opportunityVal = currencyToUsd(clamp('q8'));
             const riskLevel      = clamp('q9');
-            const capex          = clamp('capex');
+            const capex          = currencyToUsd(clamp('capex'));
             const autoLevel      = clamp('autoLevel') / 100;
             const teamSize       = clamp('teamSize');
 
@@ -537,11 +595,11 @@
                 ? capex / Math.max(1, potentialSavings / 12)
                 : Infinity;
 
-            document.getElementById('statWaste').textContent   = '$' + Math.round(cWaste).toLocaleString();
-            document.getElementById('statRisk').textContent    = '$' + Math.round(cRisk).toLocaleString();
-            document.getElementById('statOpp').textContent     = '$' + Math.round(cOpp).toLocaleString();
-            document.getElementById('totalImpact').textContent = '$' + Math.round(totalImpact).toLocaleString();
-            document.getElementById('statNet').textContent     = '$' + Math.round(netDebt).toLocaleString();
+            document.getElementById('statWaste').textContent   = formatCurrency(cWaste);
+            document.getElementById('statRisk').textContent    = formatCurrency(cRisk);
+            document.getElementById('statOpp').textContent     = formatCurrency(cOpp);
+            document.getElementById('totalImpact').textContent = formatCurrency(totalImpact);
+            document.getElementById('statNet').textContent     = formatCurrency(netDebt);
             document.getElementById('q9Val').textContent       = document.getElementById('q9').value;
             document.getElementById('q3Val').textContent       = document.getElementById('q3').value;
 
@@ -567,6 +625,13 @@
             const valDelivery = total - manual - chase;
             const L = TRANSLATIONS[currentLang];
 
+            const sizeCanvas = (id) => {
+                const c = document.getElementById(id);
+                const p = c.parentElement;
+                c.width = p.clientWidth || 300;
+                c.height = p.clientHeight || 200;
+            };
+            sizeCanvas('waterfallChart');
             const ctx1 = document.getElementById('waterfallChart').getContext('2d');
             if (waterfallChart) waterfallChart.destroy();
             waterfallChart = new Chart(ctx1, {
@@ -582,6 +647,7 @@
                 options: { ...CHART_OPTS, indexAxis: 'y' }
             });
 
+            sizeCanvas('bridgeChart');
             const ctx2 = document.getElementById('bridgeChart').getContext('2d');
             if (bridgeChart) bridgeChart.destroy();
             bridgeChart = new Chart(ctx2, {
@@ -597,6 +663,7 @@
                 options: { ...CHART_OPTS }
             });
 
+            sizeCanvas('heatmapChart');
             const ctx3 = document.getElementById('heatmapChart').getContext('2d');
             if (heatmapChart) heatmapChart.destroy();
             heatmapChart = new Chart(ctx3, {
@@ -624,9 +691,9 @@
             // ── Block 5: compact rec list ────────────────────────────────────
             const engine = document.getElementById('recEngine');
             let html = `<ul class="list-disc ml-5 space-y-2">`;
-            if (cw > 100000) html += `<li>${L.recAutomation(Math.round(cw*0.3).toLocaleString())}</li>`;
+            if (cw > 100000) html += `<li>${L.recAutomation(Math.round(cw*0.3))}</li>`;
             if (cr > 50000)  html += `<li>${L.recRisk()}</li>`;
-            if (co > 150000) html += `<li>${L.recInnovation(Math.round(co*0.5).toLocaleString())}</li>`;
+            if (co > 150000) html += `<li>${L.recInnovation(Math.round(co*0.5))}</li>`;
             html += `<li class="mt-3 p-3 font-bold italic" style="background:var(--accent-dim);border-left:4px solid var(--accent);color:var(--accent);border-radius:0 6px 6px 0;">${esc(L.recVerdict(!isFinite(pb) || pb <= 0 ? L.scenInfinity : (pb < 1 ? '< 1' : pb.toFixed(1))))}</li>`;
             engine.innerHTML = html + `</ul>`;
 
@@ -675,7 +742,7 @@
                         <span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:${l.color};">${esc(rankLabels[i])}</span>
                     </div>
                     <p style="font-family:'Space Grotesk',sans-serif;font-size:0.85rem;font-weight:700;color:var(--text-primary);margin:0;">${esc(l.title)}</p>
-                    <p style="font-size:1.6rem;font-weight:900;color:${l.color};margin:0;line-height:1;">$${l.recovery.toLocaleString()}</p>
+                    <p style="font-size:1.6rem;font-weight:900;color:${l.color};margin:0;line-height:1;">${formatCurrency(l.recovery)}</p>
                     <p style="font-size:0.6rem;color:var(--text-muted);margin:0;">${esc(L.estRecovery)}</p>
                     <p style="font-size:0.7rem;color:var(--text-secondary);line-height:1.4;margin:0;">${esc(l.detail)}</p>
                     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:6px;">
@@ -690,7 +757,7 @@
                 <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem;">
                     <div>
                         <p style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin:0 0 4px;">${esc(L.verdictRecoveryLabel)}</p>
-                        <p style="font-size:1.5rem;font-weight:900;color:var(--text-primary);margin:0;">$${totalRecovery.toLocaleString()}</p>
+                        <p style="font-size:1.5rem;font-weight:900;color:var(--text-primary);margin:0;">${formatCurrency(totalRecovery)}</p>
                     </div>
                     <div style="text-align:right;">
                         <p style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin:0 0 4px;">${esc(L.verdictPaybackLabel)}</p>
@@ -818,7 +885,7 @@
 
         function updateScenarios(cWaste, cRisk, cOpp, capex, autoLevel, totalImpact) {
             const L = TRANSLATIONS[currentLang];
-            const fmt = (n) => '$' + Math.round(Math.abs(n)).toLocaleString();
+            const fmt = (n) => formatCurrency(Math.abs(n));
 
             // Helper: compute net recovery and payback for a given autoLevel + capex
             function scenCalc(al, cx) {
@@ -989,11 +1056,15 @@
 
                     // ── raw inputs ───────────────────────────────────────────
                     const q1  = clamp('q1'),  q2  = clamp('q2'),  q3  = clamp('q3'),
-                          q4  = clamp('q4'),  q5  = clamp('q5'),  q6  = clamp('q6'),
-                          q7  = clamp('q7'),  q8  = clamp('q8'),  q9  = clamp('q9'),
+                          q4  = currencyToUsd(clamp('q4')),
+                          q5  = clamp('q5'),
+                          q6  = currencyToUsd(clamp('q6')),
+                          q7  = clamp('q7'),
+                          q8  = currencyToUsd(clamp('q8')),
+                          q9  = clamp('q9'),
                           q10 = clamp('q10');
                     const autoLvl  = clamp('autoLevel') / 100;
-                    const capex    = clamp('capex');
+                    const capex    = currencyToUsd(clamp('capex'));
                     const teamSize = clamp('teamSize');
 
                     // ── derived financials ───────────────────────────────────
@@ -1057,7 +1128,7 @@
                         [L.xlsSimParamsTitle],
                         [L.xlsAutoLevel,  autoLvl * 100, '%'              ],
                         [L.xlsTeamSize,   teamSize,       L.xlsTeamSizeUnit],
-                        [L.xlsCapex,      capex,          '$'              ],
+                        [L.xlsCapex,      capex,          currentCurrency              ],
                     ];
                     const wsInputs = XLSX.utils.aoa_to_sheet(sanitizeSheetData(inputsData));
                     wsInputs['!cols'] = [{wch:6},{wch:38},{wch:18},{wch:14}];
@@ -1295,16 +1366,16 @@
 
             // Gather all questions
             const qKeys = [
-                { label: L.q1label,  desc: L.q1desc,  id: 'q1',  type: 'number' },
-                { label: L.q2label,  desc: L.q2desc,  id: 'q2',  type: 'number' },
-                { label: L.q3label,  desc: L.q3desc,  id: 'q3',  type: 'slider', valId: 'q3Val', min: L.q3min, max: L.q3max },
-                { label: L.q4label,  desc: L.q4desc,  id: 'q4',  type: 'number' },
-                { label: L.q5label,  desc: L.q5desc,  id: 'q5',  type: 'number' },
-                { label: L.q6label,  desc: L.q6desc,  id: 'q6',  type: 'number' },
-                { label: L.q7label,  desc: L.q7desc,  id: 'q7',  type: 'number' },
-                { label: L.q8label,  desc: L.q8desc,  id: 'q8',  type: 'number' },
-                { label: L.q9label,  desc: L.q9desc,  id: 'q9',  type: 'slider', valId: 'q9Val' },
-                { label: L.q10label, desc: L.q10desc, id: 'q10', type: 'number' },
+                { label: t('q1label'),  desc: L.q1desc,  id: 'q1',  type: 'number' },
+                { label: t('q2label'),  desc: L.q2desc,  id: 'q2',  type: 'number' },
+                { label: t('q3label'),  desc: L.q3desc,  id: 'q3',  type: 'slider', valId: 'q3Val', min: L.q3min, max: L.q3max },
+                { label: t('q4label'),  desc: L.q4desc,  id: 'q4',  type: 'number' },
+                { label: t('q5label'),  desc: L.q5desc,  id: 'q5',  type: 'number' },
+                { label: t('q6label'),  desc: L.q6desc,  id: 'q6',  type: 'number' },
+                { label: t('q7label'),  desc: L.q7desc,  id: 'q7',  type: 'number' },
+                { label: t('q8label'),  desc: L.q8desc,  id: 'q8',  type: 'number' },
+                { label: t('q9label'),  desc: L.q9desc,  id: 'q9',  type: 'slider', valId: 'q9Val' },
+                { label: t('q10label'), desc: L.q10desc, id: 'q10', type: 'number' },
             ];
 
             // 2-column layout: left col x=ML, right col x=ML+UW/2+3
@@ -1322,9 +1393,17 @@
                 if (col === 0) { needSpace(rowH + 3); }
 
                 const val = document.getElementById(q.id).value;
+                const monetaryIds = ['q4', 'q6', 'q8'];
                 const displayVal = q.type === 'slider'
                     ? document.getElementById(q.valId).textContent
-                    : val;
+                    : monetaryIds.includes(q.id)
+                        ? new Intl.NumberFormat(currentLang === 'pl' ? 'pl-PL' : 'en-US', {
+                            style: 'currency',
+                            currency: currentCurrency,
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                          }).format(parseFloat(val) || 0)
+                        : val;
 
                 // Card background — ivory surface with warm stone border (matches .q-card)
                 drawRect(x, cy, colW, rowH, [255, 255, 255], [214, 201, 184]);
@@ -1532,9 +1611,11 @@
         function clamp(id) {
             const c = HASH_CONSTRAINTS[id];
             const raw = parseFloat(document.getElementById(id)?.value);
-            if (!c) return isFinite(raw) ? raw : 0;   // unknown id — best-effort
-            if (!isFinite(raw)) return c.min;          // NaN / Infinity → floor
-            return Math.min(c.max, Math.max(c.min, raw));
+            if (!c) return isFinite(raw) ? raw : 0;
+            if (!isFinite(raw)) return c.min;
+            const minInCurrency = c.min * EXCHANGE_RATES[currentCurrency];
+            const maxInCurrency = c.max * EXCHANGE_RATES[currentCurrency];
+            return Math.round(Math.min(maxInCurrency, Math.max(minInCurrency, raw)) * 100) / 100;
         }
 
         function encodeState() {
@@ -1567,7 +1648,8 @@
 
                 const el = document.getElementById(key);
                 if (!el) return;
-                el.value = safe;
+                const monetaryIds = ['q4', 'q6', 'q8', 'capex'];
+                el.value = monetaryIds.includes(key) ? safe.toFixed(2) : safe;
 
                 // Update companion display spans (textContent only — never innerHTML)
                 if (key === 'q3')        document.getElementById('q3Val').textContent        = safe;
@@ -1785,6 +1867,9 @@
             const langButton = document.getElementById('langBtn');
             if (langButton) langButton.addEventListener('click', toggleLang);
 
+            const currencySelect = document.getElementById('currencySelect');
+            if (currencySelect) currencySelect.addEventListener('change', e => toggleCurrency(e.target.value));
+
             const excelBtn = document.getElementById('exportExcelBtn');
             if (excelBtn) excelBtn.addEventListener('click', exportExcel);
 
@@ -1798,13 +1883,43 @@
             });
         });
 
+        async function fetchNbpRates() {
+            try {
+                const res = await fetch('https://api.nbp.pl/api/exchangerates/tables/A/today?format=json');
+                const data = await res.json();
+                const rates = data[0].rates;
+                const getMid = (code) => rates.find(r => r.code === code).mid;
+
+                const plnPerUsd = getMid('USD');
+                const plnPerEur = getMid('EUR');
+                const plnPerGbp = getMid('GBP');
+
+                EXCHANGE_RATES['PLN'] = plnPerUsd;
+                EXCHANGE_RATES['EUR'] = plnPerUsd / plnPerEur;
+                EXCHANGE_RATES['GBP'] = plnPerUsd / plnPerGbp;
+                EXCHANGE_RATES['USD'] = 1;
+
+                nbpDate = data[0].effectiveDate;
+                const footerEl = document.getElementById('nbpFooter');
+                if (footerEl) footerEl.textContent = TRANSLATIONS[currentLang].nbpFooter(new Date(nbpDate).toLocaleDateString(currentLang === 'pl' ? 'pl-PL' : 'en-US'));
+
+                if (currentCurrency !== 'USD') calculate();
+            } catch (e) { console.error('NBP API fetch failed:', e); }
+        }
+
         window.onload = () => {
-            Chart.defaults.color           = DARK.text;
-            Chart.defaults.borderColor     = DARK.grid;
-            Chart.defaults.backgroundColor = DARK.navy;
+            if (typeof Chart !== 'undefined') {
+                Chart.defaults.color           = DARK.text;
+                Chart.defaults.borderColor     = DARK.grid;
+                Chart.defaults.backgroundColor = DARK.navy;
+            }
+            document.getElementById('currencySelect').value = currentCurrency;
             applyTranslations();
+            document.getElementById('nbpFooter').textContent = TRANSLATIONS[currentLang].nbpFooter('—');
             decodeState();
             calculate();
+            requestAnimationFrame(() => { calculate(); });
+            fetchNbpRates();
 
             // ── Mobile PDF export guard (visual) ──────────────────────────────
             if (isMobileBrowser()) {

@@ -6,11 +6,11 @@
     <meta name="referrer" content="no-referrer">
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
-        script-src 'self' 'sha384-H5ABVdujEFJtx24pQYwBcL1GdNxPzCqOHqjU57HarcpfIIOfvj/xiRuFsddTGpwF' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
+        script-src 'self' 'sha384-tsCQS0ke6XMJa8OsPrBXsKsk6Y40fbUxlCfnLi3xWPtgH7TZXjLfXY6pv/Kb0FoU' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
         style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
         font-src 'self' data: https://fonts.gstatic.com;
         img-src 'self' data:;
-        connect-src 'self' data: https://fonts.gstatic.com https://fonts.googleapis.com;
+        connect-src 'self' data: https://fonts.gstatic.com https://fonts.googleapis.com https://api.nbp.pl;
         frame-ancestors 'none';
         form-action 'none';
         base-uri 'self';
@@ -210,6 +210,12 @@
             </div>
             <div class="flex items-center gap-3 flex-wrap justify-end">
                 <button id="copyLinkBtn" data-i18n="copyLinkBtn">⧉ COPY LINK</button>
+                <select id="currencySelect" class="bg-[#0f1a2a] text-[#e2e8f0] border border-[#1e3a52] rounded px-2 py-1 text-xs font-bold uppercase tracking-wider cursor-pointer focus:outline-none focus:border-[#06b6d4]">
+                    <option value="USD">$ USD</option>
+                    <option value="EUR">€ EUR</option>
+                    <option value="PLN">zł PLN</option>
+                    <option value="GBP">£ GBP</option>
+                </select>
                 <button id="langBtn">
                     <span class="flag" id="langFlag">🇵🇱</span>
                     <span id="langLabel">PL</span>
@@ -488,6 +494,10 @@
 
         </div>
     </main>
+
+    <footer class="text-center text-[10px] text-[#475569] py-4 border-t border-[#1e3a52] mt-8">
+        <span id="nbpFooter"></span>
+    </footer>
 
 </body>
 </html>
