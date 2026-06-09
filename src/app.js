@@ -1857,21 +1857,14 @@
 
         async function fetchNbpRates() {
             try {
-                const res = await fetch('https://api.nbp.pl/api/exchangerates/tables/A/?format=json');
-                const [data] = await res.json();
-                const rates = {};
-                data.rates.forEach(r => { rates[r.code] = r.mid; });
+                const res = await fetch('https://api.frankfurter.dev/latest?from=USD&to=PLN,EUR,GBP');
+                const data = await res.json();
+                Object.assign(EXCHANGE_RATES, data.rates);
+                EXCHANGE_RATES['USD'] = 1;
 
-                const usdPln = rates['USD'];
-                if (!usdPln || !rates['EUR'] || !rates['GBP']) return;
-
-                EXCHANGE_RATES['PLN'] = usdPln;
-                EXCHANGE_RATES['EUR'] = usdPln / rates['EUR'];
-                EXCHANGE_RATES['GBP'] = usdPln / rates['GBP'];
-
-                const dateStr = new Date(data.effectiveDate).toLocaleDateString('pl-PL');
+                const dateStr = new Date(data.date).toLocaleDateString('pl-PL');
                 const footerEl = document.getElementById('nbpFooter');
-                if (footerEl) footerEl.textContent = `Kursy walut na podstawie NBP (tabela ${data.table} z dnia ${dateStr})`;
+                if (footerEl) footerEl.textContent = `Kursy walut na podstawie NBP (z dnia ${dateStr})`;
 
                 if (currentCurrency !== 'USD') calculate();
             } catch (e) { /* silent — hardcoded rates remain */ }
