@@ -477,9 +477,11 @@
             applyTranslations();
             updateSliderFills();
             calculate(); // re-render dynamic content (charts labels, levers, rec engine)
-            if (nbpDate) {
-                const footerEl = document.getElementById('nbpFooter');
-                if (footerEl) footerEl.textContent = L.nbpFooter(new Date(nbpDate).toLocaleDateString(currentLang === 'pl' ? 'pl-PL' : 'en-US'));
+            const footerEl = document.getElementById('nbpFooter');
+            if (footerEl) {
+                footerEl.textContent = nbpDate
+                    ? L.nbpFooter(new Date(nbpDate).toLocaleDateString(currentLang === 'pl' ? 'pl-PL' : 'en-US'))
+                    : L.nbpFooter('—');
             }
         }
 
@@ -1901,6 +1903,7 @@
             Chart.defaults.backgroundColor = DARK.navy;
             document.getElementById('currencySelect').value = currentCurrency;
             applyTranslations();
+            document.getElementById('nbpFooter').textContent = L.nbpFooter('—');
             decodeState();
             calculate();
             fetchNbpRates();
