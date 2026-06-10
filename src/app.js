@@ -527,19 +527,19 @@
         }
 
         // ═══════════════════════════════════════════════════════════════
-        // Dark chart defaults
+        // Chart colour palette (warm theme)
         // ═══════════════════════════════════════════════════════════════
         const DARK = {
-            text:   '#94a3b8',
-            grid:   'rgba(30,58,82,0.6)',
-            red:    '#f87171',
-            orange: '#fb923c',
-            amber:  '#fbbf24',
-            green:  '#34d399',
-            cyan:   '#06b6d4',
-            blue:   '#60a5fa',
-            purple: '#c084fc',
-            navy:   '#1e293b',
+            text:   '#4A3F35',
+            grid:   'rgba(214,201,184,0.4)',
+            red:    '#DC2626',
+            orange: '#EA580C',
+            amber:  '#D97706',
+            green:  '#16A34A',
+            cyan:   '#0891B2',
+            blue:   '#2563EB',
+            purple: '#7C3AED',
+            navy:   '#D6C9B8',
         };
 
         
@@ -1227,26 +1227,26 @@
         function resolveCSSVarsOnElement(el) {
             const cs = getComputedStyle(document.documentElement);
             const varMap = {
-                '--bg-base':       cs.getPropertyValue('--bg-base').trim()       || '#0a0f1e',
-                '--bg-surface':    cs.getPropertyValue('--bg-surface').trim()    || '#111827',
-                '--bg-elevated':   cs.getPropertyValue('--bg-elevated').trim()   || '#1a2535',
-                '--bg-hover':      cs.getPropertyValue('--bg-hover').trim()      || '#1f2f45',
-                '--bg-input':      cs.getPropertyValue('--bg-input').trim()      || '#0f1a2a',
-                '--border':        cs.getPropertyValue('--border').trim()        || '#1e3a52',
-                '--border-focus':  cs.getPropertyValue('--border-focus').trim()  || '#06b6d4',
-                '--text-primary':  cs.getPropertyValue('--text-primary').trim()  || '#e2e8f0',
-                '--text-secondary':cs.getPropertyValue('--text-secondary').trim()|| '#94a3b8',
-                '--text-muted':    cs.getPropertyValue('--text-muted').trim()    || '#475569',
-                '--text-label':    cs.getPropertyValue('--text-label').trim()    || '#7dd3fc',
-                '--accent':        cs.getPropertyValue('--accent').trim()        || '#06b6d4',
-                '--accent-bright': cs.getPropertyValue('--accent-bright').trim() || '#22d3ee',
-                '--accent-glow':   cs.getPropertyValue('--accent-glow').trim()   || 'rgba(6,182,212,0.15)',
-                '--accent-dim':    cs.getPropertyValue('--accent-dim').trim()    || 'rgba(6,182,212,0.08)',
-                '--red':           cs.getPropertyValue('--red').trim()           || '#f87171',
-                '--orange':        cs.getPropertyValue('--orange').trim()        || '#fb923c',
-                '--purple':        cs.getPropertyValue('--purple').trim()        || '#c084fc',
-                '--green':         cs.getPropertyValue('--green').trim()         || '#34d399',
-                '--yellow':        cs.getPropertyValue('--yellow').trim()        || '#fbbf24',
+                '--bg-base':       cs.getPropertyValue('--bg-base').trim()       || '#F5F0E8',
+                '--bg-surface':    cs.getPropertyValue('--bg-surface').trim()    || '#FDFAF5',
+                '--bg-elevated':   cs.getPropertyValue('--bg-elevated').trim()   || '#FFFFFF',
+                '--bg-hover':      cs.getPropertyValue('--bg-hover').trim()      || '#F0EAE0',
+                '--bg-input':      cs.getPropertyValue('--bg-input').trim()      || '#FAF7F2',
+                '--border':        cs.getPropertyValue('--border').trim()        || '#D6C9B8',
+                '--border-focus':  cs.getPropertyValue('--border-focus').trim()  || '#B45309',
+                '--text-primary':  cs.getPropertyValue('--text-primary').trim()  || '#1C1410',
+                '--text-secondary':cs.getPropertyValue('--text-secondary').trim()|| '#4A3F35',
+                '--text-muted':    cs.getPropertyValue('--text-muted').trim()    || '#8C7B6E',
+                '--text-label':    cs.getPropertyValue('--text-label').trim()    || '#7C4F22',
+                '--accent':        cs.getPropertyValue('--accent').trim()        || '#B45309',
+                '--accent-bright': cs.getPropertyValue('--accent-bright').trim() || '#92400E',
+                '--accent-glow':   cs.getPropertyValue('--accent-glow').trim()   || 'rgba(180,83,9,0.12)',
+                '--accent-dim':    cs.getPropertyValue('--accent-dim').trim()    || 'rgba(180,83,9,0.07)',
+                '--red':           cs.getPropertyValue('--red').trim()           || '#DC2626',
+                '--orange':        cs.getPropertyValue('--orange').trim()        || '#EA580C',
+                '--purple':        cs.getPropertyValue('--purple').trim()        || '#7C3AED',
+                '--green':         cs.getPropertyValue('--green').trim()         || '#16A34A',
+                '--yellow':        cs.getPropertyValue('--yellow').trim()        || '#CA8A04',
             };
 
             // Walk every element in the subtree and inline computed styles
@@ -1278,15 +1278,6 @@
             });
         }
 
-        /* Undo the inline styles added by resolveCSSVarsOnElement() */
-        function revertCSSVarsOnElement(el, savedStyles) {
-            el.querySelectorAll('*').forEach((node, i) => {
-                if (!(node instanceof HTMLElement)) return;
-                const saved = savedStyles[i];
-                if (saved !== undefined) node.style.cssText = saved;
-            });
-        }
-
         async function exportPDF() {
             // ── Mobile guard ────────────────────────────────────────────────────
             if (isMobileBrowser()) {
@@ -1303,271 +1294,275 @@
             btn.textContent = t('exportGenerating');
             await new Promise(r => setTimeout(r, 120));
 
-            const pdf    = new jsPDF('p', 'mm', 'a4');
-            const PW     = 210, PH = 297;
-            const ML     = 14, MR = 14, MT = 14;
-            const UW     = PW - ML - MR;
-            let   cy     = MT;
-            const L      = TRANSLATIONS[currentLang];
+            try {
+                const pdf    = new jsPDF('p', 'mm', 'a4');
+                const PW     = 210, PH = 297;
+                const ML     = 14, MR = 14, MT = 14;
+                const UW     = PW - ML - MR;
+                let   cy     = MT;
+                const L      = TRANSLATIONS[currentLang];
 
-            // ── helpers ────────────────────────────────────────────────────────
-            function newPage() { pdf.addPage(); cy = MT; }
-            function needSpace(h) { if (cy + h > PH - 10) newPage(); }
-
-            function drawRect(x, y, w, h, fill, stroke) {
-                if (fill)   { pdf.setFillColor(...fill);   pdf.rect(x, y, w, h, 'F'); }
-                if (stroke) { pdf.setDrawColor(...stroke); pdf.setLineWidth(0.3); pdf.rect(x, y, w, h, 'S'); }
-            }
-
-            function wrapText(text, x, maxW, lineH) {
-                // Returns array of lines
-                const words = String(text).split(' ');
-                const lines = [];
-                let cur = '';
-                words.forEach(w => {
-                    const test = cur ? cur + ' ' + w : w;
-                    if (pdf.getTextWidth(test) <= maxW) { cur = test; }
-                    else { if (cur) lines.push(cur); cur = w; }
-                });
-                if (cur) lines.push(cur);
-                return lines;
-            }
-
-            function textBlock(text, x, y, maxW, fontSize, color, bold) {
-                pdf.setFontSize(fontSize);
-                pdf.setFont('helvetica', bold ? 'bold' : 'normal');
-                pdf.setTextColor(...color);
-                const lines = wrapText(text, x, maxW, fontSize * 0.3528);
-                lines.forEach((line, i) => { pdf.text(line, x, y + i * (fontSize * 0.3528 * 1.35)); });
-                return lines.length * (fontSize * 0.3528 * 1.35);
-            }
-
-            // ── PAGE 1: Phase 1 header + all 10 questions ─────────────────────
-            // Colour palette matching the webpage's warm amber/cream theme:
-            // --bg-base: #F5F0E8, --bg-surface: #FDFAF5, --bg-elevated: #FFFFFF
-            // --accent: #B45309 (amber-700), --text-primary: #1C1410
-            // --text-label: #7C4F22, --text-secondary: #4A3F35, --text-muted: #8C7B6E
-            // --border: #D6C9B8
-
-            // Header bar — warm amber-brown
-            drawRect(0, 0, PW, 12, [92, 64, 18]);
-            pdf.setFontSize(9); pdf.setFont('helvetica', 'bold');
-            pdf.setTextColor(253, 245, 230);  // warm cream text
-            pdf.text('STRATEGIC BUSINESS CASE ENGINE', ML, 8);
-            pdf.setTextColor(214, 201, 184); pdf.setFont('helvetica', 'normal');
-            pdf.text(L.navSubtitle.toUpperCase(), PW - MR, 8, { align: 'right' });
-
-            cy = 20;
-            // Section title — amber-700 accent bar
-            drawRect(ML - 2, cy - 4, UW + 4, 10, [180, 83, 9]);
-            pdf.setFontSize(11); pdf.setFont('helvetica', 'bold'); pdf.setTextColor(255, 255, 255);
-            pdf.text(L.phase1Title.toUpperCase(), ML + 2, cy + 3);
-            cy += 14;
-
-            // Gather all questions
-            const qKeys = [
-                { label: t('q1label'),  desc: L.q1desc,  id: 'q1',  type: 'number' },
-                { label: t('q2label'),  desc: L.q2desc,  id: 'q2',  type: 'number' },
-                { label: t('q3label'),  desc: L.q3desc,  id: 'q3',  type: 'slider', valId: 'q3Val', min: L.q3min, max: L.q3max },
-                { label: t('q4label'),  desc: L.q4desc,  id: 'q4',  type: 'number' },
-                { label: t('q5label'),  desc: L.q5desc,  id: 'q5',  type: 'number' },
-                { label: t('q6label'),  desc: L.q6desc,  id: 'q6',  type: 'number' },
-                { label: t('q7label'),  desc: L.q7desc,  id: 'q7',  type: 'number' },
-                { label: t('q8label'),  desc: L.q8desc,  id: 'q8',  type: 'number' },
-                { label: t('q9label'),  desc: L.q9desc,  id: 'q9',  type: 'slider', valId: 'q9Val' },
-                { label: t('q10label'), desc: L.q10desc, id: 'q10', type: 'number' },
-            ];
-
-            // 2-column layout: left col x=ML, right col x=ML+UW/2+3
-            const colW  = UW / 2 - 3;
-            const cols  = [ML, ML + UW / 2 + 3];
-            const rowH  = 38; // fixed height per q-card
-
-            for (let i = 0; i < qKeys.length; i++) {
-                const q   = qKeys[i];
-                const col = i % 2;
-                const x   = cols[col];
-
-                // Start new row: only when left column starts
-                if (col === 0 && i > 0) { cy += rowH + 3; }
-                if (col === 0) { needSpace(rowH + 3); }
-
-                const val = document.getElementById(q.id).value;
-                const monetaryIds = ['q4', 'q6', 'q8'];
-                const displayVal = q.type === 'slider'
-                    ? document.getElementById(q.valId).textContent
-                    : monetaryIds.includes(q.id)
-                        ? new Intl.NumberFormat(currentLang === 'pl' ? 'pl-PL' : 'en-US', {
-                            style: 'currency',
-                            currency: currentCurrency,
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
-                          }).format(parseFloat(val) || 0)
-                        : val;
-
-                // Card background — ivory surface with warm stone border (matches .q-card)
-                drawRect(x, cy, colW, rowH, [255, 255, 255], [214, 201, 184]);
-
-                // Amber-700 left accent bar (matches .q-card:focus-within border-left)
-                drawRect(x, cy, 2, rowH, [180, 83, 9]);
-
-                // Label — saddle-brown (#7C4F22, matches --text-label)
-                pdf.setFontSize(7); pdf.setFont('helvetica', 'bold'); pdf.setTextColor(124, 79, 34);
-                pdf.text(q.label.toUpperCase(), x + 5, cy + 6);
-
-                // Description — warm mid-tone (#8C7B6E, matches --text-muted)
-                pdf.setFontSize(6.2); pdf.setFont('helvetica', 'normal'); pdf.setTextColor(140, 123, 110);
-                const descLines = wrapText(q.desc, x + 5, colW - 10, 6.2 * 0.3528);
-                const maxDescLines = 3;
-                descLines.slice(0, maxDescLines).forEach((line, li) => {
-                    pdf.text(line, x + 5, cy + 12 + li * 4);
-                });
-
-                // Value box — soft input well (#FAF7F2) with warm stone border
-                const vBoxY = cy + rowH - 11;
-                drawRect(x + 5, vBoxY, colW - 10, 8, [250, 247, 242], [214, 201, 184]);
-                // Value text — deep espresso (#1C1410, matches --text-primary)
-                pdf.setFontSize(8); pdf.setFont('helvetica', 'bold'); pdf.setTextColor(28, 20, 16);
-                pdf.text(String(displayVal), x + 8, vBoxY + 5.5);
-
-                // Slider min/max labels — warm mid-tone
-                if (q.type === 'slider' && q.min) {
-                    pdf.setFontSize(5.5); pdf.setFont('helvetica', 'normal'); pdf.setTextColor(140, 123, 110);
-                    pdf.text(q.min, x + 5, vBoxY + 5.5);
-                    pdf.text(q.max, x + colW - 5, vBoxY + 5.5, { align: 'right' });
-                }
-            }
-
-            cy += rowH + 8; // after last row
-
-            // ── Screenshot blocks: investment, stats, charts, exec summary ─────
-            const screenshotIds = ['pdf-block-2','pdf-block-3','scenario-compare','pdf-block-4','pdf-block-5','pdf-block-6'];
-
-            for (const id of screenshotIds) {
-                const el = document.getElementById(id);
-                if (!el || !el.offsetHeight) continue;
-
-                // ── Step 1: swap <input> elements to <div> proxies ──────────────
-                // html2canvas cannot render <input> values visibly on dark backgrounds.
-                const swaps = [];
-                el.querySelectorAll('input').forEach(input => {
-                    const proxy = document.createElement('div');
-                    proxy.style.cssText = window.getComputedStyle(input).cssText;
-                    proxy.style.display = 'flex';
-                    proxy.style.alignItems = 'center';
-                    proxy.style.boxSizing = 'border-box';
-                    proxy.style.color = '#e2e8f0';
-                    proxy.style.fontWeight = '700';
-                    proxy.style.fontSize = '0.875rem';
-                    proxy.style.background = '#0f1a2a';   // resolved hex, no var()
-                    proxy.style.border = '1px solid #1e3a52';
-                    proxy.style.borderRadius = '6px';
-                    proxy.style.padding = '0.5rem 0.75rem';
-                    proxy.style.width = input.offsetWidth + 'px';
-                    proxy.style.height = input.offsetHeight + 'px';
-                    proxy.style.minHeight = '36px';
-                    proxy.textContent = input.value;
-                    input.parentNode.insertBefore(proxy, input);
-                    input.style.display = 'none';
-                    swaps.push({ input, proxy });
-                });
-
-                // ── Step 2: pre-resolve CSS custom properties to hex ─────────────
-                // html2canvas on desktop Chrome/Firefox may fail to resolve
-                // var(--xxx) tokens when reading computed styles inside the canvas
-                // context. We snapshot original inline styles, inline the computed
-                // values explicitly, capture, then restore.
-                const nodeList = Array.from(el.querySelectorAll('*'));
-                const savedStyles = nodeList.map(n =>
-                    n instanceof HTMLElement ? n.style.cssText : undefined
-                );
-                resolveCSSVarsOnElement(el);
-
-                const canvas = await html2canvas(el, {
-                    scale: 2,
-                    useCORS: true,
-                    logging: false,
-                    backgroundColor: '#111827',
-                    windowWidth: 1400,
-                    windowHeight: document.documentElement.scrollHeight,
-                    onclone: async (clonedDoc) => {
-                        // ── 1. Re-inject resolved CSS custom properties ──────────
-                        // Any var() references not caught by the inline-style walk
-                        // (pseudo-elements, Tailwind utilities, etc.) still resolve.
-                        const cs = getComputedStyle(document.documentElement);
-                        const vars = [
-                            '--bg-base','--bg-surface','--bg-elevated','--bg-hover',
-                            '--bg-input','--border','--border-focus','--border-subtle',
-                            '--text-primary','--text-secondary','--text-muted','--text-label',
-                            '--accent','--accent-bright','--accent-glow','--accent-dim',
-                            '--red','--orange','--purple','--green','--yellow',
-                        ];
-                        const decls = vars
-                            .map(v => `${v}:${cs.getPropertyValue(v).trim() || 'inherit'}`)
-                            .join(';');
-
-                        // ── 2. Read fonts from the eager prefetch cache ───────────
-                        // prefetchFontsToBase64() ran at page-load and stored every
-                        // @font-face binary as a base64 data URI in _fontCache.
-                        // Reading from the cache here means:
-                        //   • No network request inside html2canvas's canvas context
-                        //   • Works on corporate networks where fonts.gstatic.com is
-                        //     blocked after the initial page load completes
-                        //   • No CORS restriction — data: URIs are same-origin by spec
-                        const fontFaceCSS = buildFontFaceCSS();
-
-                        // ── 3. Inject combined <style> at top of clone <head> ────
-                        const style = clonedDoc.createElement('style');
-                        style.textContent = `:root{${decls}}\n${fontFaceCSS}`;
-                        clonedDoc.head.insertBefore(style, clonedDoc.head.firstChild);
-
-                        // ── 4. Remove Google Fonts @import from clone ────────────
-                        // Prevents the clone making a live cross-origin request that
-                        // could taint the canvas or race with our embedded fonts.
-                        for (const sheet of clonedDoc.styleSheets) {
-                            try {
-                                for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
-                                    const rule = sheet.cssRules[i];
-                                    if (rule.type === CSSRule.IMPORT_RULE &&
-                                        rule.href?.includes('fonts.googleapis.com')) {
-                                        sheet.deleteRule(i);
-                                    }
-                                }
-                            } catch { /* cross-origin sheet — skip */ }
+                // ── register Inter font (Polish character support) ──────────────
+                let pdfFont = 'helvetica';
+                try {
+                    const [regResp, bldResp] = await Promise.all([
+                        fetch('fonts/Inter-Regular.ttf'),
+                        fetch('fonts/Inter-Bold.ttf')
+                    ]);
+                    if (regResp.ok && bldResp.ok) {
+                        const [regBuf, bldBuf] = await Promise.all([
+                            regResp.arrayBuffer(),
+                            bldResp.arrayBuffer()
+                        ]);
+                        function bufToB64(buf) {
+                            let binary = '';
+                            const bytes = new Uint8Array(buf);
+                            for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+                            return btoa(binary);
                         }
+                        pdf.addFileToVFS('Inter-Regular.ttf', bufToB64(regBuf));
+                        pdf.addFont('Inter-Regular.ttf', 'Inter', 'normal');
+                        pdf.addFileToVFS('Inter-Bold.ttf', bufToB64(bldBuf));
+                        pdf.addFont('Inter-Bold.ttf', 'Inter', 'bold');
+                        pdfFont = 'Inter';
                     }
-                });
-
-                // ── Step 3: restore originals ────────────────────────────────────
-                nodeList.forEach((node, i) => {
-                    if (node instanceof HTMLElement && savedStyles[i] !== undefined) {
-                        node.style.cssText = savedStyles[i];
-                    }
-                });
-                swaps.forEach(({ input, proxy }) => {
-                    input.style.display = '';
-                    proxy.remove();
-                });
-
-                const imgData = canvas.toDataURL('image/png');
-                const bH = (canvas.height * UW) / canvas.width;
-
-                if (bH > PH - MT - 10) {
-                    if (cy > MT) newPage();
-                    const sH = PH - MT - 10;
-                    const sW = (canvas.width * sH) / canvas.height;
-                    pdf.addImage(imgData, 'PNG', ML + (UW - sW) / 2, cy, sW, sH);
-                    newPage();
-                } else {
-                    if (cy + bH > PH - 10) newPage();
-                    pdf.addImage(imgData, 'PNG', ML, cy, UW, bH);
-                    cy += bH + 5;
+                } catch (e) {
+                    console.warn('Could not load Inter font for PDF:', e.message);
                 }
-            }
 
-            pdf.save('Process-Debt-Engine.pdf');
-            btn.disabled = false;
-            btn.textContent = t('exportBtn');
+                // ── helpers ────────────────────────────────────────────────────────
+                function newPage() { pdf.addPage(); cy = MT; }
+                function needSpace(h) { if (cy + h > PH - 10) newPage(); }
+
+                function drawRect(x, y, w, h, fill, stroke) {
+                    if (fill)   { pdf.setFillColor(...fill);   pdf.rect(x, y, w, h, 'F'); }
+                    if (stroke) { pdf.setDrawColor(...stroke); pdf.setLineWidth(0.3); pdf.rect(x, y, w, h, 'S'); }
+                }
+
+                function wrapText(text, x, maxW, lineH) {
+                    const words = String(text).split(' ');
+                    const lines = [];
+                    let cur = '';
+                    words.forEach(w => {
+                        const test = cur ? cur + ' ' + w : w;
+                        if (pdf.getTextWidth(test) <= maxW) { cur = test; }
+                        else { if (cur) lines.push(cur); cur = w; }
+                    });
+                    if (cur) lines.push(cur);
+                    return lines;
+                }
+
+                function textBlock(text, x, y, maxW, fontSize, color, bold) {
+                    pdf.setFontSize(fontSize);
+                    pdf.setFont(pdfFont, bold ? 'bold' : 'normal');
+                    pdf.setTextColor(...color);
+                    const lines = wrapText(text, x, maxW, fontSize * 0.3528);
+                    lines.forEach((line, i) => { pdf.text(line, x, y + i * (fontSize * 0.3528 * 1.35)); });
+                    return lines.length * (fontSize * 0.3528 * 1.35);
+                }
+
+                // ── PAGE 1: Phase 1 header + all 10 questions ─────────────────────
+                // Colour palette matching the webpage's warm amber/cream theme:
+                // --bg-base: #F5F0E8, --bg-surface: #FDFAF5, --bg-elevated: #FFFFFF
+                // --accent: #B45309 (amber-700), --text-primary: #1C1410
+                // --text-label: #7C4F22, --text-secondary: #4A3F35, --text-muted: #8C7B6E
+                // --border: #D6C9B8
+
+                // Header bar — warm amber-brown
+                drawRect(0, 0, PW, 12, [92, 64, 18]);
+                pdf.setFontSize(9); pdf.setFont(pdfFont, 'bold');
+                pdf.setTextColor(253, 245, 230);  // warm cream text
+                pdf.text('STRATEGIC BUSINESS CASE ENGINE', ML, 8);
+                pdf.setTextColor(214, 201, 184); pdf.setFont(pdfFont, 'normal');
+                pdf.text(L.navSubtitle.toUpperCase(), PW - MR, 8, { align: 'right' });
+
+                cy = 20;
+                // Section title — amber-700 accent bar
+                drawRect(ML - 2, cy - 4, UW + 4, 10, [180, 83, 9]);
+                pdf.setFontSize(11); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(255, 255, 255);
+                pdf.text(L.phase1Title.toUpperCase(), ML + 2, cy + 3);
+                cy += 14;
+
+                // Gather all questions
+                const qKeys = [
+                    { label: t('q1label'),  desc: L.q1desc,  id: 'q1',  type: 'number' },
+                    { label: t('q2label'),  desc: L.q2desc,  id: 'q2',  type: 'number' },
+                    { label: t('q3label'),  desc: L.q3desc,  id: 'q3',  type: 'slider', valId: 'q3Val', min: L.q3min, max: L.q3max },
+                    { label: t('q4label'),  desc: L.q4desc,  id: 'q4',  type: 'number' },
+                    { label: t('q5label'),  desc: L.q5desc,  id: 'q5',  type: 'number' },
+                    { label: t('q6label'),  desc: L.q6desc,  id: 'q6',  type: 'number' },
+                    { label: t('q7label'),  desc: L.q7desc,  id: 'q7',  type: 'number' },
+                    { label: t('q8label'),  desc: L.q8desc,  id: 'q8',  type: 'number' },
+                    { label: t('q9label'),  desc: L.q9desc,  id: 'q9',  type: 'slider', valId: 'q9Val' },
+                    { label: t('q10label'), desc: L.q10desc, id: 'q10', type: 'number' },
+                ];
+
+                // 2-column layout: left col x=ML, right col x=ML+UW/2+3
+                const colW  = UW / 2 - 3;
+                const cols  = [ML, ML + UW / 2 + 3];
+                const rowH  = 38;
+
+                for (let i = 0; i < qKeys.length; i++) {
+                    const q   = qKeys[i];
+                    const col = i % 2;
+                    const x   = cols[col];
+
+                    if (col === 0 && i > 0) { cy += rowH + 3; }
+                    if (col === 0) { needSpace(rowH + 3); }
+
+                    const val = document.getElementById(q.id).value;
+                    const monetaryIds = ['q4', 'q6', 'q8'];
+                    const displayVal = q.type === 'slider'
+                        ? document.getElementById(q.valId).textContent
+                        : monetaryIds.includes(q.id)
+                            ? new Intl.NumberFormat(currentLang === 'pl' ? 'pl-PL' : 'en-US', {
+                                style: 'currency',
+                                currency: currentCurrency,
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                              }).format(parseFloat(val) || 0)
+                            : val;
+
+                    drawRect(x, cy, colW, rowH, [255, 255, 255], [214, 201, 184]);
+                    drawRect(x, cy, 2, rowH, [180, 83, 9]);
+
+                    pdf.setFontSize(7); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(124, 79, 34);
+                    pdf.text(q.label.toUpperCase(), x + 5, cy + 6);
+
+                    pdf.setFontSize(6.2); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140, 123, 110);
+                    const descLines = wrapText(q.desc, x + 5, colW - 10, 6.2 * 0.3528);
+                    const maxDescLines = 3;
+                    descLines.slice(0, maxDescLines).forEach((line, li) => {
+                        pdf.text(line, x + 5, cy + 12 + li * 4);
+                    });
+
+                    const vBoxY = cy + rowH - 11;
+                    drawRect(x + 5, vBoxY, colW - 10, 8, [250, 247, 242], [214, 201, 184]);
+                    pdf.setFontSize(8); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(28, 20, 16);
+                    pdf.text(String(displayVal), x + 8, vBoxY + 5.5);
+
+                    if (q.type === 'slider' && q.min) {
+                        pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140, 123, 110);
+                        pdf.text(q.min, x + 5, vBoxY + 5.5);
+                        pdf.text(q.max, x + colW - 5, vBoxY + 5.5, { align: 'right' });
+                    }
+                }
+
+                cy += rowH + 8;
+
+                // ── Screenshot blocks: investment, stats, charts, exec summary ─────
+                const screenshotIds = ['pdf-block-2','pdf-block-3','scenario-compare','pdf-block-4','pdf-block-5','pdf-block-6'];
+
+                for (const id of screenshotIds) {
+                    const el = document.getElementById(id);
+                    if (!el || !el.offsetHeight) continue;
+
+                    const swaps = [];
+                    el.querySelectorAll('input').forEach(input => {
+                        const proxy = document.createElement('div');
+                        proxy.style.cssText = window.getComputedStyle(input).cssText;
+                        proxy.style.display = 'flex';
+                        proxy.style.alignItems = 'center';
+                        proxy.style.boxSizing = 'border-box';
+                        proxy.style.color = '#1C1410';
+                        proxy.style.fontWeight = '700';
+                        proxy.style.fontSize = '0.875rem';
+                        proxy.style.background = '#FAF7F2';
+                        proxy.style.border = '1px solid #D6C9B8';
+                        proxy.style.borderRadius = '6px';
+                        proxy.style.padding = '0.5rem 0.75rem';
+                        proxy.style.width = input.offsetWidth + 'px';
+                        proxy.style.height = input.offsetHeight + 'px';
+                        proxy.style.minHeight = '36px';
+                        proxy.textContent = input.value;
+                        input.parentNode.insertBefore(proxy, input);
+                        input.style.display = 'none';
+                        swaps.push({ input, proxy });
+                    });
+
+                    const nodeList = Array.from(el.querySelectorAll('*'));
+                    const savedStyles = nodeList.map(n =>
+                        n instanceof HTMLElement ? n.style.cssText : undefined
+                    );
+                    resolveCSSVarsOnElement(el);
+
+                    const canvas = await html2canvas(el, {
+                        scale: 2,
+                        useCORS: true,
+                        logging: false,
+                        backgroundColor: '#F5F0E8',
+                        windowWidth: 1400,
+                        windowHeight: document.documentElement.scrollHeight,
+                        onclone: async (clonedDoc) => {
+                            const cs = getComputedStyle(document.documentElement);
+                            const vars = [
+                                '--bg-base','--bg-surface','--bg-elevated','--bg-hover',
+                                '--bg-input','--border','--border-focus','--border-subtle',
+                                '--text-primary','--text-secondary','--text-muted','--text-label',
+                                '--accent','--accent-bright','--accent-glow','--accent-dim',
+                                '--red','--orange','--purple','--green','--yellow',
+                            ];
+                            const decls = vars
+                                .map(v => `${v}:${cs.getPropertyValue(v).trim() || 'inherit'}`)
+                                .join(';');
+
+                            const fontFaceCSS = buildFontFaceCSS();
+
+                            const style = clonedDoc.createElement('style');
+                            style.textContent = `:root{${decls}}\n${fontFaceCSS}`;
+                            clonedDoc.head.insertBefore(style, clonedDoc.head.firstChild);
+
+                            for (const sheet of clonedDoc.styleSheets) {
+                                try {
+                                    for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
+                                        const rule = sheet.cssRules[i];
+                                        if (rule.type === CSSRule.IMPORT_RULE &&
+                                            rule.href?.includes('fonts.googleapis.com')) {
+                                            sheet.deleteRule(i);
+                                        }
+                                    }
+                                } catch { /* cross-origin sheet — skip */ }
+                            }
+                        }
+                    });
+
+                    nodeList.forEach((node, i) => {
+                        if (node instanceof HTMLElement && savedStyles[i] !== undefined) {
+                            node.style.cssText = savedStyles[i];
+                        }
+                    });
+                    swaps.forEach(({ input, proxy }) => {
+                        input.style.display = '';
+                        proxy.remove();
+                    });
+
+                    const imgData = canvas.toDataURL('image/png');
+                    const bH = (canvas.height * UW) / canvas.width;
+
+                    if (bH > PH - MT - 10) {
+                        if (cy > MT) newPage();
+                        const sH = PH - MT - 10;
+                        const sW = (canvas.width * sH) / canvas.height;
+                        pdf.addImage(imgData, 'PNG', ML + (UW - sW) / 2, cy, sW, sH);
+                        newPage();
+                    } else {
+                        if (cy + bH > PH - 10) newPage();
+                        pdf.addImage(imgData, 'PNG', ML, cy, UW, bH);
+                        cy += bH + 5;
+                    }
+                }
+
+                pdf.save('Process-Debt-Engine.pdf');
+            } catch (err) {
+                console.error('PDF export error:', err);
+                const msg = currentLang === 'pl'
+                    ? 'Eksport PDF nie powiódł się: ' + err.message
+                    : 'PDF export failed: ' + err.message;
+                alert(msg);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = t('exportBtn');
+            }
         }
 
         /* ── Hash state security constraints ───────────────────────────────────
@@ -1715,6 +1710,27 @@
         ────────────────────────────────────────────────────────────────────── */
         const FONT_CACHE_KEY = 'fontCache_v1';
         const _fontCache = new Map();
+
+        const _FONT_ALLOWED_FAMILIES = { 'Space Grotesk': true, 'Inter': true };
+        const _FONT_ALLOWED_STYLES   = { 'normal': true, 'italic': true, 'oblique': true };
+        const _FONT_ALLOWED_FMTS     = { 'woff2': true, 'woff': true, 'truetype': true };
+        const _FONT_B64_RE           = /^[A-Za-z0-9+/]+=*$/;
+        const _FONT_B64_MAX_LEN      = 700000;
+
+        function validateFontFace(f) {
+            if (!f || typeof f !== 'object')                          return null;
+            if (!_FONT_ALLOWED_FAMILIES[f.family])                    return null;
+            if (!/^\d+$/.test(String(f.weight)))                      return null;
+            var w = parseInt(f.weight, 10);
+            if (w < 100 || w > 900 || w % 100 !== 0)                 return null;
+            if (!_FONT_ALLOWED_STYLES[f.style])                       return null;
+            if (!_FONT_ALLOWED_FMTS[f.fmt])                           return null;
+            if (typeof f.b64 !== 'string')                            return null;
+            if (f.b64.length === 0 || f.b64.length > _FONT_B64_MAX_LEN) return null;
+            if (!_FONT_B64_RE.test(f.b64))                            return null;
+            return { family: f.family, weight: String(w), style: f.style,
+                     fmt: f.fmt, b64: f.b64 };
+        }
 
         /* Seed _fontCache from localStorage on startup so PDF export works
            immediately even before prefetchFontsToBase64() finishes.
@@ -1909,9 +1925,10 @@
 
         window.onload = () => {
             if (typeof Chart !== 'undefined') {
-                Chart.defaults.color           = DARK.text;
-                Chart.defaults.borderColor     = DARK.grid;
-                Chart.defaults.backgroundColor = DARK.navy;
+                const cs = getComputedStyle(document.documentElement);
+                Chart.defaults.color           = cs.getPropertyValue('--text-secondary').trim() || DARK.text;
+                Chart.defaults.borderColor     = cs.getPropertyValue('--border').trim() || DARK.grid;
+                Chart.defaults.backgroundColor = cs.getPropertyValue('--border').trim() || DARK.navy;
             }
             document.getElementById('currencySelect').value = currentCurrency;
             applyTranslations();
