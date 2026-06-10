@@ -1683,6 +1683,27 @@
         const FONT_CACHE_KEY = 'fontCache_v1';
         const _fontCache = new Map();
 
+        const _FONT_ALLOWED_FAMILIES = { 'Space Grotesk': true, 'Inter': true };
+        const _FONT_ALLOWED_STYLES   = { 'normal': true, 'italic': true, 'oblique': true };
+        const _FONT_ALLOWED_FMTS     = { 'woff2': true, 'woff': true, 'truetype': true };
+        const _FONT_B64_RE           = /^[A-Za-z0-9+/]+=*$/;
+        const _FONT_B64_MAX_LEN      = 700000;
+
+        function validateFontFace(f) {
+            if (!f || typeof f !== 'object')                          return null;
+            if (!_FONT_ALLOWED_FAMILIES[f.family])                    return null;
+            if (!/^\d+$/.test(String(f.weight)))                      return null;
+            var w = parseInt(f.weight, 10);
+            if (w < 100 || w > 900 || w % 100 !== 0)                 return null;
+            if (!_FONT_ALLOWED_STYLES[f.style])                       return null;
+            if (!_FONT_ALLOWED_FMTS[f.fmt])                           return null;
+            if (typeof f.b64 !== 'string')                            return null;
+            if (f.b64.length === 0 || f.b64.length > _FONT_B64_MAX_LEN) return null;
+            if (!_FONT_B64_RE.test(f.b64))                            return null;
+            return { family: f.family, weight: String(w), style: f.style,
+                     fmt: f.fmt, b64: f.b64 };
+        }
+
         /* Seed _fontCache from localStorage on startup so PDF export works
            immediately even before prefetchFontsToBase64() finishes.
            Each entry is passed through validateFontFace() before being stored —
