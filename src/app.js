@@ -1302,6 +1302,34 @@
                 let   cy     = MT;
                 const L      = TRANSLATIONS[currentLang];
 
+                // ── register Inter font (Polish character support) ──────────────
+                let pdfFont = 'helvetica';
+                try {
+                    const [regResp, bldResp] = await Promise.all([
+                        fetch('fonts/Inter-Regular.ttf'),
+                        fetch('fonts/Inter-Bold.ttf')
+                    ]);
+                    if (regResp.ok && bldResp.ok) {
+                        const [regBuf, bldBuf] = await Promise.all([
+                            regResp.arrayBuffer(),
+                            bldResp.arrayBuffer()
+                        ]);
+                        function bufToB64(buf) {
+                            let binary = '';
+                            const bytes = new Uint8Array(buf);
+                            for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+                            return btoa(binary);
+                        }
+                        pdf.addFileToVFS('Inter-Regular.ttf', bufToB64(regBuf));
+                        pdf.addFont('Inter-Regular.ttf', 'Inter', 'normal');
+                        pdf.addFileToVFS('Inter-Bold.ttf', bufToB64(bldBuf));
+                        pdf.addFont('Inter-Bold.ttf', 'Inter', 'bold');
+                        pdfFont = 'Inter';
+                    }
+                } catch (e) {
+                    console.warn('Could not load Inter font for PDF:', e.message);
+                }
+
                 // ── helpers ────────────────────────────────────────────────────────
                 function newPage() { pdf.addPage(); cy = MT; }
                 function needSpace(h) { if (cy + h > PH - 10) newPage(); }
@@ -1326,7 +1354,7 @@
 
                 function textBlock(text, x, y, maxW, fontSize, color, bold) {
                     pdf.setFontSize(fontSize);
-                    pdf.setFont('helvetica', bold ? 'bold' : 'normal');
+                    pdf.setFont(pdfFont, bold ? 'bold' : 'normal');
                     pdf.setTextColor(...color);
                     const lines = wrapText(text, x, maxW, fontSize * 0.3528);
                     lines.forEach((line, i) => { pdf.text(line, x, y + i * (fontSize * 0.3528 * 1.35)); });
@@ -1342,16 +1370,16 @@
 
                 // Header bar — warm amber-brown
                 drawRect(0, 0, PW, 12, [92, 64, 18]);
-                pdf.setFontSize(9); pdf.setFont('helvetica', 'bold');
+                pdf.setFontSize(9); pdf.setFont(pdfFont, 'bold');
                 pdf.setTextColor(253, 245, 230);  // warm cream text
                 pdf.text('STRATEGIC BUSINESS CASE ENGINE', ML, 8);
-                pdf.setTextColor(214, 201, 184); pdf.setFont('helvetica', 'normal');
+                pdf.setTextColor(214, 201, 184); pdf.setFont(pdfFont, 'normal');
                 pdf.text(L.navSubtitle.toUpperCase(), PW - MR, 8, { align: 'right' });
 
                 cy = 20;
                 // Section title — amber-700 accent bar
                 drawRect(ML - 2, cy - 4, UW + 4, 10, [180, 83, 9]);
-                pdf.setFontSize(11); pdf.setFont('helvetica', 'bold'); pdf.setTextColor(255, 255, 255);
+                pdf.setFontSize(11); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(255, 255, 255);
                 pdf.text(L.phase1Title.toUpperCase(), ML + 2, cy + 3);
                 cy += 14;
 
@@ -1398,10 +1426,10 @@
                     drawRect(x, cy, colW, rowH, [255, 255, 255], [214, 201, 184]);
                     drawRect(x, cy, 2, rowH, [180, 83, 9]);
 
-                    pdf.setFontSize(7); pdf.setFont('helvetica', 'bold'); pdf.setTextColor(124, 79, 34);
+                    pdf.setFontSize(7); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(124, 79, 34);
                     pdf.text(q.label.toUpperCase(), x + 5, cy + 6);
 
-                    pdf.setFontSize(6.2); pdf.setFont('helvetica', 'normal'); pdf.setTextColor(140, 123, 110);
+                    pdf.setFontSize(6.2); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140, 123, 110);
                     const descLines = wrapText(q.desc, x + 5, colW - 10, 6.2 * 0.3528);
                     const maxDescLines = 3;
                     descLines.slice(0, maxDescLines).forEach((line, li) => {
@@ -1410,11 +1438,11 @@
 
                     const vBoxY = cy + rowH - 11;
                     drawRect(x + 5, vBoxY, colW - 10, 8, [250, 247, 242], [214, 201, 184]);
-                    pdf.setFontSize(8); pdf.setFont('helvetica', 'bold'); pdf.setTextColor(28, 20, 16);
+                    pdf.setFontSize(8); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(28, 20, 16);
                     pdf.text(String(displayVal), x + 8, vBoxY + 5.5);
 
                     if (q.type === 'slider' && q.min) {
-                        pdf.setFontSize(5.5); pdf.setFont('helvetica', 'normal'); pdf.setTextColor(140, 123, 110);
+                        pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140, 123, 110);
                         pdf.text(q.min, x + 5, vBoxY + 5.5);
                         pdf.text(q.max, x + colW - 5, vBoxY + 5.5, { align: 'right' });
                     }
