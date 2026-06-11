@@ -709,3 +709,113 @@ section h2 {
         padding: 0.35rem 0.6rem;
     }
 }
+
+/* ── Methodology & Sources expandable card ── */
+details.methodology-card {
+    cursor: default;
+}
+details.methodology-card summary {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Space Grotesk', 'DM Sans', 'Nunito Sans', 'Trebuchet MS', ui-rounded, system-ui, sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--accent);
+    user-select: none;
+    padding: 0.1rem 0;
+    list-style: none;
+}
+details.methodology-card summary::-webkit-details-marker {
+    display: none;
+}
+details.methodology-card summary::marker {
+    display: none;
+}
+details.methodology-card summary::before {
+    content: '\25B6';
+    font-size: 0.6rem;
+    transition: transform 0.2s;
+    color: var(--accent);
+    line-height: 1;
+}
+details.methodology-card[open] summary::before {
+    content: '\25BC';
+}
+details.methodology-card[open] summary {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.85rem;
+    margin-bottom: 0;
+}
+
+.methodology-body {
+    padding-top: 1rem;
+}
+.methodology-section {
+    margin-bottom: 1.15rem;
+}
+.methodology-section h4 {
+    font-family: 'Space Grotesk', 'DM Sans', 'Nunito Sans', 'Trebuchet MS', ui-rounded, system-ui, sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 0.35rem;
+}
+.methodology-section p {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    line-height: 1.55;
+    margin: 0 0 0.3rem;
+}
+.methodology-section p strong {
+    font-size: 0.7rem;
+    color: var(--text-label);
+    font-weight: 700;
+}
+.methodology-section code {
+    background: var(--bg-input);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 0.68rem;
+    color: var(--text-primary);
+}
+.methodology-label {
+    font-weight: 700;
+    color: var(--text-label);
+    font-size: 0.7rem;
+}
+.methodology-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.68rem;
+    margin-top: 0.3rem;
+}
+.methodology-table thead th {
+    text-align: left;
+    padding: 0.4rem 0.5rem;
+    color: var(--text-label);
+    font-weight: 700;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.methodology-table tbody td {
+    padding: 0.4rem 0.5rem;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-subtle);
+    vertical-align: top;
+    line-height: 1.5;
+}
+.methodology-table tbody tr:last-child td {
+    border-bottom: none;
+}
+.methodology-footer {
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-subtle);
+}

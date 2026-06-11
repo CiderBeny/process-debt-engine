@@ -493,6 +493,107 @@
             </div>
 
         </div>
+
+        <!-- METHODOLOGY & SOURCES -->
+        <details class="card methodology-card" id="methodologySection">
+            <summary>
+                <span style="font-size:1rem;line-height:1;">📐</span>
+                <span data-i18n="methodologyTitle">Methodology &amp; Sources</span>
+            </summary>
+            <div class="methodology-body">
+
+                <!-- 1 -->
+                <div class="methodology-section">
+                    <h4 data-i18n="methodologyWasteTitle">1. Annual OPEX Waste</h4>
+                    <p><span class="methodology-label" data-i18n="methodologyFormulaLabel">Formula:</span> <code>(Manual hrs/yr + Chase hrs/yr) &times; Blended Rate &times; Team Size</code></p>
+                    <p><span class="methodology-label" data-i18n="methodologyAssumptionsLabel">Assumptions:</span> <span data-i18n="methodologyWasteAssumptions">1,800 productive hours per engineer per year — derived from U.S. Bureau of Labor Statistics American Time Use Survey (2024), which reports full-time employees average 8.1 hours on workdays, and OECD data (2024) calculating ~1,811 actual hours worked per US worker annually after accounting for paid leave, holidays, and sick time.</span></p>
+                    <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyWasteSource">BLS American Time Use Survey 2024 (bls.gov); OECD Average Annual Hours Actually Worked 2024 (oecd.org).</span></p>
+                </div>
+
+                <!-- 2 -->
+                <div class="methodology-section">
+                    <h4 data-i18n="methodologyRiskTitle">2. Risk Exposure</h4>
+                    <p><span class="methodology-label" data-i18n="methodologyFormulaLabel">Formula:</span> <code>Annual failures (Q5 &times; 4) &times; Downtime cost/hr &times; (Risk level / 5)</code></p>
+                    <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyRiskSource">Standard actuarial risk exposure formula (probability &times; impact) consistent with COSO Enterprise Risk Management framework (2017) and NIST Special Publication 800-30 Rev. 1 — Guide for Conducting Risk Assessments.</span></p>
+                </div>
+
+                <!-- 3 -->
+                <div class="methodology-section">
+                    <h4 data-i18n="methodologyOppTitle">3. Opportunity Loss</h4>
+                    <p><span class="methodology-label" data-i18n="methodologyFormulaLabel">Formula:</span> <code>(Opportunity margin &times; 0.25) + (OPEX Waste &times; 1.5)</code></p>
+                    <p><strong>0.25 multiplier (tool estimate):</strong> <span data-i18n="methodologyOppFactor1">Reflects the portion of pipeline project margin conservatively estimated as eroded during the first year of delay due to competitive response, customer churn, or SLA penalties. No single authoritative study isolates this fraction; 0.25 is a conservative floor.</span></p>
+                    <p><strong>1.5 multiplier (tool estimate):</strong> <span data-i18n="methodologyOppFactor2">Accounts for compounding pipeline effects — each delayed project pushes downstream work, multiplying total cost. Exepron ("The True Cost of Delay," 2026) demonstrates that a pipeline cascade multiplier can reach 6&times; where multiple projects share dependent resources. This tool applies 1.5&times; as a conservative minimum.</span></p>
+                    <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyOppSource">Exepron — "The True Cost of Delay" (2026). exepron.com.</span></p>
+                </div>
+
+                <!-- 4 -->
+                <div class="methodology-section">
+                    <h4 data-i18n="methodologyLeverTitle">4. Lever Recovery Rates</h4>
+                    <table class="methodology-table">
+                        <thead>
+                            <tr>
+                                <th data-i18n="methodologyLeverColLever">Lever</th>
+                                <th data-i18n="methodologyLeverColRate">Rate</th>
+                                <th data-i18n="methodologyLeverColSource">Source</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td data-i18n="methodologyLeverAutomation">Process Automation</td>
+                                <td>30%</td>
+                                <td data-i18n="methodologyLeverAutomationSrc">GitLab Forrester Total Economic Impact Study (July 2024): 483% ROI, 400% improvement in developer productivity, 305 hrs/yr saved per developer via testing automation. about.gitlab.com. CircleCI State of Software Delivery 2025/2026: 59% throughput increase driven by automation.</td>
+                            </tr>
+                            <tr>
+                                <td data-i18n="methodologyLeverRisk">Risk &amp; Incident Reduction</td>
+                                <td>60%</td>
+                                <td data-i18n="methodologyLeverRiskSrc">DPR Solutions ServiceNow CMDB Implementation Case Study (2025): 43% MTTR reduction. BMC Helix Discovery Forrester TEI Study: 20% MTTR improvement. Device42 CMDB: 30% faster root-cause identification. Composite: a well-run CMDB + Auto-Discovery programme eliminates ~60% of the premium.</td>
+                            </tr>
+                            <tr>
+                                <td data-i18n="methodologyLeverInnovation">Innovation Runway</td>
+                                <td>50%</td>
+                                <td data-i18n="methodologyLeverInnovationSrc">DORA Accelerate State of DevOps Report 2024 (Google Cloud): teams practising continuous delivery with loosely-coupled architectures achieve 40% higher organisational performance. Conservative midpoint estimate.</td>
+                            </tr>
+                            <tr>
+                                <td data-i18n="methodologyLeverMgmt">Management Efficiency</td>
+                                <td>15%</td>
+                                <td data-i18n="methodologyLeverMgmtSrc">PanDev Metrics (2026): 42% of engineering coding time lost to context switching. TheTab 2025 research: 40% productivity loss, $450B/yr globally, 23 min recovery per interruption. Gerald Weinberg, Quality Software Management (1992): 3 concurrent projects = 40% overhead. These studies establish context-switching loss at 15–40%; the conservative 15% is applied to management coordination overhead.</td>
+                            </tr>
+                            <tr>
+                                <td data-i18n="methodologyLeverTurnover">Retention &amp; Burnout</td>
+                                <td>30%</td>
+                                <td data-i18n="methodologyLeverTurnoverSrc">SHRM Foundation — "Retaining Talent" (2025): total cost of replacing an employee ranges from 50% to 200% of annual salary. SHRM 2025 Benchmarking Reports confirm cost-per-hire averages $5,475 (nonexecutive) and $35,879 (executive). The 30% recovery reflects the portion of turnover cost deemed preventable by reducing manual-toil burnout.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 5 -->
+                <div class="methodology-section">
+                    <h4 data-i18n="methodologyTurnoverTitle">5. Turnover Cost Model</h4>
+                    <p><span class="methodology-label" data-i18n="methodologyFormulaLabel">Formula:</span> <code>Turnover rate &times; 50 engineers &times; $150/hr blended rate &times; 2,000 hrs</code></p>
+                    <p><span class="methodology-label" data-i18n="methodologyAssumptionsLabel">Assumptions:</span> <span data-i18n="methodologyTurnoverAssumptions">The 50-engineer reference and $150/hr rate are organisational defaults aligned with SHRM's total replacement cost framework. Adjust these to match your actual headcount and cost structures.</span></p>
+                    <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyTurnoverSource">SHRM Foundation — "Retaining Talent: A Guide to Analyzing and Managing Employee Turnover" (2025 update). SHRM 2025 Benchmarking Reports, shrm.org/benchmarking.</span></p>
+                </div>
+
+                <!-- 6 -->
+                <div class="methodology-section">
+                    <h4 data-i18n="methodologyDoraTitle">6. DORA Benchmark Thresholds</h4>
+                    <p><span data-i18n="methodologyDoraBody">The four software delivery performance clusters (Elite, High, Medium, Low) correspond to the 2024 Accelerate State of DevOps Report published by Google Cloud's DORA team. Lead time thresholds: Elite &lt;1 day, High 1 day–1 week, Medium 1 week–1 month, Low &gt;1 month. Deployment frequency: Elite On-demand, High daily–weekly, Medium weekly–monthly, Low monthly–biannually. Note: DORA's four official metrics are Deployment Frequency, Lead Time for Changes, Change Failure Rate, and Failed Deployment Recovery Time. The manual-effort and human-error mappings in this tool are an adaptation, not official DORA categories.</span></p>
+                    <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyDoraSource">Google Cloud DORA — Accelerate State of DevOps Report 2024. dora.dev/research/2024/dora-report/</span></p>
+                </div>
+
+                <!-- 7 -->
+                <div class="methodology-section">
+                    <h4 data-i18n="methodologyFxTitle">7. Exchange Rates</h4>
+                    <p><span data-i18n="methodologyFxBody">Live mid rates are fetched from Narodowy Bank Polski (NBP) Table A via api.nbp.pl on page load. Fallback rates if the API is unavailable: 1 USD = 0.87 EUR / 3.67 PLN / 0.75 GBP.</span></p>
+                    <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyFxSource">Narodowy Bank Polski — Table A mid exchange rates. api.nbp.pl.</span></p>
+                </div>
+
+                <p class="methodology-footer" data-i18n="methodologyFooter">Methodology references last updated June 2026. All estimates labelled "tool estimate" should be calibrated against your organisation's own data for greatest accuracy.</p>
+
+            </div>
+        </details>
+
     </main>
 
     <footer class="text-center text-[10px] text-[#475569] py-4 border-t border-[#1e3a52] mt-8">
