@@ -210,6 +210,44 @@
                 xlsSheetLevers:   'Top 3 Levers',
                 xlsSheetScenarios:'Scenarios',
                 xlsSheetDora:     'DORA Benchmark',
+                // ── Methodology & Sources (EN) ──
+                methodologyTitle:              'Methodology & Sources',
+                methodologyFormulaLabel:       'Formula:',
+                methodologyAssumptionsLabel:   'Assumptions:',
+                methodologySourceLabel:        'Source:',
+                methodologyWasteTitle:         '1. Annual OPEX Waste',
+                methodologyWasteAssumptions:   '1,800 productive hours per engineer per year — derived from U.S. Bureau of Labor Statistics American Time Use Survey (2024), which reports full-time employees average 8.1 hours on workdays, and OECD data (2024) calculating ~1,811 actual hours worked per US worker annually after accounting for paid leave, holidays, and sick time.',
+                methodologyWasteSource:        'BLS American Time Use Survey 2024 (bls.gov); OECD Average Annual Hours Actually Worked 2024 (oecd.org).',
+                methodologyRiskTitle:          '2. Risk Exposure',
+                methodologyRiskSource:         'Standard actuarial risk exposure formula (probability × impact) consistent with COSO Enterprise Risk Management framework (2017) and NIST Special Publication 800-30 Rev. 1 — Guide for Conducting Risk Assessments.',
+                methodologyOppTitle:           '3. Opportunity Loss',
+                methodologyOppFactor1:         'Reflects the portion of pipeline project margin conservatively estimated as eroded during the first year of delay due to competitive response, customer churn, or SLA penalties. No single authoritative study isolates this fraction; 0.25 is a conservative floor.',
+                methodologyOppFactor2:         'Accounts for compounding pipeline effects — each delayed project pushes downstream work, multiplying total cost. Exepron ("The True Cost of Delay," 2026) demonstrates that a pipeline cascade multiplier can reach 6× where multiple projects share dependent resources. This tool applies 1.5× as a conservative minimum.',
+                methodologyOppSource:          'Exepron — "The True Cost of Delay" (2026). exepron.com.',
+                methodologyLeverTitle:         '4. Lever Recovery Rates',
+                methodologyLeverColLever:      'Lever',
+                methodologyLeverColRate:       'Rate',
+                methodologyLeverColSource:     'Source',
+                methodologyLeverAutomation:    'Process Automation',
+                methodologyLeverAutomationSrc: 'GitLab Forrester Total Economic Impact Study (July 2024): 483% ROI, 400% improvement in developer productivity, 305 hrs/yr saved per developer via testing automation. about.gitlab.com. CircleCI State of Software Delivery 2025/2026: 59% throughput increase driven by automation.',
+                methodologyLeverRisk:          'Risk & Incident Reduction',
+                methodologyLeverRiskSrc:       'DPR Solutions ServiceNow CMDB Implementation Case Study (2025): 43% MTTR reduction. BMC Helix Discovery Forrester TEI Study: 20% MTTR improvement. Device42 CMDB: 30% faster root-cause identification. Composite: a well-run CMDB + Auto-Discovery programme eliminates ~60% of the premium.',
+                methodologyLeverInnovation:    'Innovation Runway',
+                methodologyLeverInnovationSrc: 'DORA Accelerate State of DevOps Report 2024 (Google Cloud): teams practising continuous delivery with loosely-coupled architectures achieve 40% higher organisational performance. Conservative midpoint estimate.',
+                methodologyLeverMgmt:          'Management Efficiency',
+                methodologyLeverMgmtSrc:       'PanDev Metrics (2026): 42% of engineering coding time lost to context switching. TheTab 2025 research: 40% productivity loss, $450B/yr globally, 23 min recovery per interruption. Gerald Weinberg, Quality Software Management (1992): 3 concurrent projects = 40% overhead. These studies establish context-switching loss at 15–40%; the conservative 15% is applied to management coordination overhead.',
+                methodologyLeverTurnover:      'Retention & Burnout',
+                methodologyLeverTurnoverSrc:   'SHRM Foundation — "Retaining Talent" (2025): total cost of replacing an employee ranges from 50% to 200% of annual salary. SHRM 2025 Benchmarking Reports confirm cost-per-hire averages $5,475 (nonexecutive) and $35,879 (executive). The 30% recovery reflects the portion of turnover cost deemed preventable by reducing manual-toil burnout.',
+                methodologyTurnoverTitle:      '5. Turnover Cost Model',
+                methodologyTurnoverAssumptions:'The 50-engineer reference and $150/hr rate are organisational defaults aligned with SHRM\'s total replacement cost framework. Adjust these to match your actual headcount and cost structures.',
+                methodologyTurnoverSource:     'SHRM Foundation — "Retaining Talent: A Guide to Analyzing and Managing Employee Turnover" (2025 update). SHRM 2025 Benchmarking Reports, shrm.org/benchmarking.',
+                methodologyDoraTitle:          '6. DORA Benchmark Thresholds',
+                methodologyDoraBody:           'The four software delivery performance clusters (Elite, High, Medium, Low) correspond to the 2024 Accelerate State of DevOps Report published by Google Cloud\'s DORA team. Lead time thresholds: Elite <1 day, High 1 day–1 week, Medium 1 week–1 month, Low >1 month. Deployment frequency: Elite On-demand, High daily–weekly, Medium weekly–monthly, Low monthly–biannually. Note: DORA\'s four official metrics are Deployment Frequency, Lead Time for Changes, Change Failure Rate, and Failed Deployment Recovery Time. The manual-effort and human-error mappings in this tool are an adaptation, not official DORA categories.',
+                methodologyDoraSource:         'Google Cloud DORA — Accelerate State of DevOps Report 2024. dora.dev/research/2024/dora-report/',
+                methodologyFxTitle:            '7. Exchange Rates',
+                methodologyFxBody:             'Live mid rates are fetched from Narodowy Bank Polski (NBP) Table A via api.nbp.pl on page load. Fallback rates if the API is unavailable: 1 USD = 0.87 EUR / 3.67 PLN / 0.75 GBP.',
+                methodologyFxSource:           'Narodowy Bank Polski — Table A mid exchange rates. api.nbp.pl.',
+                methodologyFooter:             'Methodology references last updated June 2026. All estimates labelled "tool estimate" should be calibrated against your organisation\'s own data for greatest accuracy.',
                 nbpFooter:        (date) => `NBP exchange rates table A (as of ${date})`,
             },
             pl: {
@@ -416,6 +454,44 @@
                 xlsSheetLevers:    'Top 3 Dźwignie',
                 xlsSheetScenarios: 'Scenariusze',
                 xlsSheetDora:      'Benchmark DORA',
+                // ── Methodology & Sources (PL) ──
+                methodologyTitle:              'Metodologia i Źródła',
+                methodologyFormulaLabel:       'Wzór:',
+                methodologyAssumptionsLabel:   'Założenia:',
+                methodologySourceLabel:        'Źródło:',
+                methodologyWasteTitle:         '1. Roczne Marnotrawstwo OPEX',
+                methodologyWasteAssumptions:   '1 800 godzin produktywnych na inżyniera rocznie — na podstawie badania American Time Use Survey 2024 (U.S. Bureau of Labor Statistics), które podaje, że pełnoetatowi pracownicy pracują średnio 8,1 godziny dziennie, oraz danych OECD (2024) obliczających ~1 811 faktycznie przepracowanych godzin rocznie po uwzględnieniu urlopów, świąt i zwolnień lekarskich.',
+                methodologyWasteSource:        'BLS American Time Use Survey 2024 (bls.gov); OECD Average Annual Hours Actually Worked 2024 (oecd.org).',
+                methodologyRiskTitle:          '2. Ekspozycja na Ryzyko',
+                methodologyRiskSource:         'Standardowy wzór na ekspozycję na ryzyko aktuarialne (prawdopodobieństwo × wpływ) zgodny z ramami COSO Enterprise Risk Management (2017) i NIST Special Publication 800-30 Rev. 1 — Guide for Conducting Risk Assessments.',
+                methodologyOppTitle:           '3. Utrata Szans',
+                methodologyOppFactor1:         'Odzwierciedla część marży projektowej, która według konserwatywnych szacunków ulega erozji w pierwszym roku opóźnienia z powodu reakcji konkurencji, utraty klientów lub kar SLA. Żadne pojedyncze autorytatywne badanie nie określa tego ułamka; 0,25 to konserwatywne minimum.',
+                methodologyOppFactor2:         'Uwzględnia kaskadowe efekty w pipeline — każdy opóźniony projekt przesuwa pracę w dół strumienia, mnożąc całkowity koszt. Exepron ("The True Cost of Delay," 2026) pokazuje, że mnożnik kaskady może osiągnąć 6×, gdy wiele projektów współdzieli zasoby. To narzędzie stosuje 1,5× jako konserwatywne minimum.',
+                methodologyOppSource:          'Exepron — "The True Cost of Delay" (2026). exepron.com.',
+                methodologyLeverTitle:         '4. Współczynniki Dźwigni',
+                methodologyLeverColLever:      'Dźwignia',
+                methodologyLeverColRate:       'Współczynnik',
+                methodologyLeverColSource:     'Źródło',
+                methodologyLeverAutomation:    'Automatyzacja Procesów',
+                methodologyLeverAutomationSrc: 'GitLab Forrester Total Economic Impact Study (lipiec 2024): 483% ROI, 400% wzrost produktywności deweloperów, 305 godz./rok zaoszczędzonych na automatyzacji testów. about.gitlab.com. CircleCI State of Software Delivery 2025/2026: 59% wzrost przepustowości dzięki automatyzacji.',
+                methodologyLeverRisk:          'Redukcja Ryzyka i Incydentów',
+                methodologyLeverRiskSrc:       'DPR Solutions ServiceNow CMDB Case Study (2025): 43% redukcja MTTR. BMC Helix Discovery Forrester TEI: 20% poprawa MTTR. Device42 CMDB: 30% szybsza identyfikacja przyczyn źródłowych. Złożenie: dobrze zarządzany CMDB + Auto-Discovery eliminuje ~60% składek ryzyka.',
+                methodologyLeverInnovation:    'Przestrzeń na Innowacje',
+                methodologyLeverInnovationSrc: 'DORA Accelerate State of DevOps Report 2024 (Google Cloud): zespoły stosujące ciągłe dostarczanie z luźno powiązanymi architekturami osiągają 40% wyższą wydajność organizacyjną. Konserwatywna estymacja środkowa.',
+                methodologyLeverMgmt:          'Efektywność Zarządzania',
+                methodologyLeverMgmtSrc:       'PanDev Metrics (2026): 42% czasu programistów tracone na przełączanie kontekstu. TheTab 2025: 40% utrata produktywności, 450 mld $/r globalnie, 23 min odzysku na przerwę. Gerald Weinberg, Quality Software Management (1992): 3 projekty równocześnie = 40% narzutu. Konserwatywne 15% zastosowane do narzutu koordynacji zarządzania.',
+                methodologyLeverTurnover:      'Retencja i Wypalenie',
+                methodologyLeverTurnoverSrc:   'SHRM Foundation — "Retaining Talent" (2025): całkowity koszt zastąpienia pracownika wynosi od 50% do 200% rocznego wynagrodzenia. SHRM 2025 Benchmarking Reports: średni koszt zatrudnienia to $5 475 (niekierowniczy) i $35 879 (kierowniczy). 30% odzysku odzwierciedla część kosztów rotacji możliwą do uniknięcia poprzez redukcję wypalenia spowodowanego pracą manualną.',
+                methodologyTurnoverTitle:      '5. Model Kosztów Rotacji',
+                methodologyTurnoverAssumptions:'Referencyjne 50 inżynierów i stawka $150/godz. to domyślne wartości organizacyjne zgodne z ramami kosztów zastąpienia SHRM. Dostosuj je do rzeczywistej liczby pracowników i struktur kosztów.',
+                methodologyTurnoverSource:     'SHRM Foundation — "Retaining Talent: A Guide to Analyzing and Managing Employee Turnover" (aktualizacja 2025). SHRM 2025 Benchmarking Reports, shrm.org/benchmarking.',
+                methodologyDoraTitle:          '6. Progi Benchmarku DORA',
+                methodologyDoraBody:           'Cztery klastry wydajności dostarczania oprogramowania (Elita, Wysoki, Średni, Niski) odpowiadają raportowi Accelerate State of DevOps 2024 opublikowanemu przez zespół DORA Google Cloud. Progi czasu realizacji: Elita <1 dzień, Wysoki 1 dzień–1 tydzień, Średni 1 tydzień–1 miesiąc, Niski >1 miesiąc. Częstotliwość wdrożeń: Elita na żądanie, Wysoki codziennie–tygodniowo, Średni tygodniowo–miesięcznie, Niski miesięcznie–półrocznie. Uwaga: cztery oficjalne metryki DORA to częstotliwość wdrożeń, czas realizacji zmian, wskaźnik awaryjności zmian i czas odtworzenia po awarii. Mapowanie wysiłku manualnego i błędów ludzkich w tym narzędziu jest adaptacją, a nie oficjalnymi kategoriami DORA.',
+                methodologyDoraSource:         'Google Cloud DORA — Accelerate State of DevOps Report 2024. dora.dev/research/2024/dora-report/',
+                methodologyFxTitle:            '7. Kursy Walut',
+                methodologyFxBody:             'Kursy średnie są pobierane z tabeli A Narodowego Banku Polskiego (NBP) przez api.nbp.pl przy ładowaniu strony. Kursy zastępcze w przypadku braku API: 1 USD = 0,87 EUR / 3,67 PLN / 0,75 GBP.',
+                methodologyFxSource:           'Narodowy Bank Polski — Tabela A kursów średnich. api.nbp.pl.',
+                methodologyFooter:             'Źródła metodologiczne aktualizowane w czerwcu 2026. Wszystkie szacunki oznaczone "tool estimate" należy skalibrować na podstawie danych własnej organizacji dla największej dokładności.',
                 nbpFooter:         (date) => `Kursy walut NBP tabela A (z dnia ${date})`,
             }
         };
@@ -524,6 +600,13 @@
             document.getElementById('currencySelect').value = currency;
             applyTranslations();
             calculate();
+            const footerEl = document.getElementById('nbpFooter');
+            if (footerEl) {
+                const t = TRANSLATIONS[currentLang];
+                footerEl.textContent = nbpDate
+                    ? t.nbpFooter(new Date(nbpDate).toLocaleDateString(currentLang === 'pl' ? 'pl-PL' : 'en-US'))
+                    : t.nbpFooter('—');
+            }
         }
 
         // ═══════════════════════════════════════════════════════════════
