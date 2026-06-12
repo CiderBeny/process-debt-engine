@@ -560,7 +560,7 @@
                 const t = TRANSLATIONS[currentLang];
                 footerEl.textContent = nbpDate
                     ? t.nbpFooter(new Date(nbpDate).toLocaleDateString(currentLang === 'pl' ? 'pl-PL' : 'en-US'))
-                    : t.nbpFooter('—');
+                    : t.nbpUnavailable;
             }
         }
 
@@ -607,7 +607,7 @@
                 const t = TRANSLATIONS[currentLang];
                 footerEl.textContent = nbpDate
                     ? t.nbpFooter(new Date(nbpDate).toLocaleDateString(currentLang === 'pl' ? 'pl-PL' : 'en-US'))
-                    : t.nbpFooter('—');
+                    : t.nbpUnavailable;
             }
         }
 
@@ -2030,7 +2030,7 @@
             }
             document.getElementById('currencySelect').value = currentCurrency;
             applyTranslations();
-            document.getElementById('nbpFooter').textContent = TRANSLATIONS[currentLang].nbpFooter('—');
+            document.getElementById('nbpFooter').textContent = TRANSLATIONS[currentLang].nbpUnavailable;
             decodeState();
             calculate();
             requestAnimationFrame(() => { calculate(); });
