@@ -249,6 +249,7 @@
                 methodologyFxSource:           'Narodowy Bank Polski — Table A mid exchange rates. api.nbp.pl.',
                 methodologyFooter:             'Methodology references last updated June 2026. All estimates labelled "tool estimate" should be calibrated against your organisation\'s own data for greatest accuracy.',
                 nbpFooter:        (date) => `NBP exchange rates table A (as of ${date})`,
+                nbpUnavailable:   'NBP exchange rates table A (unavailable — using fallback rates)',
             },
             pl: {
                 navSubtitle:      'Silnik Efektywności Procesów IT i Strategii Finansowej',
@@ -493,6 +494,7 @@
                 methodologyFxSource:           'Narodowy Bank Polski — Tabela A kursów średnich. api.nbp.pl.',
                 methodologyFooter:             'Źródła metodologiczne aktualizowane w czerwcu 2026. Wszystkie szacunki oznaczone "tool estimate" należy skalibrować na podstawie danych własnej organizacji dla największej dokładności.',
                 nbpFooter:         (date) => `Kursy walut NBP tabela A (z dnia ${date})`,
+                nbpUnavailable:    'Kursy walut NBP tabela A (niedostępna — użyto kursów zastępczych)',
             }
         };
 
@@ -2012,7 +2014,11 @@
                 if (footerEl) footerEl.textContent = TRANSLATIONS[currentLang].nbpFooter(new Date(nbpDate).toLocaleDateString(currentLang === 'pl' ? 'pl-PL' : 'en-US'));
 
                 if (currentCurrency !== 'USD') calculate();
-            } catch (e) { console.error('NBP API fetch failed:', e); }
+            } catch (e) {
+                console.error('NBP API fetch failed:', e);
+                const footerEl = document.getElementById('nbpFooter');
+                if (footerEl) footerEl.textContent = TRANSLATIONS[currentLang].nbpUnavailable;
+            }
         }
 
         window.onload = () => {
