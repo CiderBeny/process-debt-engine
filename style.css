@@ -439,6 +439,11 @@ section h2 {
 }
 #pdf-block-3 .card:hover::before { opacity: 1; }
 
+#pdf-block-3 .stat-value {
+  font-size: clamp(0.75rem, 2.5vw, 1.875rem) !important;
+  overflow-wrap: break-word;
+}
+
 /* Override Tailwind color utilities for stat values */
 #statWaste   { color: var(--red)    !important; }
 #statRisk    { color: var(--orange) !important; }

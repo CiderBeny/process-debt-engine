@@ -379,35 +379,35 @@
                         <p class="label" data-i18n="statWasteLabel">Annual OPEX Waste</p>
                         <span class="formula-tip" tabindex="0" role="button" data-formula="(Manual hrs/yr + Manager chase hrs/yr) × Blended Rate × Team Size" aria-label="Formula: (Manual hrs/yr + Manager chase hrs/yr) × Blended Rate × Team Size" data-i18n-formula="formulaWaste">ⓘ</span>
                     </div>
-                    <p class="text-3xl font-black mt-1" id="statWaste">$0</p>
+                    <p class="text-3xl font-black mt-1 stat-value" id="statWaste">$0</p>
                 </div>
                 <div class="card border-l-4 border-l-orange-500">
                     <div class="label-row">
                         <p class="label" data-i18n="statRiskLabel">Risk Exposure</p>
                         <span class="formula-tip" tabindex="0" role="button" data-formula="Annual failures × Downtime cost/hr × (Risk level / 5)" aria-label="Formula: Annual failures × Downtime cost/hr × (Risk level / 5)" data-i18n-formula="formulaRisk">ⓘ</span>
                     </div>
-                    <p class="text-3xl font-black mt-1" id="statRisk">$0</p>
+                    <p class="text-3xl font-black mt-1 stat-value" id="statRisk">$0</p>
                 </div>
                 <div class="card border-l-4 border-l-purple-600">
                     <div class="label-row">
                         <p class="label" data-i18n="statOppLabel">Opportunity Loss</p>
                         <span class="formula-tip" tabindex="0" role="button" data-formula="(Opportunity margin × 0.25) + (OPEX Waste × 1.5)" aria-label="Formula: (Opportunity margin × 0.25) + (OPEX Waste × 1.5)" data-i18n-formula="formulaOpp">ⓘ</span>
                     </div>
-                    <p class="text-3xl font-black mt-1" id="statOpp">$0</p>
+                    <p class="text-3xl font-black mt-1 stat-value" id="statOpp">$0</p>
                 </div>
                 <div class="card bg-slate-900">
                     <div class="label-row">
                         <p class="label" data-i18n="statTotalLabel">Total Debt Impact</p>
                         <span class="formula-tip" tabindex="0" role="button" data-formula="OPEX Waste + Risk Exposure + Opportunity Loss" aria-label="Formula: OPEX Waste + Risk Exposure + Opportunity Loss" data-i18n-formula="formulaTotal">ⓘ</span>
                     </div>
-                    <p class="text-3xl font-black mt-1" id="totalImpact">$0</p>
+                    <p class="text-3xl font-black mt-1 stat-value" id="totalImpact">$0</p>
                 </div>
                 <div class="card border-l-4 border-l-green-600">
                     <div class="label-row">
                         <p class="label" data-i18n="statNetLabel">Net Debt After Investment</p>
                         <span class="formula-tip" tabindex="0" role="button" data-formula="Total Debt Impact − CAPEX Investment" aria-label="Formula: Total Debt Impact − CAPEX Investment" data-i18n-formula="formulaNet">ⓘ</span>
                     </div>
-                    <p class="text-3xl font-black mt-1" id="statNet">$0</p>
+                    <p class="text-3xl font-black mt-1 stat-value" id="statNet">$0</p>
                     <span class="helper-text" data-i18n="statNetHelper">Total impact minus CAPEX</span>
                 </div>
             </div>
