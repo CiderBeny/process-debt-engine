@@ -1534,11 +1534,11 @@
                 cy += rowH + 8;
 
                 // ── Screenshot blocks: investment, stats, charts, exec summary ─────
-                const screenshotIds = ['pdf-block-2','pdf-block-3','scenario-compare','pdf-block-4','pdf-block-5','pdf-block-6'];
+                const mainIds = ['pdf-block-2','pdf-block-3','scenario-compare','pdf-block-4','pdf-block-5','pdf-block-6'];
 
-                for (const id of screenshotIds) {
+                async function captureBlock(id) {
                     const el = document.getElementById(id);
-                    if (!el || !el.offsetHeight) continue;
+                    if (!el || !el.offsetHeight) return;
 
                     const swaps = [];
                     el.querySelectorAll('input').forEach(input => {
@@ -1634,6 +1634,15 @@
                         cy += bH + 5;
                     }
                 }
+
+                for (const id of mainIds) await captureBlock(id);
+
+                // ── Methodology & Sources on fresh page ─────
+                newPage();
+                const methodologySection = document.getElementById('methodologySection');
+                if (methodologySection) methodologySection.open = true;
+                const methodologyIds = ['methodology-header','methodology-1','methodology-2','methodology-3','methodology-4','methodology-5','methodology-6','methodology-7','methodology-footer'];
+                for (const id of methodologyIds) await captureBlock(id);
 
                 pdf.save('Process-Debt-Engine.pdf');
             } catch (err) {
