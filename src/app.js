@@ -544,9 +544,7 @@
             LEVER_MANAGEMENT:          0.15,   // Context-switch studies (PanDev 2026)
             LEVER_TURNOVER:            0.3,    // SHRM Foundation 2025
 
-            // ── Turnover default model ──
-            TURNOVER_REF_TEAM:         50,     // engineers (SHRM framework)
-            TURNOVER_REF_RATE:         150,    // $/hr (SHRM framework)
+            // ── Turnover default annual hours ──
             TURNOVER_REF_HOURS:        2000,   // hrs/yr (SHRM framework)
 
             // ── Risk normalisation ──
@@ -761,7 +759,7 @@
             updateCharts(totalAnnualHrs, manualAnnualHrs, chasingAnnualHrs, cWaste, capex, potentialSavings, riskLevel, manualPercent, autoLevel);
             updateRecs(cWaste, cRisk, cOppDirect, cCascade, paybackMonths);
             updateDoraBenchmark();
-            updateScenarios(cWaste, cRisk, capex, autoLevel, totalImpact);
+            updateScenarios(cWaste, cRisk, cCascade, capex, autoLevel, totalImpact);
         }
 
         const CHART_OPTS = {
@@ -860,7 +858,9 @@
 
             const turnover     = parseFloat(document.getElementById('q10').value) || 0;
             const manualPct    = parseFloat(document.getElementById('q1').value)  || 0;
-            const turnoverCost = (turnover / 100) * COEFFICIENTS.TURNOVER_REF_TEAM * COEFFICIENTS.TURNOVER_REF_RATE * COEFFICIENTS.TURNOVER_REF_HOURS;
+            const teamSize     = parseFloat(document.getElementById('teamSize').value) || 1;
+            const rate         = currencyToUsd(parseFloat(document.getElementById('q6').value) || 0);
+            const turnoverCost = (turnover / 100) * teamSize * rate * COEFFICIENTS.TURNOVER_REF_HOURS;
 
             const effortMap = {
                 [L.effortLow]:    'var(--green)',
@@ -873,7 +873,7 @@
                 { key:'risk',       title: L.leverRiskTitle,       recovery: Math.round(cr * COEFFICIENTS.LEVER_RISK),        effort: L.effortLow,    timeline: '1–2 ' + L.verdictPaybackUnit, color:'var(--orange)', icon: ICONS.risk,       detail: L.leverRiskDetail() },
                 { key:'innovation', title: L.leverInnovationTitle, recovery: Math.round((co + cc) * COEFFICIENTS.LEVER_INNOVATION), effort: L.effortHigh, timeline: '3–6 ' + L.verdictPaybackUnit, color:'var(--purple)', icon: ICONS.innovation, detail: L.leverInnovationDetail() },
                 { key:'mgmt',       title: L.leverMgmtTitle,       recovery: Math.round(cw * COEFFICIENTS.LEVER_MANAGEMENT), effort: L.effortLow,    timeline: '1 '   + L.verdictPaybackUnit,  color:'var(--cyan)',   icon: ICONS.mgmt,       detail: L.leverMgmtDetail() },
-                { key:'turnover',   title: L.leverTurnoverTitle,   recovery: Math.round(turnoverCost*0.3),effort: L.effortMedium,timeline: '3–5 ' + L.verdictPaybackUnit, color:'var(--green)',  icon: ICONS.turnover,   detail: L.leverTurnoverDetail() },
+                { key:'turnover',   title: L.leverTurnoverTitle,   recovery: Math.round(turnoverCost * COEFFICIENTS.LEVER_TURNOVER), effort: L.effortMedium,timeline: '3–5 ' + L.verdictPaybackUnit, color:'var(--green)',  icon: ICONS.turnover,   detail: L.leverTurnoverDetail() },
             ];
 
             levers.sort((a, b) => b.recovery - a.recovery);
@@ -1035,13 +1035,13 @@
             return { band: L.doraBandLow, color: 'var(--red)' };
         }
 
-        function updateScenarios(cWaste, cRisk, capex, autoLevel, totalImpact) {
+        function updateScenarios(cWaste, cRisk, cCascade, capex, autoLevel, totalImpact) {
             const L = TRANSLATIONS[currentLang];
             const fmt = (n) => formatCurrency(Math.abs(n));
 
             // Helper: compute net recovery and payback for a given autoLevel + capex
             function scenCalc(al, cx) {
-                const savings = (cWaste + cRisk) * al;
+                const savings = (cWaste + cRisk + cCascade) * al;
                 const net     = savings - cx;
                 const pb      = savings > 0 ? (cx / (savings / COEFFICIENTS.MONTHS_PER_YEAR)) : Infinity;
                 return { savings, net, pb };
@@ -1139,9 +1139,9 @@
 
         function updateDoraBenchmark() {
             const L = TRANSLATIONS[currentLang];
-            const q1 = parseFloat(document.getElementById('q1').value) || 0;
-            const q2 = parseFloat(document.getElementById('q2').value) || 0;
-            const q5 = parseFloat(document.getElementById('q5').value) || 0;
+            const q1 = clamp('q1');
+            const q2 = clamp('q2');
+            const q5 = clamp('q5');
 
             const rows = [
                 {
@@ -1238,7 +1238,7 @@
                         : Infinity;
 
                     // ── turnover / lever calcs (Bug 2 fix: use L for titles & effort) ──
-                    const turnoverCost = (q10 / 100) * COEFFICIENTS.TURNOVER_REF_TEAM * COEFFICIENTS.TURNOVER_REF_RATE * COEFFICIENTS.TURNOVER_REF_HOURS;
+                    const turnoverCost = (q10 / 100) * teamSize * q6 * COEFFICIENTS.TURNOVER_REF_HOURS;
                     const leversRaw = [
                         { title: L.leverAutomationTitle, recovery: Math.round(cWaste * COEFFICIENTS.LEVER_AUTOMATION), effort: L.effortMedium, timeline: '2–4 mo' },
                         { title: L.leverRiskTitle,        recovery: Math.round(cRisk  * COEFFICIENTS.LEVER_RISK),       effort: L.effortLow,    timeline: '1–2 mo' },
@@ -1252,10 +1252,10 @@
 
                     // ── scenario calcs ───────────────────────────────────────
                     const scenA_net  = totalImpact;
-                    const scenB_sav  = (cWaste + cRisk) * autoLvl;
+                    const scenB_sav  = (cWaste + cRisk + cCascade) * autoLvl;
                     const scenB_net  = scenB_sav - capex;
                     const scenB_pb   = scenB_sav > 0 ? (capex / (scenB_sav / COEFFICIENTS.MONTHS_PER_YEAR)) : Infinity;
-                    const scenC_sav  = (cWaste + cRisk) * COEFFICIENTS.SCEN_C_AUTO_LEVEL;
+                    const scenC_sav  = (cWaste + cRisk + cCascade) * COEFFICIENTS.SCEN_C_AUTO_LEVEL;
                     const scenC_cap  = capex * COEFFICIENTS.SCEN_C_CAPEX_MULTIPLIER;
                     const scenC_net  = scenC_sav - scenC_cap;
                     const scenC_pb   = scenC_sav > 0 ? (scenC_cap / (scenC_sav / COEFFICIENTS.MONTHS_PER_YEAR)) : Infinity;
