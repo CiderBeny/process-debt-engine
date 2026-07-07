@@ -415,6 +415,13 @@
                     </div>
                     <p class="text-3xl font-black mt-1 stat-value" id="totalImpact">$0</p>
                 </div>
+                <div class="card border-l-4 border-l-cyan-600">
+                    <div class="label-row">
+                        <p class="label" data-i18n="statNpvLabel">NPV Total Debt (5 yr)</p>
+                        <span class="formula-tip" tabindex="0" role="button" data-formula="(OPEX Waste + Risk + Cascade) × PVIFA(10%,5yr) + Pipeline Erosion + CAPEX" aria-label="Formula: (OPEX Waste + Risk + Cascade) × PVIFA(10%,5yr) + Pipeline Erosion + CAPEX">ⓘ</span>
+                    </div>
+                    <p class="text-3xl font-black mt-1 stat-value" id="npvTotalDebt">$0</p>
+                </div>
                 <div class="card border-l-4 border-l-green-600">
                     <div class="label-row">
                         <p class="label" data-i18n="statNetLabel">Net Debt After Investment</p>
@@ -591,7 +598,7 @@
                 <!-- 6 -->
                 <div class="methodology-section" id="methodology-6">
                     <h4 data-i18n="methodologyTurnoverTitle">6. Turnover Cost Model</h4>
-                    <p><span class="methodology-label" data-i18n="methodologyFormulaLabel">Formula:</span> <code>Turnover rate &times; 50 engineers &times; $150/hr blended rate &times; 2,000 hrs</code></p>
+                    <p><span class="methodology-label" data-i18n="methodologyFormulaLabel">Formula:</span> <code>Turnover rate &times; Team Size &times; Blended Rate (Q6) &times; 2,000 hrs</code></p>
                     <p><span class="methodology-label" data-i18n="methodologyAssumptionsLabel">Assumptions:</span> <span data-i18n="methodologyTurnoverAssumptions">The 50-engineer reference and $150/hr rate are organisational defaults aligned with SHRM's total replacement cost framework. Adjust these to match your actual headcount and cost structures.</span></p>
                     <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyTurnoverSource">SHRM Foundation — "Retaining Talent: A Guide to Analyzing and Managing Employee Turnover" (2025 update). SHRM 2025 Benchmarking Reports, shrm.org/benchmarking.</span></p>
                 </div>
@@ -610,7 +617,22 @@
                     <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyFxSource">Narodowy Bank Polski — Table A mid exchange rates. api.nbp.pl.</span></p>
                 </div>
 
-                <p class="methodology-footer" id="methodology-footer" data-i18n="methodologyFooter">Methodology references last updated June 2026. All estimates labelled "tool estimate" should be calibrated against your organisation's own data for greatest accuracy.</p>
+                <!-- 9 -->
+                <div class="methodology-section" id="methodology-9">
+                    <h4 data-i18n="methodologyTotalTitle">9. Total Debt Impact</h4>
+                    <p><span class="methodology-label" data-i18n="methodologyFormulaLabel">Formula:</span> <code data-i18n="methodologyTotalFormula">OPEX Waste + Risk Exposure + Pipeline Margin Erosion + Cascade Impact</code></p>
+                    <p><span class="methodology-label" data-i18n="methodologyAssumptionsLabel">Note:</span> <span data-i18n="methodologyTotalNote">Pipeline Margin Erosion (cOppDirect) is a one-time estimate reflecting margin lost in the first year of delay. All other components recur annually. Cascade Impact is proportional to OPEX Waste — reducing manual waste automatically reduces cascade costs.</span></p>
+                    <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyTotalSource">Economic model synthesised from BLS ATUS (2024), OECD Annual Hours (2024), Exepron "True Cost of Delay" (2026), COSO ERM (2017), and SHRM Retention Framework (2025).</span></p>
+                </div>
+
+                <div class="methodology-section" id="methodology-10">
+                    <h4 data-i18n="methodologyNpvTitle">10. NPV Economic Model</h4>
+                    <p><span class="methodology-label" data-i18n="methodologyFormulaLabel">Formula:</span> <code data-i18n="methodologyNpvFormula">NPV Total = One-Time Costs + PVIFA(rate, years) × Annual Recurring Costs</code></p>
+                    <p><span class="methodology-label" data-i18n="methodologyAssumptionsLabel">Note:</span> <span data-i18n="methodologyNpvNote">One-time costs = Pipeline Margin Erosion + CAPEX. Annual recurring = OPEX Waste + Risk + Cascade. PVIFA discounts the recurring stream using a 10% WACC over a 5-year horizon. Discounted Payback uses monthly DCF to find the break-even month.</span></p>
+                    <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyNpvSource">Brealey, Myers & Allen — Principles of Corporate Finance. COSO ERM 2017. Damodaran — Cost of Capital by Sector (2025).</span></p>
+                </div>
+
+                <p class="methodology-footer" id="methodology-footer" data-i18n="methodologyFooter">Methodology references last updated July 2026. All estimates labelled "tool estimate" should be calibrated against your organisation's own data for greatest accuracy.</p>
 
             </div>
         </details>
