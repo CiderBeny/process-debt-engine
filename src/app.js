@@ -43,6 +43,7 @@
                 statOppLabel:     'Pipeline Margin Erosion',
                 statCascadeLabel: 'Cascade Impact',
                 statTotalLabel:   'Total Debt Impact',
+                statNpvLabel:     'NPV Total Debt (5 yr)',
                 statNetLabel:   'Net Debt After Investment',
                 statNetHelper:  'Total impact minus CAPEX',
                 formulaWaste: '(Manual hrs/yr + Manager chase hrs/yr) × Blended Rate × Team Size',
@@ -258,6 +259,10 @@
                 methodologyTotalFormula:     'OPEX Waste + Risk Exposure + Pipeline Margin Erosion + Cascade Impact',
                 methodologyTotalNote:        'Pipeline Margin Erosion (cOppDirect) is a one-time estimate reflecting margin lost in the first year of delay. All other components recur annually. Cascade Impact is proportional to OPEX Waste — reducing manual waste automatically reduces cascade costs.',
                 methodologyTotalSource:      'Economic model synthesised from BLS ATUS (2024), OECD Annual Hours (2024), Exepron "True Cost of Delay" (2026), COSO ERM (2017), and SHRM Retention Framework (2025).',
+                methodologyNpvTitle:         '10. NPV Economic Model',
+                methodologyNpvFormula:       'NPV Total = One-Time Costs + PVIFA(rate, years) × Annual Recurring Costs',
+                methodologyNpvNote:          'One-time costs = Pipeline Margin Erosion + CAPEX. Annual recurring = OPEX Waste + Risk + Cascade. PVIFA (Present Value Interest Factor of Annuity) discounts the recurring stream using a 10% WACC over a 5-year horizon. Discounted Payback uses monthly DCF to find the break-even month. This aligns with standard capital budgeting (Brealey, Myers & Allen) and COSO ERM 2017 guidance on multi-period risk assessment.',
+                methodologyNpvSource:        'Brealey, R.A., Myers, S.C. & Allen, F. — Principles of Corporate Finance (14th ed., McGraw-Hill). COSO — Enterprise Risk Management — Integrating with Strategy and Performance (2017). WACC benchmark: Damodaran, A. — Cost of Capital by Sector (2025), IT infrastructure median ~9.3%.',
                 methodologyFooter:           'Methodology references last updated July 2026. All estimates labelled "tool estimate" should be calibrated against your organisation\'s own data for greatest accuracy.',
                 nbpFooter:        (date) => `NBP exchange rates table A (as of ${date})`,
                 nbpUnavailable:   'NBP exchange rates table A (unavailable — using fallback rates)',
@@ -303,6 +308,7 @@
                 statOppLabel:     'Erozja Marży Pipeline',
                 statCascadeLabel: 'Efekt Kaskadowy',
                 statTotalLabel:   'Całkowity Wpływ Długu',
+                statNpvLabel:     'NPV Całkowitego Długu (5 lat)',
                 statNetLabel:   'Dług Netto po Inwestycji',
                 statNetHelper:  'Całkowity wpływ minus CAPEX',
                 formulaWaste: '(Godz. manualne/rok + Godz. koordynacji/rok) × Stawka łączona × Liczba inżynierów',
@@ -514,6 +520,10 @@
                 methodologyTotalFormula:       'OPEX Waste + Risk Exposure + Pipeline Margin Erosion + Cascade Impact',
                 methodologyTotalNote:          'Pipeline Margin Erosion (cOppDirect) to szacunek jednorazowy — marża utracona w pierwszym roku opóźnienia. Pozostałe składniki są cykliczne rocznie. Cascade Impact jest proporcjonalny do OPEX Waste — redukcja strat manualnych automatycznie obniża koszty kaskadowe.',
                 methodologyTotalSource:        'Model ekonomiczny zsyntetyzowany z BLS ATUS (2024), OECD Annual Hours (2024), Exepron "True Cost of Delay" (2026), COSO ERM (2017) i SHRM Retention Framework (2025).',
+                methodologyNpvTitle:         '10. Model Ekonomiczny NPV',
+                methodologyNpvFormula:       'NPV = Koszty Jednorazowe + PVIFA(stopa, lata) × Roczne Koszty Cykliczne',
+                methodologyNpvNote:          'Koszty jednorazowe = Erozja Marży Pipeline + CAPEX. Koszty cykliczne = OPEX Waste + Ryzyko + Kaskada. PVIFA dyskontuje strumień cykliczny przy użyciu 10% WACC w horyzoncie 5-letnim. Discounted Payback stosuje miesięczną DCF do wyznaczenia progu rentowności. Zgodne ze standardowym budżetowaniem kapitałowym (Brealey, Myers & Allen) oraz COSO ERM 2017.',
+                methodologyNpvSource:        'Brealey, R.A., Myers, S.C. & Allen, F. — Principles of Corporate Finance (14th ed., McGraw-Hill). COSO — Zarządzanie Ryzykiem Korporacyjnym — Integracja ze Strategią i Wynikami (2017). WACC benchmark: Damodaran, A. — Cost of Capital by Sector (2025), mediana IT infrastructure ~9,3%.',
                 methodologyFooter:             'Źródła metodologiczne aktualizowane w lipcu 2026. Wszystkie szacunki oznaczone "tool estimate" należy skalibrować na podstawie danych własnej organizacji dla największej dokładności.',
                 nbpFooter:         (date) => `Kursy walut NBP tabela A (z dnia ${date})`,
                 nbpUnavailable:    'Kursy walut NBP tabela A (niedostępna — użyto kursów zastępczych)',
@@ -572,6 +582,10 @@
             REC_AUTO_MIN_WASTE:        100000, // $
             REC_RISK_MIN_EXPOSURE:     50000,  // $
             REC_INNOVATION_MIN:        150000, // $
+
+            // ── Economic model (NPV / DCF) ──
+            DISCOUNT_RATE:              0.10,   // 10% WACC — IT infra benchmark
+            TIME_HORIZON_YEARS:         5,      // standard investment horizon
         };
 
         /* ── XSS guard ──────────────────────────────────────────────────────────
@@ -718,6 +732,19 @@
             setSliderFill('autoLevel', 'autoLevelFill', 0, 100);
         }
 
+        function discountedPayback(annualSavings, investment) {
+            if (annualSavings <= 0 || investment <= 0) return Infinity;
+            var rate = COEFFICIENTS.DISCOUNT_RATE;
+            var monthly = annualSavings / 12;
+            var cumulative = 0;
+            var maxMonths = COEFFICIENTS.TIME_HORIZON_YEARS * 12;
+            for (var m = 1; m <= maxMonths; m++) {
+                cumulative += monthly / Math.pow(1 + rate, m / 12);
+                if (cumulative >= investment) return m;
+            }
+            return Infinity;
+        }
+
         function calculate() {
             const manualPercent  = clamp('q1');
             const downCost       = currencyToUsd(clamp('q4'));
@@ -745,18 +772,24 @@
             const totalImpact = cWaste + cRisk + cOppDirect + cCascade;
             const netDebt     = totalImpact - capex;
 
+            // ── NPV — Net Present Value over investment horizon ──
+            const annualRecurring = cWaste + cRisk + cCascade;
+            const oneTimeCosts    = cOppDirect + capex;
+            var dr = COEFFICIENTS.DISCOUNT_RATE;
+            var ny = COEFFICIENTS.TIME_HORIZON_YEARS;
+            var pvifa = dr > 0 ? (1 - Math.pow(1 + dr, -ny)) / dr : ny;
+            var npvRecurring = annualRecurring * pvifa;
+            var npvTotalDebt = oneTimeCosts + npvRecurring;
+
             const potentialSavings = (cWaste + cRisk) * autoLevel;
-            // Guard: floor monthly savings at $1 to prevent IEEE 754 underflow
-            // producing Infinity when potentialSavings is a subnormal positive float.
-            const paybackMonths    = potentialSavings > 0
-                ? capex / Math.max(1, potentialSavings / 12)
-                : Infinity;
+            const paybackMonths    = discountedPayback(potentialSavings, capex);
 
             document.getElementById('statWaste').textContent   = formatCurrency(cWaste);
             document.getElementById('statRisk').textContent    = formatCurrency(cRisk);
             document.getElementById('statOpp').textContent     = formatCurrency(cOppDirect);
             document.getElementById('statCascade').textContent = formatCurrency(cCascade);
             document.getElementById('totalImpact').textContent = formatCurrency(totalImpact);
+            document.getElementById('npvTotalDebt').textContent = formatCurrency(npvTotalDebt);
             document.getElementById('statNet').textContent     = formatCurrency(netDebt);
             document.getElementById('q9Val').textContent       = document.getElementById('q9').value;
             document.getElementById('q3Val').textContent       = document.getElementById('q3').value;
@@ -1049,10 +1082,14 @@
 
             // Helper: compute net recovery and payback for a given autoLevel + capex
             function scenCalc(al, cx) {
-                const savings = (cWaste + cRisk + cCascade) * al;
-                const net     = savings - cx;
-                const pb      = savings > 0 ? (cx / (savings / COEFFICIENTS.MONTHS_PER_YEAR)) : Infinity;
-                return { savings, net, pb };
+                var annualSavings = (cWaste + cRisk + cCascade) * al;
+                var dr = COEFFICIENTS.DISCOUNT_RATE;
+                var ny = COEFFICIENTS.TIME_HORIZON_YEARS;
+                var pvifa = dr > 0 ? (1 - Math.pow(1 + dr, -ny)) / dr : ny;
+                var npvSavings = annualSavings * pvifa;
+                var net = npvSavings - cx;
+                var pb = discountedPayback(annualSavings, cx);
+                return { savings: annualSavings, npvSavings: npvSavings, net: net, pb: pb };
             }
 
             const scenA = scenCalc(0,    0);
@@ -1241,9 +1278,17 @@
                     const totalImpact = cWaste + cRisk + cOppDirect + cCascade;
                     const netDebt     = totalImpact - capex;
                     const potSavings  = (cWaste + cRisk) * autoLvl;
-                    const paybackMo   = potSavings > 0
-                        ? capex / Math.max(1, potSavings / COEFFICIENTS.MONTHS_PER_YEAR)
-                        : Infinity;
+
+                    // ── NPV ──
+                    var annualRecurring = cWaste + cRisk + cCascade;
+                    var oneTimeCosts    = cOppDirect + capex;
+                    var dr = COEFFICIENTS.DISCOUNT_RATE;
+                    var ny = COEFFICIENTS.TIME_HORIZON_YEARS;
+                    var pvifa = dr > 0 ? (1 - Math.pow(1 + dr, -ny)) / dr : ny;
+                    var npvRecurring = annualRecurring * pvifa;
+                    var npvTotalDebt = oneTimeCosts + npvRecurring;
+
+                    var paybackMo = discountedPayback(potSavings, capex);
 
                     // ── turnover / lever calcs (Bug 2 fix: use L for titles & effort) ──
                     const turnoverCost = (q10 / 100) * teamSize * q6 * COEFFICIENTS.TURNOVER_REF_HOURS;
@@ -1258,15 +1303,20 @@
                     const top3 = leversRaw.slice(0, 3);
                     const totalRecovery = top3.reduce((s, l) => s + l.recovery, 0);
 
-                    // ── scenario calcs ───────────────────────────────────────
-                    const scenA_net  = totalImpact;
-                    const scenB_sav  = (cWaste + cRisk + cCascade) * autoLvl;
-                    const scenB_net  = scenB_sav - capex;
-                    const scenB_pb   = scenB_sav > 0 ? (capex / (scenB_sav / COEFFICIENTS.MONTHS_PER_YEAR)) : Infinity;
-                    const scenC_sav  = (cWaste + cRisk + cCascade) * COEFFICIENTS.SCEN_C_AUTO_LEVEL;
-                    const scenC_cap  = capex * COEFFICIENTS.SCEN_C_CAPEX_MULTIPLIER;
-                    const scenC_net  = scenC_sav - scenC_cap;
-                    const scenC_pb   = scenC_sav > 0 ? (scenC_cap / (scenC_sav / COEFFICIENTS.MONTHS_PER_YEAR)) : Infinity;
+                    // ── scenario calcs (NPV-based) ────────────────────────────
+                    function excelScenCalc(al, cx) {
+                        var annualSavings = (cWaste + cRisk + cCascade) * al;
+                        var dr = COEFFICIENTS.DISCOUNT_RATE;
+                        var ny = COEFFICIENTS.TIME_HORIZON_YEARS;
+                        var pvifa = dr > 0 ? (1 - Math.pow(1 + dr, -ny)) / dr : ny;
+                        var npvSavings = annualSavings * pvifa;
+                        var net = npvSavings - cx;
+                        var pb = discountedPayback(annualSavings, cx);
+                        return { savings: annualSavings, npvSavings: npvSavings, net: net, pb: pb };
+                    }
+                    const scenA = excelScenCalc(0, 0);
+                    const scenB = excelScenCalc(autoLvl, capex);
+                    const scenC = excelScenCalc(COEFFICIENTS.SCEN_C_AUTO_LEVEL, capex * COEFFICIENTS.SCEN_C_CAPEX_MULTIPLIER);
 
                     // ── DORA band classification (uses translated band labels) ──
                     const doraBandFn = (metric, val) => {
@@ -1328,13 +1378,14 @@
                     XLSX.utils.book_append_sheet(wb, wsLevers, L.xlsSheetLevers);
 
                     // ── Sheet 4: Scenario Comparison ─────────────────────────
-                    const scenValues = [
-                        [Math.round(scenA_net), Math.round(totalImpact), Math.round(totalImpact)],
+                    var scenC_cap = capex * COEFFICIENTS.SCEN_C_CAPEX_MULTIPLIER;
+                    var scenValues = [
+                        [Math.round(scenA.net), Math.round(totalImpact), Math.round(totalImpact)],
                         [0,                     Math.round(capex),       Math.round(scenC_cap)  ],
-                        [0,                     Math.round(scenB_net),   Math.round(scenC_net)  ],
+                        [0,                     Math.round(scenB.net),   Math.round(scenC.net)  ],
                         ['∞',
-                         isFinite(scenB_pb) ? Math.round(scenB_pb * 10)/10 : '∞',
-                         isFinite(scenC_pb) ? Math.round(scenC_pb * 10)/10 : '∞'],
+                         isFinite(scenB.pb) ? Math.round(scenB.pb * 10)/10 : '∞',
+                         isFinite(scenC.pb) ? Math.round(scenC.pb * 10)/10 : '∞'],
                     ];
                     const scenData = [
                         [L.xlsScenariosTitle],
@@ -1721,7 +1772,7 @@
                 newPage();
                 const methodologySection = document.getElementById('methodologySection');
                 if (methodologySection) methodologySection.open = true;
-                const methodologyIds = ['methodology-header','methodology-1','methodology-2','methodology-3','methodology-4','methodology-5','methodology-6','methodology-7','methodology-footer'];
+                const methodologyIds = ['methodology-header','methodology-1','methodology-2','methodology-3','methodology-4','methodology-5','methodology-6','methodology-7','methodology-8','methodology-9','methodology-10','methodology-footer'];
                 for (const id of methodologyIds) await captureBlock(id);
 
                 pdf.save('Process-Debt-Engine.pdf');

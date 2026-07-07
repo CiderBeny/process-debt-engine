@@ -16,9 +16,10 @@
 ```
 ├── fonts/                # Inter TTF files for PDF export (Polish support)
 ├── src/
-│   ├── app.js            # All application logic (~1959 lines)
-│   ├── input.css         # Tailwind CSS entry point
-│   └── security.test.js  # Unit tests
+│   ├── app.js             # All application logic (~1959 lines)
+│   ├── input.css          # Tailwind CSS entry point
+│   ├── security.test.js   # Security/safety unit tests
+│   └── model-audit.test.js# Model integrity audit tests
 ├── .vscode/              # Recommended extensions
 ├── index.html            # Main HTML (UI, CSP, font bootstrap + cache)
 ├── style.css             # Custom CSS + base64-embedded fonts
@@ -43,7 +44,7 @@ npx @tailwindcss/cli -i src/input.css -o output.css
 ## How to Run Tests
 ```sh
 npm test
-# Runs: node --test src/security.test.js
+# Runs: node --test src/security.test.js src/model-audit.test.js
 ```
 
 ## i18n Conventions
