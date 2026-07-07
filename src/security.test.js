@@ -43,6 +43,7 @@ const HASH_CONSTRAINTS = {
     q3:        { min: 1,   max: 5     },
     q4:        { min: 0,   max: 1e7   },
     q5:        { min: 0,   max: 9999  },
+    q11:       { min: 0,   max: 168   },
     q6:        { min: 0,   max: 5000  },
     q7:        { min: 0,   max: 744   },
     q8:        { min: 0,   max: 1e9   },
@@ -206,8 +207,8 @@ describe('HASH_CONSTRAINTS — input bounds validation', () => {
     it('capex max is 1e9', () => {
         assert.strictEqual(HASH_CONSTRAINTS.capex.max, 1e9);
     });
-    it('all 13 fields have defined constraints', () => {
-        const keys = ['q1','q2','q3','q4','q5','q6','q7','q8','q9','q10','autoLevel','capex','teamSize'];
+    it('all 14 fields have defined constraints', () => {
+        const keys = ['q1','q2','q3','q4','q5','q11','q6','q7','q8','q9','q10','autoLevel','capex','teamSize'];
         keys.forEach(k => {
             assert.ok(HASH_CONSTRAINTS[k], `Missing constraint for ${k}`);
             assert.strictEqual(typeof HASH_CONSTRAINTS[k].min, 'number');

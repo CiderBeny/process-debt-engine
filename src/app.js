@@ -29,6 +29,8 @@
                 q9desc:   'Impact on ability to scale growth?',
                 q10label: '10. Employee Turnover (%)',
                 q10desc:  'What is the annual turnover rate in teams heavily burdened by manual, repetitive work (burnout indicator)?',
+                q11label: '11. MTTR ({C})',
+                q11desc:  'What is the average time (in hours) to restore a critical service after a production incident (Mean Time To Repair)?',
                 simTitle:       'Investment & Simulation Parameters',
                 autoLabel:      'Target Automation Level (%)',
                 efficiencyGain: 'Efficiency Gain',
@@ -36,16 +38,18 @@
                 teamSizeHelper: 'Total number of engineers affected by process debt.',
                 capexLabel:     'One-Time CAPEX Investment ({C})',
                 capexHelper:    'Licenses, Implementation, and Training costs.',
-                statWasteLabel: 'Annual OPEX Waste',
-                statRiskLabel:  'Risk Exposure',
-                statOppLabel:   'Opportunity Loss',
-                statTotalLabel: 'Total Debt Impact',
+                statWasteLabel:   'Annual OPEX Waste',
+                statRiskLabel:    'Risk Exposure',
+                statOppLabel:     'Pipeline Margin Erosion',
+                statCascadeLabel: 'Cascade Impact',
+                statTotalLabel:   'Total Debt Impact',
                 statNetLabel:   'Net Debt After Investment',
                 statNetHelper:  'Total impact minus CAPEX',
                 formulaWaste: '(Manual hrs/yr + Manager chase hrs/yr) × Blended Rate × Team Size',
-                formulaRisk:  'Annual failures × Downtime cost/hr × (Risk level / 5)',
-                formulaOpp:   '(Opportunity margin × 0.25) + (OPEX Waste × 1.5)',
-                formulaTotal: 'OPEX Waste + Risk Exposure + Opportunity Loss',
+                formulaRisk:  'Annual failures × MTTR × Downtime cost/hr × (Risk level / 5)',
+                formulaOpp:     '(Opportunity margin × 0.25)',
+                formulaCascade: 'OPEX Waste × 1.5 (pipeline cascade multiplier)',
+                formulaTotal:   'OPEX Waste + Risk Exposure + Pipeline Margin Erosion + Cascade Impact',
                 formulaNet:   'Total Debt Impact − CAPEX Investment',
                 chart1Title: '1. Waterfall: Capacity Erosion',
                 chart1Sub:   'hrs / year',
@@ -162,6 +166,7 @@
                     ['Q3',  'Documentation Standard (1–5)',   null, '/5'       ],
                     ['Q4',  'Downtime Cost',                  null, '{C}/hr'   ],
                     ['Q5',  'Human Errors / Quarter',         null, 'incidents'],
+                    ['Q11', 'MTTR',                           null, 'hrs'      ],
                     ['Q6',  'Blended Rate',                   null, '{C}/hr'   ],
                     ['Q7',  'Management Overhead',            null, 'hrs/mo'   ],
                     ['Q8',  'Opportunity Margin',             null, '{C}'      ],
@@ -176,14 +181,15 @@
                 xlsResultsTitle:     'Process Debt Engine — Financial Results',
                 xlsResultsHeaders:   ['Metric', 'Formula', 'Value ({CC})'],
                 xlsResultsRows: [
-                    ['Annual OPEX Waste',        '(Manual hrs/yr + Chase hrs/yr) × Rate × Team',     null],
-                    ['Risk Exposure',             'Annual failures × Downtime {C}/hr × (Risk/5)',        null],
-                    ['Opportunity Loss',          '(Opportunity margin × 0.25) + (OPEX Waste × 1.5)', null],
-                    ['Total Debt Impact',         'OPEX + Risk + Opportunity',                         null],
-                    ['CAPEX Investment',          'User input',                                         null],
-                    ['Net Debt After Investment', 'Total Impact − CAPEX',                              null],
-                    ['Potential Annual Savings',  '(OPEX Waste + Risk) × Automation Level',           null],
-                    ['Payback Period',            'CAPEX / (Monthly Savings)',                          null],
+                    ['Annual OPEX Waste',        '(Manual hrs/yr + Chase hrs/yr) × Rate × Team',        null],
+                    ['Risk Exposure',             'Annual failures × MTTR × Downtime {C}/hr × (Risk/5)', null],
+                    ['Pipeline Margin Erosion',   'Opportunity margin × 0.25',                          null],
+                    ['Cascade Impact',             'OPEX Waste × 1.5 (pipeline cascade multiplier)',     null],
+                    ['Total Debt Impact',          'OPEX + Risk + Pipeline Erosion + Cascade',           null],
+                    ['CAPEX Investment',          'User input',                                          null],
+                    ['Net Debt After Investment', 'Total Impact − CAPEX',                               null],
+                    ['Potential Annual Savings',  '(OPEX Waste + Risk) × Automation Level',            null],
+                    ['Payback Period',            'CAPEX / (Monthly Savings)',                           null],
                 ],
                 xlsResultsMonths:    'months',
                 xlsLeversTitle:      'Top 3 Financial Levers (sorted by estimated annual recovery)',
@@ -220,11 +226,12 @@
                 methodologyWasteSource:        'BLS American Time Use Survey 2024 (bls.gov); OECD Average Annual Hours Actually Worked 2024 (oecd.org).',
                 methodologyRiskTitle:          '2. Risk Exposure',
                 methodologyRiskSource:         'Standard actuarial risk exposure formula (probability × impact) consistent with COSO Enterprise Risk Management framework (2017) and NIST Special Publication 800-30 Rev. 1 — Guide for Conducting Risk Assessments.',
-                methodologyOppTitle:           '3. Opportunity Loss',
+                methodologyOppTitle:           '3. Pipeline Margin Erosion',
                 methodologyOppFactor1:         'Reflects the portion of pipeline project margin conservatively estimated as eroded during the first year of delay due to competitive response, customer churn, or SLA penalties. No single authoritative study isolates this fraction; 0.25 is a conservative floor.',
                 methodologyOppFactor2:         'Accounts for compounding pipeline effects — each delayed project pushes downstream work, multiplying total cost. Exepron ("The True Cost of Delay," 2026) demonstrates that a pipeline cascade multiplier can reach 6× where multiple projects share dependent resources. This tool applies 1.5× as a conservative minimum.',
                 methodologyOppSource:          'Exepron — "The True Cost of Delay" (2026). exepron.com.',
-                methodologyLeverTitle:         '4. Lever Recovery Rates',
+                methodologyCascadeTitle:      '4. Cascade Impact',
+                methodologyLeverTitle:         '5. Lever Recovery Rates',
                 methodologyLeverColLever:      'Lever',
                 methodologyLeverColRate:       'Rate',
                 methodologyLeverColSource:     'Source',
@@ -238,13 +245,13 @@
                 methodologyLeverMgmtSrc:       'PanDev Metrics (2026): 42% of engineering coding time lost to context switching. TheTab 2025 research: 40% productivity loss, $450B/yr globally, 23 min recovery per interruption. Gerald Weinberg, Quality Software Management (1992): 3 concurrent projects = 40% overhead. These studies establish context-switching loss at 15–40%; the conservative 15% is applied to management coordination overhead.',
                 methodologyLeverTurnover:      'Retention & Burnout',
                 methodologyLeverTurnoverSrc:   'SHRM Foundation — "Retaining Talent" (2025): total cost of replacing an employee ranges from 50% to 200% of annual salary. SHRM 2025 Benchmarking Reports confirm cost-per-hire averages $5,475 (nonexecutive) and $35,879 (executive). The 30% recovery reflects the portion of turnover cost deemed preventable by reducing manual-toil burnout.',
-                methodologyTurnoverTitle:      '5. Turnover Cost Model',
+                methodologyTurnoverTitle:      '6. Turnover Cost Model',
                 methodologyTurnoverAssumptions:'The 50-engineer reference and $150/hr rate are organisational defaults aligned with SHRM\'s total replacement cost framework. Adjust these to match your actual headcount and cost structures.',
                 methodologyTurnoverSource:     'SHRM Foundation — "Retaining Talent: A Guide to Analyzing and Managing Employee Turnover" (2025 update). SHRM 2025 Benchmarking Reports, shrm.org/benchmarking.',
-                methodologyDoraTitle:          '6. DORA Benchmark Thresholds',
+                methodologyDoraTitle:          '7. DORA Benchmark Thresholds',
                 methodologyDoraBody:           'The four software delivery performance clusters (Elite, High, Medium, Low) correspond to the 2024 Accelerate State of DevOps Report published by Google Cloud\'s DORA team. Lead time thresholds: Elite <1 day, High 1 day–1 week, Medium 1 week–1 month, Low >1 month. Deployment frequency: Elite On-demand, High daily–weekly, Medium weekly–monthly, Low monthly–biannually. Note: DORA\'s four official metrics are Deployment Frequency, Lead Time for Changes, Change Failure Rate, and Failed Deployment Recovery Time. The manual-effort and human-error mappings in this tool are an adaptation, not official DORA categories.',
                 methodologyDoraSource:         'Google Cloud DORA — Accelerate State of DevOps Report 2024. dora.dev/research/2024/dora-report/',
-                methodologyFxTitle:            '7. Exchange Rates',
+                methodologyFxTitle:            '8. Exchange Rates',
                 methodologyFxBody:             'Live mid rates are fetched from Narodowy Bank Polski (NBP) Table A via api.nbp.pl on page load. Fallback rates if the API is unavailable: 1 USD = 0.87 EUR / 3.67 PLN / 0.75 GBP.',
                 methodologyFxSource:           'Narodowy Bank Polski — Table A mid exchange rates. api.nbp.pl.',
                 methodologyFooter:             'Methodology references last updated June 2026. All estimates labelled "tool estimate" should be calibrated against your organisation\'s own data for greatest accuracy.',
@@ -278,6 +285,8 @@
                 q9desc:   'Wpływ na zdolność do skalowania wzrostu?',
                 q10label: '10. Rotacja Pracowników (%)',
                 q10desc:  'Jaki jest roczny wskaźnik rotacji w zespołach przeciążonych manualną, powtarzalną pracą (wskaźnik wypalenia)?',
+                q11label: '11. MTTR ({C})',
+                q11desc:  'Jaki jest średni czas (w godzinach) przywracania krytycznej usługi po awarii produkcyjnej (Mean Time To Repair)?',
                 simTitle:       'Parametry Inwestycji i Symulacji',
                 autoLabel:      'Docelowy Poziom Automatyzacji (%)',
                 efficiencyGain: 'Wzrost Efektywności',
@@ -285,16 +294,18 @@
                 teamSizeHelper: 'Łączna liczba inżynierów dotkniętych długiem procesowym.',
                 capexLabel:     'Jednorazowa Inwestycja CAPEX ({C})',
                 capexHelper:    'Licencje, wdrożenie i koszty szkoleń.',
-                statWasteLabel: 'Roczne Marnotrawstwo OPEX',
-                statRiskLabel:  'Ekspozycja na Ryzyko',
-                statOppLabel:   'Utrata Szans',
-                statTotalLabel: 'Całkowity Wpływ Długu',
+                statWasteLabel:   'Roczne Marnotrawstwo OPEX',
+                statRiskLabel:    'Ekspozycja na Ryzyko',
+                statOppLabel:     'Erozja Marży Pipeline',
+                statCascadeLabel: 'Efekt Kaskadowy',
+                statTotalLabel:   'Całkowity Wpływ Długu',
                 statNetLabel:   'Dług Netto po Inwestycji',
                 statNetHelper:  'Całkowity wpływ minus CAPEX',
                 formulaWaste: '(Godz. manualne/rok + Godz. koordynacji/rok) × Stawka łączona × Liczba inżynierów',
-                formulaRisk:  'Roczne awarie × Koszt przestoju/godz. × (Poziom ryzyka / 5)',
-                formulaOpp:   '(Marża szans × 0,25) + (Marnotrawstwo OPEX × 1,5)',
-                formulaTotal: 'Marnotrawstwo OPEX + Ekspozycja na ryzyko + Utrata szans',
+                formulaRisk:  'Roczne awarie × MTTR × Koszt przestoju/godz. × (Poziom ryzyka / 5)',
+                formulaOpp:     '(Marża szans × 0,25)',
+                formulaCascade: 'Marnotrawstwo OPEX × 1,5 (mnożnik kaskady pipeline)',
+                formulaTotal:   'Marnotrawstwo OPEX + Ekspozycja na ryzyko + Erozja Marży Pipeline + Efekt Kaskadowy',
                 formulaNet:   'Całkowity wpływ długu − Inwestycja CAPEX',
                 chart1Title: '1. Wodospad: Erozja Pojemności',
                 chart1Sub:   'godz. / rok',
@@ -407,6 +418,7 @@
                     ['Q3',  'Standard Dokumentacji (1–5)',        null, '/5'          ],
                     ['Q4',  'Koszt Przestoju',                    null, '{C}/godz.'   ],
                     ['Q5',  'Błędy Ludzkie / Kwartał',           null, 'incydenty'   ],
+                    ['Q11', 'MTTR',                              null, 'godz.'       ],
                     ['Q6',  'Stawka Łączona',                    null, '{C}/godz.'   ],
                     ['Q7',  'Narzut Zarządzania',                null, 'godz./mies.' ],
                     ['Q8',  'Marża Szans',                       null, '{C}'         ],
@@ -422,9 +434,10 @@
                 xlsResultsHeaders:   ['Metryka', 'Formuła', 'Wartość ({CC})'],
                 xlsResultsRows: [
                     ['Roczne Marnotrawstwo OPEX',      '(Godz. manualne/rok + Godz. koordynacji/rok) × Stawka × Zespół', null],
-                    ['Ekspozycja na Ryzyko',            'Roczne awarie × Koszt przestoju/godz. × (Ryzyko/5)',             null],
-                    ['Utrata Szans',                    '(Marża szans × 0,25) + (Marnotrawstwo OPEX × 1,5)',              null],
-                    ['Całkowity Wpływ Długu',           'OPEX + Ryzyko + Szanse',                                         null],
+                    ['Ekspozycja na Ryzyko',            'Roczne awarie × MTTR × Koszt przestoju/godz. × (Ryzyko/5)',      null],
+                    ['Erozja Marży Pipeline',           'Marża szans × 0,25',                                             null],
+                    ['Efekt Kaskadowy',                 'Marnotrawstwo OPEX × 1,5 (mnożnik kaskady)',                     null],
+                    ['Całkowity Wpływ Długu',           'OPEX + Ryzyko + Erozja + Kaskada',                               null],
                     ['Inwestycja CAPEX',                'Dane użytkownika',                                                null],
                     ['Dług Netto po Inwestycji',        'Całkowity wpływ − CAPEX',                                        null],
                     ['Potencjalne Roczne Oszczędności', '(Marnotrawstwo OPEX + Ryzyko) × Poziom Automatyzacji',          null],
@@ -465,11 +478,12 @@
                 methodologyWasteSource:        'BLS American Time Use Survey 2024 (bls.gov); OECD Average Annual Hours Actually Worked 2024 (oecd.org).',
                 methodologyRiskTitle:          '2. Ekspozycja na Ryzyko',
                 methodologyRiskSource:         'Standardowy wzór na ekspozycję na ryzyko aktuarialne (prawdopodobieństwo × wpływ) zgodny z ramami COSO Enterprise Risk Management (2017) i NIST Special Publication 800-30 Rev. 1 — Guide for Conducting Risk Assessments.',
-                methodologyOppTitle:           '3. Utrata Szans',
+                methodologyOppTitle:           '3. Erozja Marży Pipeline',
                 methodologyOppFactor1:         'Odzwierciedla część marży projektowej, która według konserwatywnych szacunków ulega erozji w pierwszym roku opóźnienia z powodu reakcji konkurencji, utraty klientów lub kar SLA. Żadne pojedyncze autorytatywne badanie nie określa tego ułamka; 0,25 to konserwatywne minimum.',
                 methodologyOppFactor2:         'Uwzględnia kaskadowe efekty w pipeline — każdy opóźniony projekt przesuwa pracę w dół strumienia, mnożąc całkowity koszt. Exepron ("The True Cost of Delay," 2026) pokazuje, że mnożnik kaskady może osiągnąć 6×, gdy wiele projektów współdzieli zasoby. To narzędzie stosuje 1,5× jako konserwatywne minimum.',
                 methodologyOppSource:          'Exepron — "The True Cost of Delay" (2026). exepron.com.',
-                methodologyLeverTitle:         '4. Współczynniki Dźwigni',
+                methodologyCascadeTitle:      '4. Efekt Kaskadowy',
+                methodologyLeverTitle:         '5. Współczynniki Dźwigni',
                 methodologyLeverColLever:      'Dźwignia',
                 methodologyLeverColRate:       'Współczynnik',
                 methodologyLeverColSource:     'Źródło',
@@ -483,13 +497,13 @@
                 methodologyLeverMgmtSrc:       'PanDev Metrics (2026): 42% czasu programistów tracone na przełączanie kontekstu. TheTab 2025: 40% utrata produktywności, 450 mld $/r globalnie, 23 min odzysku na przerwę. Gerald Weinberg, Quality Software Management (1992): 3 projekty równocześnie = 40% narzutu. Konserwatywne 15% zastosowane do narzutu koordynacji zarządzania.',
                 methodologyLeverTurnover:      'Retencja i Wypalenie',
                 methodologyLeverTurnoverSrc:   'SHRM Foundation — "Retaining Talent" (2025): całkowity koszt zastąpienia pracownika wynosi od 50% do 200% rocznego wynagrodzenia. SHRM 2025 Benchmarking Reports: średni koszt zatrudnienia to $5 475 (niekierowniczy) i $35 879 (kierowniczy). 30% odzysku odzwierciedla część kosztów rotacji możliwą do uniknięcia poprzez redukcję wypalenia spowodowanego pracą manualną.',
-                methodologyTurnoverTitle:      '5. Model Kosztów Rotacji',
+                methodologyTurnoverTitle:      '6. Model Kosztów Rotacji',
                 methodologyTurnoverAssumptions:'Referencyjne 50 inżynierów i stawka $150/godz. to domyślne wartości organizacyjne zgodne z ramami kosztów zastąpienia SHRM. Dostosuj je do rzeczywistej liczby pracowników i struktur kosztów.',
                 methodologyTurnoverSource:     'SHRM Foundation — "Retaining Talent: A Guide to Analyzing and Managing Employee Turnover" (aktualizacja 2025). SHRM 2025 Benchmarking Reports, shrm.org/benchmarking.',
-                methodologyDoraTitle:          '6. Progi Benchmarku DORA',
+                methodologyDoraTitle:          '7. Progi Benchmarku DORA',
                 methodologyDoraBody:           'Cztery klastry wydajności dostarczania oprogramowania (Elita, Wysoki, Średni, Niski) odpowiadają raportowi Accelerate State of DevOps 2024 opublikowanemu przez zespół DORA Google Cloud. Progi czasu realizacji: Elita <1 dzień, Wysoki 1 dzień–1 tydzień, Średni 1 tydzień–1 miesiąc, Niski >1 miesiąc. Częstotliwość wdrożeń: Elita na żądanie, Wysoki codziennie–tygodniowo, Średni tygodniowo–miesięcznie, Niski miesięcznie–półrocznie. Uwaga: cztery oficjalne metryki DORA to częstotliwość wdrożeń, czas realizacji zmian, wskaźnik awaryjności zmian i czas odtworzenia po awarii. Mapowanie wysiłku manualnego i błędów ludzkich w tym narzędziu jest adaptacją, a nie oficjalnymi kategoriami DORA.',
                 methodologyDoraSource:         'Google Cloud DORA — Accelerate State of DevOps Report 2024. dora.dev/research/2024/dora-report/',
-                methodologyFxTitle:            '7. Kursy Walut',
+                methodologyFxTitle:            '8. Kursy Walut',
                 methodologyFxBody:             'Kursy średnie są pobierane z tabeli A Narodowego Banku Polskiego (NBP) przez api.nbp.pl przy ładowaniu strony. Kursy zastępcze w przypadku braku API: 1 USD = 0,87 EUR / 3,67 PLN / 0,75 GBP.',
                 methodologyFxSource:           'Narodowy Bank Polski — Tabela A kursów średnich. api.nbp.pl.',
                 methodologyFooter:             'Źródła metodologiczne aktualizowane w czerwcu 2026. Wszystkie szacunki oznaczone "tool estimate" należy skalibrować na podstawie danych własnej organizacji dla największej dokładności.',
@@ -652,6 +666,7 @@
             const manualPercent  = clamp('q1');
             const downCost       = currencyToUsd(clamp('q4'));
             const failures       = clamp('q5') * 4;
+            const mttr           = clamp('q11');
             const rate           = currencyToUsd(clamp('q6'));
             const managerHrs     = clamp('q7');
             const opportunityVal = currencyToUsd(clamp('q8'));
@@ -666,11 +681,12 @@
             const manualAnnualHrs  = totalAnnualHrs * (manualPercent / 100);
             const chasingAnnualHrs = managerHrs * 12;
 
-            const cWaste = (manualAnnualHrs + chasingAnnualHrs) * rate * teamSize;
-            const cRisk  = (failures * downCost) * (riskLevel / 5);
-            const cOpp   = (opportunityVal * 0.25) + (cWaste * 1.5);
+            const cWaste     = (manualAnnualHrs + chasingAnnualHrs) * rate * teamSize;
+            const cRisk      = (failures * mttr * downCost) * (riskLevel / 5);
+            const cOppDirect = opportunityVal * 0.25;
+            const cCascade   = cWaste * 1.5;
 
-            const totalImpact = cWaste + cRisk + cOpp;
+            const totalImpact = cWaste + cRisk + cOppDirect + cCascade;
             const netDebt     = totalImpact - capex;
 
             const potentialSavings = (cWaste + cRisk) * autoLevel;
@@ -682,7 +698,8 @@
 
             document.getElementById('statWaste').textContent   = formatCurrency(cWaste);
             document.getElementById('statRisk').textContent    = formatCurrency(cRisk);
-            document.getElementById('statOpp').textContent     = formatCurrency(cOpp);
+            document.getElementById('statOpp').textContent     = formatCurrency(cOppDirect);
+            document.getElementById('statCascade').textContent = formatCurrency(cCascade);
             document.getElementById('totalImpact').textContent = formatCurrency(totalImpact);
             document.getElementById('statNet').textContent     = formatCurrency(netDebt);
             document.getElementById('q9Val').textContent       = document.getElementById('q9').value;
@@ -692,9 +709,9 @@
             updateSliderFills();
 
             updateCharts(totalAnnualHrs, manualAnnualHrs, chasingAnnualHrs, cWaste, capex, potentialSavings, riskLevel, manualPercent, autoLevel);
-            updateRecs(cWaste, cRisk, cOpp, paybackMonths);
+            updateRecs(cWaste, cRisk, cOppDirect, cCascade, paybackMonths);
             updateDoraBenchmark();
-            updateScenarios(cWaste, cRisk, cOpp, capex, autoLevel, totalImpact);
+            updateScenarios(cWaste, cRisk, capex, autoLevel, totalImpact);
         }
 
         const CHART_OPTS = {
@@ -770,7 +787,7 @@
             });
         }
 
-        function updateRecs(cw, cr, co, pb) {
+        function updateRecs(cw, cr, co, cc, pb) {
             const L = TRANSLATIONS[currentLang];
 
             // ── Block 5: compact rec list ────────────────────────────────────
@@ -778,7 +795,7 @@
             let html = `<ul class="list-disc ml-5 space-y-2">`;
             if (cw > 100000) html += `<li>${L.recAutomation(Math.round(cw*0.3))}</li>`;
             if (cr > 50000)  html += `<li>${L.recRisk()}</li>`;
-            if (co > 150000) html += `<li>${L.recInnovation(Math.round(co*0.5))}</li>`;
+            if (co + cc > 150000) html += `<li>${L.recInnovation(Math.round((co + cc) * 0.5))}</li>`;
             html += `<li class="mt-3 p-3 font-bold italic" style="background:var(--accent-dim);border-left:4px solid var(--accent);color:var(--accent);border-radius:0 6px 6px 0;">${esc(L.recVerdict(!isFinite(pb) || pb <= 0 ? L.scenInfinity : (pb < 1 ? '< 1' : pb.toFixed(1))))}</li>`;
             engine.innerHTML = html + `</ul>`;
 
@@ -968,7 +985,7 @@
             return { band: L.doraBandLow, color: 'var(--red)' };
         }
 
-        function updateScenarios(cWaste, cRisk, cOpp, capex, autoLevel, totalImpact) {
+        function updateScenarios(cWaste, cRisk, capex, autoLevel, totalImpact) {
             const L = TRANSLATIONS[currentLang];
             const fmt = (n) => formatCurrency(Math.abs(n));
 
@@ -1143,6 +1160,7 @@
                     const q1  = clamp('q1'),  q2  = clamp('q2'),  q3  = clamp('q3'),
                           q4  = currencyToUsd(clamp('q4')),
                           q5  = clamp('q5'),
+                          q11 = clamp('q11'),
                           q6  = currencyToUsd(clamp('q6')),
                           q7  = clamp('q7'),
                           q8  = currencyToUsd(clamp('q8')),
@@ -1158,10 +1176,12 @@
                     const chasingAnnualHrs= q7 * 12;
                     const annualFailures  = q5 * 4;
 
-                    const cWaste = (manualAnnualHrs + chasingAnnualHrs) * q6 * teamSize;
-                    const cRisk  = (annualFailures * q4) * (q9 / 5);
-                    const cOpp   = (q8 * 0.25) + (cWaste * 1.5);
-                    const totalImpact = cWaste + cRisk + cOpp;
+                    const mttr       = q11;
+                    const cWaste     = (manualAnnualHrs + chasingAnnualHrs) * q6 * teamSize;
+                    const cRisk      = (annualFailures * mttr * q4) * (q9 / 5);
+                    const cOppDirect = q8 * 0.25;
+                    const cCascade   = cWaste * 1.5;
+                    const totalImpact = cWaste + cRisk + cOppDirect + cCascade;
                     const netDebt     = totalImpact - capex;
                     const potSavings  = (cWaste + cRisk) * autoLvl;
                     const paybackMo   = potSavings > 0
@@ -1173,7 +1193,7 @@
                     const leversRaw = [
                         { title: L.leverAutomationTitle, recovery: Math.round(cWaste * 0.3),       effort: L.effortMedium, timeline: '2–4 mo' },
                         { title: L.leverRiskTitle,        recovery: Math.round(cRisk  * 0.6),       effort: L.effortLow,    timeline: '1–2 mo' },
-                        { title: L.leverInnovationTitle,  recovery: Math.round(cOpp   * 0.5),       effort: L.effortHigh,   timeline: '3–6 mo' },
+                        { title: L.leverInnovationTitle,  recovery: Math.round((cOppDirect + cCascade) * 0.5),       effort: L.effortHigh,   timeline: '3–6 mo' },
                         { title: L.leverMgmtTitle,        recovery: Math.round(cWaste * 0.15),      effort: L.effortLow,    timeline: '1 mo'   },
                         { title: L.leverTurnoverTitle,    recovery: Math.round(turnoverCost * 0.3), effort: L.effortMedium, timeline: '3–5 mo' },
                     ];
@@ -1202,7 +1222,7 @@
                     };
 
                     // ── Sheet 1: Inputs (Bug 1 fix: all labels from L) ───────
-                    const inputQValues = [q1, q2, q3, q4, q5, q6, q7, q8, q9, q10];
+                    const inputQValues = [q1, q2, q3, q4, q5, q11, q6, q7, q8, q9, q10];
                     const inputsData = [
                         [L.xlsInputsTitle],
                         [L.xlsGenerated, new Date().toLocaleString()],
@@ -1221,7 +1241,7 @@
 
                     // ── Sheet 2: Financial Results ───────────────────────────
                     const resultValues = [
-                        Math.round(cWaste), Math.round(cRisk), Math.round(cOpp),
+                        Math.round(cWaste), Math.round(cRisk), Math.round(cOppDirect), Math.round(cCascade),
                         Math.round(totalImpact), Math.round(capex), Math.round(netDebt),
                         Math.round(potSavings), isFinite(paybackMo) ? Math.round(paybackMo * 10) / 10 : L.scenInfinity,
                     ];
@@ -1475,6 +1495,7 @@
                     { label: t('q3label'),  desc: L.q3desc,  id: 'q3',  type: 'slider', valId: 'q3Val', min: L.q3min, max: L.q3max },
                     { label: t('q4label'),  desc: L.q4desc,  id: 'q4',  type: 'number' },
                     { label: t('q5label'),  desc: L.q5desc,  id: 'q5',  type: 'number' },
+                    { label: t('q11label'), desc: L.q11desc, id: 'q11', type: 'number' },
                     { label: t('q6label'),  desc: L.q6desc,  id: 'q6',  type: 'number' },
                     { label: t('q7label'),  desc: L.q7desc,  id: 'q7',  type: 'number' },
                     { label: t('q8label'),  desc: L.q8desc,  id: 'q8',  type: 'number' },
@@ -1667,7 +1688,7 @@
                                the DOM, closing the URL-hash injection vector.
         ────────────────────────────────────────────────────────────────────── */
         const ALLOWED_HASH_KEYS = new Set(
-            ['q1','q2','q3','q4','q5','q6','q7','q8','q9','q10','autoLevel','capex','teamSize']
+            ['q1','q2','q3','q4','q5','q11','q6','q7','q8','q9','q10','autoLevel','capex','teamSize']
         );
 
         const HASH_CONSTRAINTS = {
@@ -1676,6 +1697,7 @@
             q3:        { min: 1,   max: 5     },  // documentation scale
             q4:        { min: 0,   max: 1e7   },  // downtime cost $/h
             q5:        { min: 0,   max: 9999  },  // human errors / quarter
+            q11:       { min: 0,   max: 168   },  // MTTR hours (≤ 1 week)
             q6:        { min: 0,   max: 5000  },  // blended rate $/h
             q7:        { min: 0,   max: 744   },  // management overhead h/m (≤ 1 month)
             q8:        { min: 0,   max: 1e9   },  // opportunity margin $
@@ -1964,7 +1986,7 @@
 
             
             // -- Input event listeners -> recalculate (input)
-            const calcIds = ['q1','q2','q3','q4','q5','q6','q7','q8','q9','q10','autoLevel','teamSize','capex'];
+            const calcIds = ['q1','q2','q3','q4','q5','q11','q6','q7','q8','q9','q10','autoLevel','teamSize','capex'];
             calcIds.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.addEventListener('input', calculate);
