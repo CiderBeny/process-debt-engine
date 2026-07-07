@@ -727,7 +727,8 @@
 
             document.getElementById('autoLevelVal').textContent = Math.round(autoLevel * 100);
 
-            const manualAnnualHrs  = COEFFICIENTS.ANNUAL_HOURS_PER_ENGINEER * (manualPercent / 100);
+            const totalAnnualHrs   = COEFFICIENTS.ANNUAL_HOURS_PER_ENGINEER;
+            const manualAnnualHrs  = totalAnnualHrs * (manualPercent / 100);
             const chasingAnnualHrs = managerHrs * COEFFICIENTS.MONTHS_PER_YEAR;
 
             const cWaste     = (manualAnnualHrs + chasingAnnualHrs) * rate * teamSize;
