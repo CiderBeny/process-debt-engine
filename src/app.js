@@ -29,6 +29,8 @@
                 q9desc:   'Impact on ability to scale growth?',
                 q10label: '10. Employee Turnover (%)',
                 q10desc:  'What is the annual turnover rate in teams heavily burdened by manual, repetitive work (burnout indicator)?',
+                q11label: '11. MTTR ({C})',
+                q11desc:  'What is the average time (in hours) to restore a critical service after a production incident (Mean Time To Repair)?',
                 simTitle:       'Investment & Simulation Parameters',
                 autoLabel:      'Target Automation Level (%)',
                 efficiencyGain: 'Efficiency Gain',
@@ -44,7 +46,7 @@
                 statNetLabel:   'Net Debt After Investment',
                 statNetHelper:  'Total impact minus CAPEX',
                 formulaWaste: '(Manual hrs/yr + Manager chase hrs/yr) × Blended Rate × Team Size',
-                formulaRisk:  'Annual failures × Downtime cost/hr × (Risk level / 5)',
+                formulaRisk:  'Annual failures × MTTR × Downtime cost/hr × (Risk level / 5)',
                 formulaOpp:     '(Opportunity margin × 0.25)',
                 formulaCascade: 'OPEX Waste × 1.5 (pipeline cascade multiplier)',
                 formulaTotal:   'OPEX Waste + Risk Exposure + Pipeline Margin Erosion + Cascade Impact',
@@ -164,6 +166,7 @@
                     ['Q3',  'Documentation Standard (1–5)',   null, '/5'       ],
                     ['Q4',  'Downtime Cost',                  null, '{C}/hr'   ],
                     ['Q5',  'Human Errors / Quarter',         null, 'incidents'],
+                    ['Q11', 'MTTR',                           null, 'hrs'      ],
                     ['Q6',  'Blended Rate',                   null, '{C}/hr'   ],
                     ['Q7',  'Management Overhead',            null, 'hrs/mo'   ],
                     ['Q8',  'Opportunity Margin',             null, '{C}'      ],
@@ -179,7 +182,7 @@
                 xlsResultsHeaders:   ['Metric', 'Formula', 'Value ({CC})'],
                 xlsResultsRows: [
                     ['Annual OPEX Waste',        '(Manual hrs/yr + Chase hrs/yr) × Rate × Team',        null],
-                    ['Risk Exposure',             'Annual failures × Downtime {C}/hr × (Risk/5)',        null],
+                    ['Risk Exposure',             'Annual failures × MTTR × Downtime {C}/hr × (Risk/5)', null],
                     ['Pipeline Margin Erosion',   'Opportunity margin × 0.25',                          null],
                     ['Cascade Impact',             'OPEX Waste × 1.5 (pipeline cascade multiplier)',     null],
                     ['Total Debt Impact',          'OPEX + Risk + Pipeline Erosion + Cascade',           null],
@@ -282,6 +285,8 @@
                 q9desc:   'Wpływ na zdolność do skalowania wzrostu?',
                 q10label: '10. Rotacja Pracowników (%)',
                 q10desc:  'Jaki jest roczny wskaźnik rotacji w zespołach przeciążonych manualną, powtarzalną pracą (wskaźnik wypalenia)?',
+                q11label: '11. MTTR ({C})',
+                q11desc:  'Jaki jest średni czas (w godzinach) przywracania krytycznej usługi po awarii produkcyjnej (Mean Time To Repair)?',
                 simTitle:       'Parametry Inwestycji i Symulacji',
                 autoLabel:      'Docelowy Poziom Automatyzacji (%)',
                 efficiencyGain: 'Wzrost Efektywności',
@@ -297,7 +302,7 @@
                 statNetLabel:   'Dług Netto po Inwestycji',
                 statNetHelper:  'Całkowity wpływ minus CAPEX',
                 formulaWaste: '(Godz. manualne/rok + Godz. koordynacji/rok) × Stawka łączona × Liczba inżynierów',
-                formulaRisk:  'Roczne awarie × Koszt przestoju/godz. × (Poziom ryzyka / 5)',
+                formulaRisk:  'Roczne awarie × MTTR × Koszt przestoju/godz. × (Poziom ryzyka / 5)',
                 formulaOpp:     '(Marża szans × 0,25)',
                 formulaCascade: 'Marnotrawstwo OPEX × 1,5 (mnożnik kaskady pipeline)',
                 formulaTotal:   'Marnotrawstwo OPEX + Ekspozycja na ryzyko + Erozja Marży Pipeline + Efekt Kaskadowy',
@@ -413,6 +418,7 @@
                     ['Q3',  'Standard Dokumentacji (1–5)',        null, '/5'          ],
                     ['Q4',  'Koszt Przestoju',                    null, '{C}/godz.'   ],
                     ['Q5',  'Błędy Ludzkie / Kwartał',           null, 'incydenty'   ],
+                    ['Q11', 'MTTR',                              null, 'godz.'       ],
                     ['Q6',  'Stawka Łączona',                    null, '{C}/godz.'   ],
                     ['Q7',  'Narzut Zarządzania',                null, 'godz./mies.' ],
                     ['Q8',  'Marża Szans',                       null, '{C}'         ],
@@ -428,7 +434,7 @@
                 xlsResultsHeaders:   ['Metryka', 'Formuła', 'Wartość ({CC})'],
                 xlsResultsRows: [
                     ['Roczne Marnotrawstwo OPEX',      '(Godz. manualne/rok + Godz. koordynacji/rok) × Stawka × Zespół', null],
-                    ['Ekspozycja na Ryzyko',            'Roczne awarie × Koszt przestoju/godz. × (Ryzyko/5)',             null],
+                    ['Ekspozycja na Ryzyko',            'Roczne awarie × MTTR × Koszt przestoju/godz. × (Ryzyko/5)',      null],
                     ['Erozja Marży Pipeline',           'Marża szans × 0,25',                                             null],
                     ['Efekt Kaskadowy',                 'Marnotrawstwo OPEX × 1,5 (mnożnik kaskady)',                     null],
                     ['Całkowity Wpływ Długu',           'OPEX + Ryzyko + Erozja + Kaskada',                               null],
@@ -660,6 +666,7 @@
             const manualPercent  = clamp('q1');
             const downCost       = currencyToUsd(clamp('q4'));
             const failures       = clamp('q5') * 4;
+            const mttr           = clamp('q11');
             const rate           = currencyToUsd(clamp('q6'));
             const managerHrs     = clamp('q7');
             const opportunityVal = currencyToUsd(clamp('q8'));
@@ -675,7 +682,7 @@
             const chasingAnnualHrs = managerHrs * 12;
 
             const cWaste     = (manualAnnualHrs + chasingAnnualHrs) * rate * teamSize;
-            const cRisk      = (failures * downCost) * (riskLevel / 5);
+            const cRisk      = (failures * mttr * downCost) * (riskLevel / 5);
             const cOppDirect = opportunityVal * 0.25;
             const cCascade   = cWaste * 1.5;
 
@@ -1153,6 +1160,7 @@
                     const q1  = clamp('q1'),  q2  = clamp('q2'),  q3  = clamp('q3'),
                           q4  = currencyToUsd(clamp('q4')),
                           q5  = clamp('q5'),
+                          q11 = clamp('q11'),
                           q6  = currencyToUsd(clamp('q6')),
                           q7  = clamp('q7'),
                           q8  = currencyToUsd(clamp('q8')),
@@ -1168,8 +1176,9 @@
                     const chasingAnnualHrs= q7 * 12;
                     const annualFailures  = q5 * 4;
 
+                    const mttr       = q11;
                     const cWaste     = (manualAnnualHrs + chasingAnnualHrs) * q6 * teamSize;
-                    const cRisk      = (annualFailures * q4) * (q9 / 5);
+                    const cRisk      = (annualFailures * mttr * q4) * (q9 / 5);
                     const cOppDirect = q8 * 0.25;
                     const cCascade   = cWaste * 1.5;
                     const totalImpact = cWaste + cRisk + cOppDirect + cCascade;
@@ -1213,7 +1222,7 @@
                     };
 
                     // ── Sheet 1: Inputs (Bug 1 fix: all labels from L) ───────
-                    const inputQValues = [q1, q2, q3, q4, q5, q6, q7, q8, q9, q10];
+                    const inputQValues = [q1, q2, q3, q4, q5, q11, q6, q7, q8, q9, q10];
                     const inputsData = [
                         [L.xlsInputsTitle],
                         [L.xlsGenerated, new Date().toLocaleString()],
@@ -1486,6 +1495,7 @@
                     { label: t('q3label'),  desc: L.q3desc,  id: 'q3',  type: 'slider', valId: 'q3Val', min: L.q3min, max: L.q3max },
                     { label: t('q4label'),  desc: L.q4desc,  id: 'q4',  type: 'number' },
                     { label: t('q5label'),  desc: L.q5desc,  id: 'q5',  type: 'number' },
+                    { label: t('q11label'), desc: L.q11desc, id: 'q11', type: 'number' },
                     { label: t('q6label'),  desc: L.q6desc,  id: 'q6',  type: 'number' },
                     { label: t('q7label'),  desc: L.q7desc,  id: 'q7',  type: 'number' },
                     { label: t('q8label'),  desc: L.q8desc,  id: 'q8',  type: 'number' },
@@ -1678,7 +1688,7 @@
                                the DOM, closing the URL-hash injection vector.
         ────────────────────────────────────────────────────────────────────── */
         const ALLOWED_HASH_KEYS = new Set(
-            ['q1','q2','q3','q4','q5','q6','q7','q8','q9','q10','autoLevel','capex','teamSize']
+            ['q1','q2','q3','q4','q5','q11','q6','q7','q8','q9','q10','autoLevel','capex','teamSize']
         );
 
         const HASH_CONSTRAINTS = {
@@ -1687,6 +1697,7 @@
             q3:        { min: 1,   max: 5     },  // documentation scale
             q4:        { min: 0,   max: 1e7   },  // downtime cost $/h
             q5:        { min: 0,   max: 9999  },  // human errors / quarter
+            q11:       { min: 0,   max: 168   },  // MTTR hours (≤ 1 week)
             q6:        { min: 0,   max: 5000  },  // blended rate $/h
             q7:        { min: 0,   max: 744   },  // management overhead h/m (≤ 1 month)
             q8:        { min: 0,   max: 1e9   },  // opportunity margin $
@@ -1975,7 +1986,7 @@
 
             
             // -- Input event listeners -> recalculate (input)
-            const calcIds = ['q1','q2','q3','q4','q5','q6','q7','q8','q9','q10','autoLevel','teamSize','capex'];
+            const calcIds = ['q1','q2','q3','q4','q5','q11','q6','q7','q8','q9','q10','autoLevel','teamSize','capex'];
             calcIds.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.addEventListener('input', calculate);
