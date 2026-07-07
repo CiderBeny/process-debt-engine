@@ -41,6 +41,24 @@ function discountedPayback(annualSavings, investment) {
     return Infinity;
 }
 
+function calculateIRR(cashFlows) {
+    var precision = 1e-6;
+    var maxIter = 1000;
+    var low = -0.99;
+    var high = 10;
+    for (var i = 0; i < maxIter; i++) {
+        var rate = (low + high) / 2;
+        var npv = 0;
+        for (var t = 0; t < cashFlows.length; t++) {
+            npv += cashFlows[t] / Math.pow(1 + rate, t / 12);
+        }
+        if (Math.abs(npv) < precision) return rate;
+        if (npv > 0) low = rate; else high = rate;
+        if (high - low < precision) return (low + high) / 2;
+    }
+    return null;
+}
+
 const TRANSLATIONS_EN_LABELS = {
     q11label: '11. MTTR ({C})',
     q4label:  '4. Downtime Cost ({C}/h)',
@@ -233,5 +251,29 @@ describe('Known Issue #4 (mitigated) — NPV model verifies fix is in place', ()
         var totalImpact = cWaste + cRisk + cOppDirect + cCascade;
         assert.strictEqual(totalImpact, 1355000,
             'Single-year totalImpact = $1,355,000 — kept for legacy display');
+    });
+
+    it('IRR > WACC for a profitable investment', () => {
+        var cf = [-200000];
+        for (var m = 1; m <= 60; m++) cf.push(29000); // $348k/yr / 12
+        var irr = calculateIRR(cf);
+        assert.ok(irr !== null, 'IRR should be computable');
+        assert.ok(irr > COEFFICIENTS.DISCOUNT_RATE,
+            'IRR (' + (irr * 100).toFixed(1) + '%) should exceed WACC (' + (COEFFICIENTS.DISCOUNT_RATE * 100) + '%)');
+    });
+
+    it('IRR is meaningless (null or < -90%) for all-negative cash flows', () => {
+        var cf = [-100, -50, -30];
+        var irr = calculateIRR(cf);
+        assert.ok(irr === null || irr < -0.9,
+            'All-negative flows have no meaningful IRR (got ' + (irr !== null ? (irr * 100).toFixed(1) + '%' : 'null') + ')');
+    });
+
+    it('IRR = 0 for zero-NPV investment (break-even)', () => {
+        var cf = [-1000];
+        for (var m = 1; m <= 60; m++) cf.push(16.67); // ~$200/yr = exactly pay back $1000
+        var irr = calculateIRR(cf);
+        assert.ok(irr !== null, 'Break-even should have computable IRR');
+        assert.ok(Math.abs(irr) < 0.01, 'Break-even IRR ≈ 0%');
     });
 });

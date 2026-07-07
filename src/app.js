@@ -44,6 +44,7 @@
                 statCascadeLabel: 'Cascade Impact',
                 statTotalLabel:   'Total Debt Impact',
                 statNpvLabel:     'NPV Total Debt (5 yr)',
+                statIrrLabel:     'IRR',
                 statNetLabel:   'Net Debt After Investment',
                 statNetHelper:  'Total impact minus CAPEX',
                 formulaWaste: '(Manual hrs/yr + Manager chase hrs/yr) × Blended Rate × Team Size',
@@ -191,6 +192,7 @@
                     ['Net Debt After Investment', 'Total Impact − CAPEX',                               null],
                     ['Potential Annual Savings',  '(OPEX Waste + Risk) × Automation Level',            null],
                     ['Payback Period',            'CAPEX / (Monthly Savings)',                           null],
+                    ['IRR',                       'Monthly DCF — rate where NPV = 0 over 5 yr',         null],
                 ],
                 xlsResultsMonths:    'months',
                 xlsLeversTitle:      'Top 3 Financial Levers (sorted by estimated annual recovery)',
@@ -204,6 +206,7 @@
                     ['CAPEX Investment ({CC})', null, null, null],
                     ['Net Recovery ({CC})',     null, null, null],
                     ['Payback Period (mo)', null, null, null],
+                    ['IRR',                null, null, null],
                 ],
                 xlsDoraTitle:    'DORA Benchmark Context',
                 xlsDoraHeaders:  ['Metric', 'Your Value', 'DORA Band (Reference)', 'Your Classification'],
@@ -309,6 +312,7 @@
                 statCascadeLabel: 'Efekt Kaskadowy',
                 statTotalLabel:   'Całkowity Wpływ Długu',
                 statNpvLabel:     'NPV Całkowitego Długu (5 lat)',
+                statIrrLabel:     'IRR',
                 statNetLabel:   'Dług Netto po Inwestycji',
                 statNetHelper:  'Całkowity wpływ minus CAPEX',
                 formulaWaste: '(Godz. manualne/rok + Godz. koordynacji/rok) × Stawka łączona × Liczba inżynierów',
@@ -452,6 +456,7 @@
                     ['Dług Netto po Inwestycji',        'Całkowity wpływ − CAPEX',                                        null],
                     ['Potencjalne Roczne Oszczędności', '(Marnotrawstwo OPEX + Ryzyko) × Poziom Automatyzacji',          null],
                     ['Okres Zwrotu',                    'CAPEX / (Miesięczne Oszczędności)',                               null],
+                    ['IRR',                             'Miesięczna DCF — stopa gdzie NPV = 0 w 5 lat',                  null],
                 ],
                 xlsResultsMonths:    'miesięcy',
                 xlsLeversTitle:      'Top 3 Dźwigni Finansowych (posortowane wg szacowanego rocznego odzysku)',
@@ -465,6 +470,7 @@
                     ['Inwestycja CAPEX ({CC})', null, null, null],
                     ['Odzysk Netto ({CC})',     null, null, null],
                     ['Okres Zwrotu (mies.)', null, null, null],
+                    ['IRR',                null, null, null],
                 ],
                 xlsDoraTitle:    'Kontekst Benchmarku DORA',
                 xlsDoraHeaders:  ['Metryka', 'Twoja Wartość', 'Pasmo DORA (Odniesienie)', 'Twoja Klasyfikacja'],
@@ -745,6 +751,24 @@
             return Infinity;
         }
 
+        function calculateIRR(cashFlows) {
+            var precision = 1e-6;
+            var maxIter = 1000;
+            var low = -0.99;
+            var high = 10;
+            for (var i = 0; i < maxIter; i++) {
+                var rate = (low + high) / 2;
+                var npv = 0;
+                for (var t = 0; t < cashFlows.length; t++) {
+                    npv += cashFlows[t] / Math.pow(1 + rate, t / 12);
+                }
+                if (Math.abs(npv) < precision) return rate;
+                if (npv > 0) low = rate; else high = rate;
+                if (high - low < precision) return (low + high) / 2;
+            }
+            return null;
+        }
+
         function calculate() {
             const manualPercent  = clamp('q1');
             const downCost       = currencyToUsd(clamp('q4'));
@@ -784,12 +808,18 @@
             const potentialSavings = (cWaste + cRisk) * autoLevel;
             const paybackMonths    = discountedPayback(potentialSavings, capex);
 
+            // ── IRR — Internal Rate of Return ──
+            var irrCashFlows = [-capex];
+            for (var mi = 1; mi <= ny * 12; mi++) irrCashFlows.push(potentialSavings / 12);
+            var irr = calculateIRR(irrCashFlows);
+
             document.getElementById('statWaste').textContent   = formatCurrency(cWaste);
             document.getElementById('statRisk').textContent    = formatCurrency(cRisk);
             document.getElementById('statOpp').textContent     = formatCurrency(cOppDirect);
             document.getElementById('statCascade').textContent = formatCurrency(cCascade);
             document.getElementById('totalImpact').textContent = formatCurrency(totalImpact);
             document.getElementById('npvTotalDebt').textContent = formatCurrency(npvTotalDebt);
+            document.getElementById('statIrr').textContent     = irr !== null ? (irr * 100).toFixed(1) + '%' : '—';
             document.getElementById('statNet').textContent     = formatCurrency(netDebt);
             document.getElementById('q9Val').textContent       = document.getElementById('q9').value;
             document.getElementById('q3Val').textContent       = document.getElementById('q3').value;
@@ -1080,7 +1110,7 @@
             const L = TRANSLATIONS[currentLang];
             const fmt = (n) => formatCurrency(Math.abs(n));
 
-            // Helper: compute net recovery and payback for a given autoLevel + capex
+            // Helper: compute net recovery, payback and IRR for a given autoLevel + capex
             function scenCalc(al, cx) {
                 var annualSavings = (cWaste + cRisk + cCascade) * al;
                 var dr = COEFFICIENTS.DISCOUNT_RATE;
@@ -1089,7 +1119,16 @@
                 var npvSavings = annualSavings * pvifa;
                 var net = npvSavings - cx;
                 var pb = discountedPayback(annualSavings, cx);
-                return { savings: annualSavings, npvSavings: npvSavings, net: net, pb: pb };
+                // IRR
+                var irrVal = null;
+                if (annualSavings > 0 && cx > 0) {
+                    var cf = [-cx];
+                    for (var m = 1; m <= ny * 12; m++) cf.push(annualSavings / 12);
+                    irrVal = calculateIRR(cf);
+                } else if (al === 0) {
+                    irrVal = 0;
+                }
+                return { savings: annualSavings, npvSavings: npvSavings, net: net, pb: pb, irr: irrVal };
             }
 
             const scenA = scenCalc(0,    0);
@@ -1154,6 +1193,10 @@
                         <div style="display:flex;justify-content:space-between;align-items:baseline;border-top:1px dashed var(--border-subtle);padding-top:0.5rem;margin-top:0.1rem;">
                             <span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);">${esc(L.scenLabelPayback)}</span>
                             <span style="font-size:1rem;font-weight:900;color:${pbColor(pb)};font-family:'Space Grotesk',sans-serif;">${esc(pbStr(pb))}</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+                            <span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);">IRR</span>
+                            <span style="font-size:0.9rem;font-weight:900;color:${calcResult.irr !== null && calcResult.irr > COEFFICIENTS.DISCOUNT_RATE ? 'var(--green)' : 'var(--red)'};font-family:'Space Grotesk',sans-serif;">${calcResult.irr !== null ? (calcResult.irr * 100).toFixed(1) + '%' : '—'}</span>
                         </div>
                     </div>
                 </div>`;
@@ -1290,6 +1333,14 @@
 
                     var paybackMo = discountedPayback(potSavings, capex);
 
+                    // ── IRR ──
+                    var irrVal = null;
+                    if (potSavings > 0 && capex > 0) {
+                        var irrCf = [-capex];
+                        for (var im = 1; im <= ny * 12; im++) irrCf.push(potSavings / 12);
+                        irrVal = calculateIRR(irrCf);
+                    }
+
                     // ── turnover / lever calcs (Bug 2 fix: use L for titles & effort) ──
                     const turnoverCost = (q10 / 100) * teamSize * q6 * COEFFICIENTS.TURNOVER_REF_HOURS;
                     const leversRaw = [
@@ -1312,7 +1363,16 @@
                         var npvSavings = annualSavings * pvifa;
                         var net = npvSavings - cx;
                         var pb = discountedPayback(annualSavings, cx);
-                        return { savings: annualSavings, npvSavings: npvSavings, net: net, pb: pb };
+                        // IRR
+                        var irrVal = null;
+                        if (annualSavings > 0 && cx > 0) {
+                            var cf = [-cx];
+                            for (var m = 1; m <= ny * 12; m++) cf.push(annualSavings / 12);
+                            irrVal = calculateIRR(cf);
+                        } else if (al === 0) {
+                            irrVal = 0;
+                        }
+                        return { savings: annualSavings, npvSavings: npvSavings, net: net, pb: pb, irr: irrVal };
                     }
                     const scenA = excelScenCalc(0, 0);
                     const scenB = excelScenCalc(autoLvl, capex);
@@ -1351,6 +1411,7 @@
                         Math.round(cWaste), Math.round(cRisk), Math.round(cOppDirect), Math.round(cCascade),
                         Math.round(totalImpact), Math.round(capex), Math.round(netDebt),
                         Math.round(potSavings), isFinite(paybackMo) ? Math.round(paybackMo * 10) / 10 : L.scenInfinity,
+                        irrVal !== null ? (irrVal * 100).toFixed(1) + '%' : '—',
                     ];
                     const resultsData = [
                         [L.xlsResultsTitle],
@@ -1386,6 +1447,9 @@
                         ['∞',
                          isFinite(scenB.pb) ? Math.round(scenB.pb * 10)/10 : '∞',
                          isFinite(scenC.pb) ? Math.round(scenC.pb * 10)/10 : '∞'],
+                        [scenA.irr !== null ? (scenA.irr * 100).toFixed(1) + '%' : '—',
+                         scenB.irr !== null ? (scenB.irr * 100).toFixed(1) + '%' : '—',
+                         scenC.irr !== null ? (scenC.irr * 100).toFixed(1) + '%' : '—'],
                     ];
                     const scenData = [
                         [L.xlsScenariosTitle],
