@@ -633,9 +633,9 @@
                 </div>
 
                 <div class="methodology-section" id="methodology-10">
-                    <h4 data-i18n="methodologyNpvTitle">10. NPV Economic Model</h4>
-                    <p><span class="methodology-label" data-i18n="methodologyFormulaLabel">Formula:</span> <code data-i18n="methodologyNpvFormula">NPV Total = One-Time Costs + PVIFA(rate, years) × Annual Recurring Costs</code></p>
-                    <p><span class="methodology-label" data-i18n="methodologyAssumptionsLabel">Note:</span> <span data-i18n="methodologyNpvNote">One-time costs = Pipeline Margin Erosion + CAPEX. Annual recurring = OPEX Waste + Risk + Cascade. PVIFA discounts the recurring stream using a 10% WACC over a 5-year horizon. Discounted Payback uses monthly DCF to find the break-even month.</span></p>
+                    <h4 data-i18n="methodologyNpvTitle">10. NPV & IRR Economic Model</h4>
+                    <p><span class="methodology-label" data-i18n="methodologyFormulaLabel">Formula:</span> <code data-i18n="methodologyNpvFormula">NPV = One-Time Costs + PVIFA × Annual Recurring | IRR = rate where Σ(CFₜ/(1+r)^(t/12)) = 0</code></p>
+                    <p><span class="methodology-label" data-i18n="methodologyAssumptionsLabel">Note:</span> <span data-i18n="methodologyNpvNote">One-time costs = Pipeline Margin Erosion + CAPEX. Annual recurring = OPEX Waste + Risk + Cascade. PVIFA discounts the recurring stream using a 10% WACC over a 5-year horizon. Discounted Payback uses monthly DCF to find the break-even month. IRR (Internal Rate of Return) is computed via binary search over monthly cash flows — the rate at which NPV = 0. IRR > WACC (10%) indicates value creation.</span></p>
                     <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyNpvSource">Brealey, Myers & Allen — Principles of Corporate Finance. COSO ERM 2017. Damodaran — Cost of Capital by Sector (2025).</span></p>
                 </div>
 
