@@ -591,7 +591,7 @@
                 <!-- 6 -->
                 <div class="methodology-section" id="methodology-6">
                     <h4 data-i18n="methodologyTurnoverTitle">6. Turnover Cost Model</h4>
-                    <p><span class="methodology-label" data-i18n="methodologyFormulaLabel">Formula:</span> <code>Turnover rate &times; 50 engineers &times; $150/hr blended rate &times; 2,000 hrs</code></p>
+                    <p><span class="methodology-label" data-i18n="methodologyFormulaLabel">Formula:</span> <code>Turnover rate &times; Team Size &times; Blended Rate (Q6) &times; 2,000 hrs</code></p>
                     <p><span class="methodology-label" data-i18n="methodologyAssumptionsLabel">Assumptions:</span> <span data-i18n="methodologyTurnoverAssumptions">The 50-engineer reference and $150/hr rate are organisational defaults aligned with SHRM's total replacement cost framework. Adjust these to match your actual headcount and cost structures.</span></p>
                     <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyTurnoverSource">SHRM Foundation — "Retaining Talent: A Guide to Analyzing and Managing Employee Turnover" (2025 update). SHRM 2025 Benchmarking Reports, shrm.org/benchmarking.</span></p>
                 </div>
@@ -610,7 +610,15 @@
                     <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyFxSource">Narodowy Bank Polski — Table A mid exchange rates. api.nbp.pl.</span></p>
                 </div>
 
-                <p class="methodology-footer" id="methodology-footer" data-i18n="methodologyFooter">Methodology references last updated June 2026. All estimates labelled "tool estimate" should be calibrated against your organisation's own data for greatest accuracy.</p>
+                <!-- 9 -->
+                <div class="methodology-section" id="methodology-9">
+                    <h4 data-i18n="methodologyTotalTitle">9. Total Debt Impact</h4>
+                    <p><span class="methodology-label" data-i18n="methodologyFormulaLabel">Formula:</span> <code data-i18n="methodologyTotalFormula">OPEX Waste + Risk Exposure + Pipeline Margin Erosion + Cascade Impact</code></p>
+                    <p><span class="methodology-label" data-i18n="methodologyAssumptionsLabel">Note:</span> <span data-i18n="methodologyTotalNote">Pipeline Margin Erosion (cOppDirect) is a one-time estimate reflecting margin lost in the first year of delay. All other components recur annually. Cascade Impact is proportional to OPEX Waste — reducing manual waste automatically reduces cascade costs.</span></p>
+                    <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyTotalSource">Economic model synthesised from BLS ATUS (2024), OECD Annual Hours (2024), Exepron "True Cost of Delay" (2026), COSO ERM (2017), and SHRM Retention Framework (2025).</span></p>
+                </div>
+
+                <p class="methodology-footer" id="methodology-footer" data-i18n="methodologyFooter">Methodology references last updated July 2026. All estimates labelled "tool estimate" should be calibrated against your organisation's own data for greatest accuracy.</p>
 
             </div>
         </details>
