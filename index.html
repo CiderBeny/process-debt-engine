@@ -373,6 +373,80 @@
                     <span class="helper-text mt-1 block" data-i18n="capexHelper">Licenses, Implementation, and Training costs.</span>
                 </div>
             </div>
+
+            <details class="mt-6 border-t border-border pt-4" style="grid-column:1/-1;">
+                <summary class="label cursor-pointer select-none text-xs font-bold uppercase tracking-widest opacity-70 hover:opacity-100"
+                         data-i18n="advancedTitle">⚙ Advanced Parameters</summary>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+
+                    <div>
+                        <label class="label" for="cascadeMult" data-i18n="cascadeMultLabel">Cascade Multiplier</label>
+                        <span class="helper-text mt-1 block" data-i18n="cascadeMultHelper">Proportion of OPEX Waste applied as cascade (0.0–1.5). Default 0.5.</span>
+                        <div class="slider-wrapper">
+                            <div class="slider-track-bg"></div>
+                            <div class="slider-track-fill" id="cascadeMultFill"></div>
+                            <input type="range" id="cascadeMult" min="0" max="150" value="50" class="slider">
+                        </div>
+                        <p class="text-center text-xs mt-1"><span id="cascadeMultVal">0.5</span></p>
+                    </div>
+
+                    <div>
+                        <label class="label" for="erosionRate" data-i18n="erosionRateLabel">Pipeline Erosion Rate</label>
+                        <span class="helper-text mt-1 block" data-i18n="erosionRateHelper">Fraction of opportunity margin eroded yearly (0.0–1.0). Default 0.25.</span>
+                        <div class="slider-wrapper">
+                            <div class="slider-track-bg"></div>
+                            <div class="slider-track-fill" id="erosionRateFill"></div>
+                            <input type="range" id="erosionRate" min="0" max="100" value="25" class="slider">
+                        </div>
+                        <p class="text-center text-xs mt-1"><span id="erosionRateVal">0.25</span></p>
+                    </div>
+
+                    <div>
+                        <label class="label" for="discountRate" data-i18n="discountRateLabel">WACC (Discount Rate)</label>
+                        <span class="helper-text mt-1 block" data-i18n="discountRateHelper">Weighted Average Cost of Capital (5%–20%). Default 10%.</span>
+                        <div class="slider-wrapper">
+                            <div class="slider-track-bg"></div>
+                            <div class="slider-track-fill" id="discountRateFill"></div>
+                            <input type="range" id="discountRate" min="5" max="20" value="10" step="0.5" class="slider">
+                        </div>
+                        <p class="text-center text-xs mt-1"><span id="discountRateVal">10</span>%</p>
+                    </div>
+
+                    <div>
+                        <label class="label" for="timeHorizon" data-i18n="timeHorizonLabel">Time Horizon (years)</label>
+                        <span class="helper-text mt-1 block" data-i18n="timeHorizonHelper">NPV / payback evaluation period (3–10 yr). Default 5.</span>
+                        <div class="slider-wrapper">
+                            <div class="slider-track-bg"></div>
+                            <div class="slider-track-fill" id="timeHorizonFill"></div>
+                            <input type="range" id="timeHorizon" min="3" max="10" value="5" class="slider">
+                        </div>
+                        <p class="text-center text-xs mt-1"><span id="timeHorizonVal">5</span></p>
+                    </div>
+
+                    <div>
+                        <label class="label" for="leverAutomation" data-i18n="leverAutomationLabel">Automation Lever Recovery</label>
+                        <span class="helper-text mt-1 block" data-i18n="leverAutomationHelper">Fraction of OPEX Waste recoverable via automation (10%–60%). Default 30%.</span>
+                        <div class="slider-wrapper">
+                            <div class="slider-track-bg"></div>
+                            <div class="slider-track-fill" id="leverAutomationFill"></div>
+                            <input type="range" id="leverAutomation" min="10" max="60" value="30" class="slider">
+                        </div>
+                        <p class="text-center text-xs mt-1"><span id="leverAutomationVal">30</span>%</p>
+                    </div>
+
+                    <div>
+                        <label class="label" for="leverRisk" data-i18n="leverRiskLabel">Risk Lever Recovery</label>
+                        <span class="helper-text mt-1 block" data-i18n="leverRiskHelper">Fraction of Risk Exposure recoverable via CMDB/Auto-Discovery (20%–80%). Default 60%.</span>
+                        <div class="slider-wrapper">
+                            <div class="slider-track-bg"></div>
+                            <div class="slider-track-fill" id="leverRiskFill"></div>
+                            <input type="range" id="leverRisk" min="20" max="80" value="60" class="slider">
+                        </div>
+                        <p class="text-center text-xs mt-1"><span id="leverRiskVal">60</span>%</p>
+                    </div>
+
+                </div>
+            </details>
         </div>
 
         <!-- SECTION 2: RESULTS -->

@@ -6,12 +6,12 @@ const COEFFICIENTS = {
     ANNUAL_HOURS_PER_ENGINEER: 1800,
     MONTHS_PER_YEAR:           12,
     QUARTERS_PER_YEAR:         4,
-    PIPELINE_EROSION_RATE:     0.25,
-    CASCADE_MULTIPLIER:        0.5,
+    PIPELINE_EROSION_RATE_DEFAULT: 0.25,
+    CASCADE_MULTIPLIER_DEFAULT:    0.5,
     SCEN_C_AUTO_LEVEL:         0.8,
     SCEN_C_CAPEX_MULTIPLIER:   1.5,
-    LEVER_AUTOMATION:          0.3,
-    LEVER_RISK:                0.6,
+    LEVER_AUTOMATION_DEFAULT:  0.3,
+    LEVER_RISK_DEFAULT:        0.6,
     LEVER_INNOVATION:          0.5,
     LEVER_MANAGEMENT:          0.15,
     LEVER_TURNOVER:            0.3,
@@ -21,19 +21,20 @@ const COEFFICIENTS = {
     PAYBACK_YELLOW:            48,
     AUTOMATABLE_SHARE:         0.6,
     TARGET_RISK_REDUCTION:     0.5,
-    REC_AUTO_MIN_WASTE:        100000,
-    REC_RISK_MIN_EXPOSURE:     50000,
-    REC_INNOVATION_MIN:        150000,
-    DISCOUNT_RATE:              0.10,
-    TIME_HORIZON_YEARS:         5,
+    REC_AUTO_MIN_WASTE:        0,
+    REC_RISK_MIN_EXPOSURE:     0,
+    REC_INNOVATION_MIN:        0,
+    DISCOUNT_RATE_DEFAULT:      0.10,
+    TIME_HORIZON_YEARS_DEFAULT: 5,
 };
 
-function discountedPayback(annualSavings, investment) {
+function discountedPayback(annualSavings, investment, rate, maxYears) {
     if (annualSavings <= 0 || investment <= 0) return Infinity;
-    var rate = COEFFICIENTS.DISCOUNT_RATE;
+    if (rate === undefined) rate = COEFFICIENTS.DISCOUNT_RATE_DEFAULT;
+    if (maxYears === undefined) maxYears = COEFFICIENTS.TIME_HORIZON_YEARS_DEFAULT;
     var monthly = annualSavings / 12;
     var cumulative = 0;
-    var maxMonths = COEFFICIENTS.TIME_HORIZON_YEARS * 12;
+    var maxMonths = maxYears * 12;
     for (var m = 1; m <= maxMonths; m++) {
         cumulative += monthly / Math.pow(1 + rate, m / 12);
         if (cumulative >= investment) return m;
@@ -111,13 +112,13 @@ describe('Known Issue #2 — OPEX Waste appears 2.5× in Total Debt Impact', () 
     const SAMPLE = { cWaste: 500000, cRisk: 80000, cOppDirect: 25000, autoLevel: 0.6, capex: 200000 };
 
     it('cCascade = cWaste × 0.5 ⇒ OPEX contributes indirectly via cascade (reduced)', () => {
-        const cCascade = SAMPLE.cWaste * COEFFICIENTS.CASCADE_MULTIPLIER;
+        const cCascade = SAMPLE.cWaste * COEFFICIENTS.CASCADE_MULTIPLIER_DEFAULT;
         assert.strictEqual(cCascade, 250000,
             'cCascade = $500k × 0.5 = $250k — reduced multiplier to avoid double-counting');
     });
 
     it('totalImpact = cWaste + cRisk + cOppDirect + cCascade — cascade no longer dominates', () => {
-        const cCascade = SAMPLE.cWaste * COEFFICIENTS.CASCADE_MULTIPLIER;
+        const cCascade = SAMPLE.cWaste * COEFFICIENTS.CASCADE_MULTIPLIER_DEFAULT;
         const total = SAMPLE.cWaste + SAMPLE.cRisk + SAMPLE.cOppDirect + cCascade;
         const opexContribution = SAMPLE.cWaste + cCascade; // 500k + 250k = 750k
         assert.strictEqual(total, 500000 + 80000 + 25000 + 250000,
@@ -127,7 +128,7 @@ describe('Known Issue #2 — OPEX Waste appears 2.5× in Total Debt Impact', () 
     });
 
     it('Main payback savings base now matches scenario savings — both include cascade (fixed)', () => {
-        const cCascade = SAMPLE.cWaste * COEFFICIENTS.CASCADE_MULTIPLIER;
+        const cCascade = SAMPLE.cWaste * COEFFICIENTS.CASCADE_MULTIPLIER_DEFAULT;
         const allSavings = (SAMPLE.cWaste + SAMPLE.cRisk + cCascade) * SAMPLE.autoLevel;
         assert.strictEqual(allSavings, (500000 + 80000 + 250000) * 0.6,
             'Both main payback and scenarios use (cWaste + cRisk + cCascade) × autoLevel = $498k/yr');
@@ -139,12 +140,12 @@ describe('Known Issue #2 — OPEX Waste appears 2.5× in Total Debt Impact', () 
 
 // ── Known Issue #3: Arbitrary coefficients ─────────────────────
 describe('Known Issue #3 — Hardcoded coefficients without direct empirical basis', () => {
-    it('Pipeline erosion rate = 0.25 (25%) — no single authoritative study isolates this fraction', () => {
-        assert.strictEqual(COEFFICIENTS.PIPELINE_EROSION_RATE, 0.25);
+    it('Pipeline erosion rate default = 0.25 (25%) — no single authoritative study isolates this fraction', () => {
+        assert.strictEqual(COEFFICIENTS.PIPELINE_EROSION_RATE_DEFAULT, 0.25);
     });
 
-    it('Cascade multiplier = 0.5 (reduced from 1.5 to avoid OPEX double-counting)', () => {
-        assert.strictEqual(COEFFICIENTS.CASCADE_MULTIPLIER, 0.5);
+    it('Cascade multiplier default = 0.5 (reduced from 1.5 to avoid OPEX double-counting)', () => {
+        assert.strictEqual(COEFFICIENTS.CASCADE_MULTIPLIER_DEFAULT, 0.5);
     });
 
     it('Scenario C: auto level = 80%, CAPEX multiplier = 1.5 — model assumptions, not externally sourced', () => {
@@ -153,8 +154,8 @@ describe('Known Issue #3 — Hardcoded coefficients without direct empirical bas
     });
 
     it('Lever recovery rates: 30%, 60%, 50%, 15%, 30% — fixed percentages from varied sources', () => {
-        assert.strictEqual(COEFFICIENTS.LEVER_AUTOMATION, 0.3);
-        assert.strictEqual(COEFFICIENTS.LEVER_RISK, 0.6);
+        assert.strictEqual(COEFFICIENTS.LEVER_AUTOMATION_DEFAULT, 0.3);
+        assert.strictEqual(COEFFICIENTS.LEVER_RISK_DEFAULT, 0.6);
         assert.strictEqual(COEFFICIENTS.LEVER_INNOVATION, 0.5);
         assert.strictEqual(COEFFICIENTS.LEVER_MANAGEMENT, 0.15);
         assert.strictEqual(COEFFICIENTS.LEVER_TURNOVER, 0.3);
@@ -173,19 +174,19 @@ describe('Known Issue #3 — Hardcoded coefficients without direct empirical bas
         assert.strictEqual(COEFFICIENTS.TURNOVER_REF_HOURS, 1800);
     });
 
-    it('Recommendation gate thresholds: $100k, $50k, $150k — arbitrary dollar floors', () => {
-        assert.strictEqual(COEFFICIENTS.REC_AUTO_MIN_WASTE, 100000);
-        assert.strictEqual(COEFFICIENTS.REC_RISK_MIN_EXPOSURE, 50000);
-        assert.strictEqual(COEFFICIENTS.REC_INNOVATION_MIN, 150000);
+    it('Recommendation gate thresholds: all set to 0 (always show when > 0)', () => {
+        assert.strictEqual(COEFFICIENTS.REC_AUTO_MIN_WASTE, 0);
+        assert.strictEqual(COEFFICIENTS.REC_RISK_MIN_EXPOSURE, 0);
+        assert.strictEqual(COEFFICIENTS.REC_INNOVATION_MIN, 0);
     });
 });
 
 // ── Known Issue #4 (mitigated): NPV + Discounted Payback ──────
 describe('Known Issue #4 (mitigated) — NPV model verifies fix is in place', () => {
-    it('COEFFICIENTS now contains DISCOUNT_RATE and TIME_HORIZON_YEARS', () => {
-        assert.strictEqual(COEFFICIENTS.DISCOUNT_RATE, 0.10,
+    it('COEFFICIENTS contains DISCOUNT_RATE_DEFAULT and TIME_HORIZON_YEARS_DEFAULT', () => {
+        assert.strictEqual(COEFFICIENTS.DISCOUNT_RATE_DEFAULT, 0.10,
             'Discount rate = 10% (WACC benchmark for IT infra)');
-        assert.strictEqual(COEFFICIENTS.TIME_HORIZON_YEARS, 5,
+        assert.strictEqual(COEFFICIENTS.TIME_HORIZON_YEARS_DEFAULT, 5,
             'Time horizon = 5 years (standard investment horizon)');
     });
 
@@ -250,8 +251,8 @@ describe('Known Issue #4 (mitigated) — NPV model verifies fix is in place', ()
         for (var m = 1; m <= 60; m++) cf.push(29000); // $348k/yr / 12
         var irr = calculateIRR(cf);
         assert.ok(irr !== null, 'IRR should be computable');
-        assert.ok(irr > COEFFICIENTS.DISCOUNT_RATE,
-            'IRR (' + (irr * 100).toFixed(1) + '%) should exceed WACC (' + (COEFFICIENTS.DISCOUNT_RATE * 100) + '%)');
+        assert.ok(irr > COEFFICIENTS.DISCOUNT_RATE_DEFAULT,
+            'IRR (' + (irr * 100).toFixed(1) + '%) should exceed WACC (' + (COEFFICIENTS.DISCOUNT_RATE_DEFAULT * 100) + '%)');
     });
 
     it('IRR is meaningless (null or < -90%) for all-negative cash flows', () => {
