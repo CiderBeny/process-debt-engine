@@ -805,7 +805,7 @@
             var npvRecurring = annualRecurring * pvifa;
             var npvTotalDebt = oneTimeCosts + npvRecurring;
 
-            const potentialSavings = (cWaste + cRisk) * autoLevel;
+            const potentialSavings = (cWaste + cRisk + cCascade) * autoLevel;
             const paybackMonths    = discountedPayback(potentialSavings, capex);
 
             // ── IRR — Internal Rate of Return ──
@@ -1320,7 +1320,7 @@
                     const cCascade   = cWaste * COEFFICIENTS.CASCADE_MULTIPLIER;
                     const totalImpact = cWaste + cRisk + cOppDirect + cCascade;
                     const netDebt     = totalImpact - capex;
-                    const potSavings  = (cWaste + cRisk) * autoLvl;
+                    const potSavings  = (cWaste + cRisk + cCascade) * autoLvl;
 
                     // ── NPV ──
                     var annualRecurring = cWaste + cRisk + cCascade;

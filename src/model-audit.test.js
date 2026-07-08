@@ -124,24 +124,14 @@ describe('Known Issue #2 — OPEX Waste appears 2.5× in Total Debt Impact', () 
             'OPEX contributes $1.25M of $1.355M total = 92% via 1× direct + 1.5× cascade');
     });
 
-    it('Main payback savings base (cWaste + cRisk) differs from scenario savings (cWaste + cRisk + cCascade)', () => {
+    it('Main payback savings base now matches scenario savings — both include cascade (fixed)', () => {
         const cCascade = SAMPLE.cWaste * COEFFICIENTS.CASCADE_MULTIPLIER;
-        const mainSavings = (SAMPLE.cWaste + SAMPLE.cRisk) * SAMPLE.autoLevel;
-        const scenSavings = (SAMPLE.cWaste + SAMPLE.cRisk + cCascade) * SAMPLE.autoLevel;
-        assert.notStrictEqual(mainSavings, scenSavings,
-            'Main payback = $(500k+80k)×60% = $348k/yr vs Scenario = $(500k+80k+750k)×60% = $798k/yr');
-        assert.ok(scenSavings > mainSavings,
-            'Scenario savings inflate by including cascade, giving 2.3× higher apparent savings');
-    });
-
-    it('Main payback period differs from scenario payback due to different savings bases', () => {
-        const cCascade = SAMPLE.cWaste * COEFFICIENTS.CASCADE_MULTIPLIER;
-        const mainSavings = (SAMPLE.cWaste + SAMPLE.cRisk) * SAMPLE.autoLevel;
-        const scenSavings = (SAMPLE.cWaste + SAMPLE.cRisk + cCascade) * SAMPLE.autoLevel;
-        const mainPb = SAMPLE.capex / Math.max(1, mainSavings / 12);
-        const scenPb = SAMPLE.capex / Math.max(1, scenSavings / 12);
-        assert.ok(mainPb > scenPb,
-            'Main payback = 6.9 mo vs Scenario payback = 3.0 mo — same investment, different payback claims');
+        const allSavings = (SAMPLE.cWaste + SAMPLE.cRisk + cCascade) * SAMPLE.autoLevel;
+        assert.strictEqual(allSavings, (500000 + 80000 + 750000) * 0.6,
+            'Both main payback and scenarios use (cWaste + cRisk + cCascade) × autoLevel = $798k/yr');
+        const pb = SAMPLE.capex / Math.max(1, allSavings / 12);
+        assert.strictEqual(pb, 200000 / (798000 / 12),
+            'Payback = $200k / ($798k/12) = 3.0 mo — consistent across main metric and scenarios');
     });
 });
 
