@@ -29,7 +29,7 @@
                 q9desc:   'Impact on ability to scale growth?',
                 q10label: '10. Employee Turnover (%)',
                 q10desc:  'What is the annual turnover rate in teams heavily burdened by manual, repetitive work (burnout indicator)?',
-                q11label: '11. MTTR ({C})',
+                q11label: '11. MTTR (hrs)',
                 q11desc:  'What is the average time (in hours) to restore a critical service after a production incident (Mean Time To Repair)?',
                 simTitle:       'Investment & Simulation Parameters',
                 autoLabel:      'Target Automation Level (%)',
@@ -47,10 +47,11 @@
                 statIrrLabel:     'IRR',
                 statNetLabel:   'Net Debt After Investment',
                 statNetHelper:  'Total impact minus CAPEX',
+                statNpvHelper:  '5-year net present value at 10% WACC — includes time value of money',
                 formulaWaste: '(Manual hrs/yr + Manager chase hrs/yr) × Blended Rate × Team Size',
                 formulaRisk:  'Annual failures × MTTR × Downtime cost/hr × (Risk level / 5)',
                 formulaOpp:     '(Opportunity margin × 0.25)',
-                formulaCascade: 'OPEX Waste × 1.5 (pipeline cascade multiplier)',
+                formulaCascade: 'OPEX Waste × 0.5 (pipeline cascade multiplier — conservative)',
                 formulaTotal:   'OPEX Waste + Risk Exposure + Pipeline Margin Erosion + Cascade Impact',
                 formulaNet:   'Total Debt Impact − CAPEX Investment',
                 chart1Title: '1. Waterfall: Capacity Erosion',
@@ -297,7 +298,7 @@
                 q9desc:   'Wpływ na zdolność do skalowania wzrostu?',
                 q10label: '10. Rotacja Pracowników (%)',
                 q10desc:  'Jaki jest roczny wskaźnik rotacji w zespołach przeciążonych manualną, powtarzalną pracą (wskaźnik wypalenia)?',
-                q11label: '11. MTTR ({C})',
+                q11label: '11. MTTR (godz.)',
                 q11desc:  'Jaki jest średni czas (w godzinach) przywracania krytycznej usługi po awarii produkcyjnej (Mean Time To Repair)?',
                 simTitle:       'Parametry Inwestycji i Symulacji',
                 autoLabel:      'Docelowy Poziom Automatyzacji (%)',
@@ -315,10 +316,11 @@
                 statIrrLabel:     'IRR',
                 statNetLabel:   'Dług Netto po Inwestycji',
                 statNetHelper:  'Całkowity wpływ minus CAPEX',
+                statNpvHelper:  '5-letnia wartość bieżąca netto przy 10% WACC — uwzględnia wartość pieniądza w czasie',
                 formulaWaste: '(Godz. manualne/rok + Godz. koordynacji/rok) × Stawka łączona × Liczba inżynierów',
                 formulaRisk:  'Roczne awarie × MTTR × Koszt przestoju/godz. × (Poziom ryzyka / 5)',
                 formulaOpp:     '(Marża szans × 0,25)',
-                formulaCascade: 'Marnotrawstwo OPEX × 1,5 (mnożnik kaskady pipeline)',
+                formulaCascade: 'Marnotrawstwo OPEX × 0,5 (mnożnik kaskady pipeline — konserwatywny)',
                 formulaTotal:   'Marnotrawstwo OPEX + Ekspozycja na ryzyko + Erozja Marży Pipeline + Efekt Kaskadowy',
                 formulaNet:   'Całkowity wpływ długu − Inwestycja CAPEX',
                 chart1Title: '1. Wodospad: Erozja Pojemności',
@@ -547,52 +549,52 @@
            they are auditable, documented, and not duplicated across functions.
            Sources referenced where available.
         ─────────────────────────────────────────────────────────────────────── */
-        const COEFFICIENTS = {
-            // ── Annualised conversions ──
-            ANNUAL_HOURS_PER_ENGINEER: 1800,   // BLS ATUS 2024 / OECD (~1,811 rounded)
-            MONTHS_PER_YEAR:           12,
-            QUARTERS_PER_YEAR:         4,
+         const COEFFICIENTS = {
+             // ── Annualised conversions ──
+             ANNUAL_HOURS_PER_ENGINEER: 1800,   // BLS ATUS 2024 / OECD (~1,811 rounded)  · confidence: high
+             MONTHS_PER_YEAR:           12,
+             QUARTERS_PER_YEAR:         4,
 
-            // ── Opportunity & Cascade ──
-            PIPELINE_EROSION_RATE:     0.25,   // conservative floor — Exepron 2026
-            CASCADE_MULTIPLIER:        1.5,    // conservative minimum — Exepron 2026
+             // ── Opportunity & Cascade ──
+             PIPELINE_EROSION_RATE:     0.25,   // conservative floor — Exepron 2026           · confidence: low
+             CASCADE_MULTIPLIER:        0.5,    // reduced from 1.5 to avoid OPEX double-counting · confidence: low
 
-            // ── Scenario C thresholds ──
-            SCEN_C_AUTO_LEVEL:         0.8,    // 80 % full automation
-            SCEN_C_CAPEX_MULTIPLIER:   1.5,    // +50 % CAPEX for full automation
+             // ── Scenario C thresholds ──
+             SCEN_C_AUTO_LEVEL:         0.8,    // 80 % full automation                        · confidence: medium
+             SCEN_C_CAPEX_MULTIPLIER:   1.5,    // +50 % CAPEX for full automation              · confidence: medium
 
-            // ── Lever recovery rates ──
-            LEVER_AUTOMATION:          0.3,    // Forrester TEI GitLab Jul 2024
-            LEVER_RISK:                0.6,    // CMDB case studies composite
-            LEVER_INNOVATION:          0.5,    // DORA 2024 midpoint
-            LEVER_MANAGEMENT:          0.15,   // Context-switch studies (PanDev 2026)
-            LEVER_TURNOVER:            0.3,    // SHRM Foundation 2025
+             // ── Lever recovery rates ──
+             LEVER_AUTOMATION:          0.3,    // Forrester TEI GitLab Jul 2024                · confidence: medium
+             LEVER_RISK:                0.6,    // CMDB case studies composite                 · confidence: low
+             LEVER_INNOVATION:          0.5,    // DORA 2024 midpoint                          · confidence: medium
+             LEVER_MANAGEMENT:          0.15,   // Context-switch studies (PanDev 2026)         · confidence: low
+             LEVER_TURNOVER:            0.3,    // SHRM Foundation 2025                         · confidence: medium
 
-            // ── Turnover default annual hours ──
-            TURNOVER_REF_HOURS:        2000,   // hrs/yr (SHRM framework)
+             // ── Turnover default annual hours ──
+             TURNOVER_REF_HOURS:        1800,   // hrs/yr — aligned with ANNUAL_HOURS_PER_ENGINEER · confidence: high
 
-            // ── Risk normalisation ──
-            RISK_SCALE_MAX:            5,      // q9 is 1–5 scale
+             // ── Risk normalisation ──
+             RISK_SCALE_MAX:            5,      // q9 is 1–5 scale
 
-            // ── Payback colour thresholds (months) ──
-            PAYBACK_GREEN:             24,
-            PAYBACK_YELLOW:            48,
+             // ── Payback colour thresholds (months) ──
+             PAYBACK_GREEN:             24,
+             PAYBACK_YELLOW:            48,
 
-            // ── Automation — share of manual work that is automatable ──
-            AUTOMATABLE_SHARE:         0.6,    // 60% — cited in DevOps literature
+             // ── Automation — share of manual work that is automatable ──
+             AUTOMATABLE_SHARE:         0.6,    // 60% — cited in DevOps literature             · confidence: medium
 
-            // ── Risk heatmap — target-state risk reduction ──
-            TARGET_RISK_REDUCTION:     0.5,    // 50% reduction post-automation
+             // ── Risk heatmap — target-state risk reduction (unused — now inline in updateCharts)
+             TARGET_RISK_REDUCTION:     0.5,    // kept for backward compat                     · confidence: deprecated
 
-            // ── Recommendation gate thresholds ──
-            REC_AUTO_MIN_WASTE:        100000, // $
-            REC_RISK_MIN_EXPOSURE:     50000,  // $
-            REC_INNOVATION_MIN:        150000, // $
+             // ── Recommendation gate thresholds ──
+             REC_AUTO_MIN_WASTE:        100000, // $                                           · confidence: low
+             REC_RISK_MIN_EXPOSURE:     50000,  // $                                           · confidence: low
+             REC_INNOVATION_MIN:        150000, // $                                           · confidence: low
 
-            // ── Economic model (NPV / DCF) ──
-            DISCOUNT_RATE:              0.10,   // 10% WACC — IT infra benchmark
-            TIME_HORIZON_YEARS:         5,      // standard investment horizon
-        };
+             // ── Economic model (NPV / DCF) ──
+             DISCOUNT_RATE:              0.10,   // 10% WACC — IT infra benchmark               · confidence: high
+             TIME_HORIZON_YEARS:         5,      // standard investment horizon                 · confidence: high
+         };
 
         /* ── XSS guard ──────────────────────────────────────────────────────────
            esc() escapes the five HTML-special characters before any string-typed
@@ -892,7 +894,7 @@
                 data: {
                     datasets: [
                         { label: L.chartCurrentState, data: [{x: effort, y: risk}], backgroundColor: DARK.red, pointRadius: 14, pointHoverRadius: 18 },
-                        { label: L.chartTargetState,  data: [{x: effort*(1-auto), y: risk * COEFFICIENTS.TARGET_RISK_REDUCTION}], backgroundColor: DARK.green, pointRadius: 14, pointHoverRadius: 18 }
+                        { label: L.chartTargetState,  data: [{x: effort*(1-auto), y: risk * (1 - auto * 0.6)}], backgroundColor: DARK.green, pointRadius: 14, pointHoverRadius: 18 }
                     ]
                 },
                 options: {

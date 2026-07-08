@@ -7,7 +7,7 @@ const COEFFICIENTS = {
     MONTHS_PER_YEAR:           12,
     QUARTERS_PER_YEAR:         4,
     PIPELINE_EROSION_RATE:     0.25,
-    CASCADE_MULTIPLIER:        1.5,
+    CASCADE_MULTIPLIER:        0.5,
     SCEN_C_AUTO_LEVEL:         0.8,
     SCEN_C_CAPEX_MULTIPLIER:   1.5,
     LEVER_AUTOMATION:          0.3,
@@ -15,7 +15,7 @@ const COEFFICIENTS = {
     LEVER_INNOVATION:          0.5,
     LEVER_MANAGEMENT:          0.15,
     LEVER_TURNOVER:            0.3,
-    TURNOVER_REF_HOURS:        2000,
+    TURNOVER_REF_HOURS:        1800,
     RISK_SCALE_MAX:            5,
     PAYBACK_GREEN:             24,
     PAYBACK_YELLOW:            48,
@@ -60,27 +60,29 @@ function calculateIRR(cashFlows) {
 }
 
 const TRANSLATIONS_EN_LABELS = {
-    q11label: '11. MTTR ({C})',
+    q11label: '11. MTTR (hrs)',
     q4label:  '4. Downtime Cost ({C}/h)',
 };
 
-// ── Known Issue #1: MTTR unit error ────────────────────────────
-describe('Known Issue #1 — MTTR unit error (label shows currency, not hours)', () => {
-    it('q11label contains {C} (currency symbol) but MTTR is a time unit', () => {
+// ── Known Issue #1 (fixed): MTTR label now shows hours, not currency ─────
+describe('Known Issue #1 (fixed) — MTTR label corrected to hours', () => {
+    it('q11label uses "hrs" (time unit) instead of "{C}" (currency)', () => {
         assert.ok(
-            TRANSLATIONS_EN_LABELS.q11label.includes('{C}'),
-            'BUG PRESENT: q11label="MTTR ({C})" — MTTR is in hours, not currency.\n' +
-            'Expected fix: change to "MTTR (hrs)" (EN) / "MTTR (godz.)" (PL).',
+            TRANSLATIONS_EN_LABELS.q11label.includes('hrs'),
+            'FIX APPLIED: q11label="MTTR (hrs)" — no longer uses {C}',
+        );
+        assert.ok(
+            !TRANSLATIONS_EN_LABELS.q11label.includes('{C}'),
+            'FIX APPLIED: {C} removed from q11label — users now see the correct unit',
         );
     });
 
-    it('q11label is inconsistent with q4label — q4 uses {C}/h (cost), q11 should use hrs', () => {
-        const mttrUsesCurrency = TRANSLATIONS_EN_LABELS.q11label.includes('{C}');
+    it('q11label is now consistent with q4label — q4 uses {C}/h (cost), q11 uses hrs (time)', () => {
+        const mttrUsesHrs = TRANSLATIONS_EN_LABELS.q11label.includes('hrs');
         const downCostUsesCurrencyHr = TRANSLATIONS_EN_LABELS.q4label.includes('{C}/h');
         assert.ok(
-            mttrUsesCurrency && downCostUsesCurrencyHr,
-            'BUG PRESENT: both q11 and q4 use {C}, but q11 is hours, q4 is $/hr.\n' +
-            'When MTTR is labelled as currency, users may enter dollar amounts instead of hours.',
+            mttrUsesHrs && downCostUsesCurrencyHr,
+            'q11 uses hrs, q4 uses {C}/h — no ambiguity between time and cost labels',
         );
     });
 
@@ -90,7 +92,7 @@ describe('Known Issue #1 — MTTR unit error (label shows currency, not hours)',
             'q11 max is 168 hours (= 1 week), proving MTTR is a time value, not monetary');
     });
 
-    it('Risk formula is dimensionally correct despite the label bug', () => {
+    it('Risk formula is dimensionally correct', () => {
         // cRisk = (failures × mttr × downCost) × (riskLevel / 5)
         // units:   (count × hrs × $/hr)   × (dimensionless)
         //        = (count × $)             = monetary value ✓
@@ -108,30 +110,30 @@ describe('Known Issue #1 — MTTR unit error (label shows currency, not hours)',
 describe('Known Issue #2 — OPEX Waste appears 2.5× in Total Debt Impact', () => {
     const SAMPLE = { cWaste: 500000, cRisk: 80000, cOppDirect: 25000, autoLevel: 0.6, capex: 200000 };
 
-    it('cCascade = cWaste × 1.5 ⇒ OPEX contributes indirectly via cascade', () => {
+    it('cCascade = cWaste × 0.5 ⇒ OPEX contributes indirectly via cascade (reduced)', () => {
         const cCascade = SAMPLE.cWaste * COEFFICIENTS.CASCADE_MULTIPLIER;
-        assert.strictEqual(cCascade, 750000,
-            'cCascade = $500k × 1.5 = $750k — proportional to OPEX Waste');
+        assert.strictEqual(cCascade, 250000,
+            'cCascade = $500k × 0.5 = $250k — reduced multiplier to avoid double-counting');
     });
 
-    it('totalImpact = cWaste + cRisk + cOppDirect + cCascade — same OPEX appears twice', () => {
+    it('totalImpact = cWaste + cRisk + cOppDirect + cCascade — cascade no longer dominates', () => {
         const cCascade = SAMPLE.cWaste * COEFFICIENTS.CASCADE_MULTIPLIER;
         const total = SAMPLE.cWaste + SAMPLE.cRisk + SAMPLE.cOppDirect + cCascade;
-        const opexContribution = SAMPLE.cWaste + cCascade; // 500k + 750k = 1.25M
-        assert.strictEqual(total, 500000 + 80000 + 25000 + 750000,
-            'Total = 500k + 80k + 25k + 750k = $1,355,000');
+        const opexContribution = SAMPLE.cWaste + cCascade; // 500k + 250k = 750k
+        assert.strictEqual(total, 500000 + 80000 + 25000 + 250000,
+            'Total = 500k + 80k + 25k + 250k = $855,000');
         assert.ok(opexContribution > SAMPLE.cWaste,
-            'OPEX contributes $1.25M of $1.355M total = 92% via 1× direct + 1.5× cascade');
+            'OPEX contributes $750k of $855k total = 88% via 1× direct + 0.5× cascade');
     });
 
     it('Main payback savings base now matches scenario savings — both include cascade (fixed)', () => {
         const cCascade = SAMPLE.cWaste * COEFFICIENTS.CASCADE_MULTIPLIER;
         const allSavings = (SAMPLE.cWaste + SAMPLE.cRisk + cCascade) * SAMPLE.autoLevel;
-        assert.strictEqual(allSavings, (500000 + 80000 + 750000) * 0.6,
-            'Both main payback and scenarios use (cWaste + cRisk + cCascade) × autoLevel = $798k/yr');
+        assert.strictEqual(allSavings, (500000 + 80000 + 250000) * 0.6,
+            'Both main payback and scenarios use (cWaste + cRisk + cCascade) × autoLevel = $498k/yr');
         const pb = SAMPLE.capex / Math.max(1, allSavings / 12);
-        assert.strictEqual(pb, 200000 / (798000 / 12),
-            'Payback = $200k / ($798k/12) = 3.0 mo — consistent across main metric and scenarios');
+        assert.strictEqual(pb, 200000 / (498000 / 12),
+            'Payback = $200k / ($498k/12) = 4.8 mo — consistent across main metric and scenarios');
     });
 });
 
@@ -141,8 +143,8 @@ describe('Known Issue #3 — Hardcoded coefficients without direct empirical bas
         assert.strictEqual(COEFFICIENTS.PIPELINE_EROSION_RATE, 0.25);
     });
 
-    it('Cascade multiplier = 1.5 (methodology notes 6× is possible, 1.5× is "conservative minimum")', () => {
-        assert.strictEqual(COEFFICIENTS.CASCADE_MULTIPLIER, 1.5);
+    it('Cascade multiplier = 0.5 (reduced from 1.5 to avoid OPEX double-counting)', () => {
+        assert.strictEqual(COEFFICIENTS.CASCADE_MULTIPLIER, 0.5);
     });
 
     it('Scenario C: auto level = 80%, CAPEX multiplier = 1.5 — model assumptions, not externally sourced', () => {
@@ -166,9 +168,9 @@ describe('Known Issue #3 — Hardcoded coefficients without direct empirical bas
         assert.strictEqual(COEFFICIENTS.TARGET_RISK_REDUCTION, 0.5);
     });
 
-    it('Annual hours = 1800 (rounded from ~1811), Turnover ref hours = 2000 — different standards exist', () => {
+    it('Annual hours = 1800, Turnover ref hours = 1800 — aligned to same standard', () => {
         assert.strictEqual(COEFFICIENTS.ANNUAL_HOURS_PER_ENGINEER, 1800);
-        assert.strictEqual(COEFFICIENTS.TURNOVER_REF_HOURS, 2000);
+        assert.strictEqual(COEFFICIENTS.TURNOVER_REF_HOURS, 1800);
     });
 
     it('Recommendation gate thresholds: $100k, $50k, $150k — arbitrary dollar floors', () => {
@@ -188,23 +190,23 @@ describe('Known Issue #4 (mitigated) — NPV model verifies fix is in place', ()
     });
 
     it('NPV recurring = annualRecurring × PVIFA(10%, 5yr) — annuity formula', () => {
-        var annualRecurring = 1330000; // cWaste 500k + cRisk 80k + cCascade 750k
+        var annualRecurring = 830000; // cWaste 500k + cRisk 80k + cCascade 250k
         var r = 0.10, n = 5;
         var pvifa = (1 - Math.pow(1 + r, -n)) / r;
         var npvRecurring = annualRecurring * pvifa;
-        // PVIFA(10%,5) ≈ 3.7908 → NPV ≈ $5,041,764
+        // PVIFA(10%,5) ≈ 3.7908 → NPV ≈ $3,146,353
         var expectedNpv = annualRecurring * 3.790786769408448;
         assert.ok(Math.abs(npvRecurring - expectedNpv) < 0.01,
-            'NPV of $1.33M/yr × PVIFA ≈ $5,041,746 — correctly discounts future cash flows');
+            'NPV of $830k/yr × PVIFA ≈ $3,146,353 — correctly discounts future cash flows');
         assert.ok(npvRecurring > annualRecurring,
             'NPV of 5-year stream > single year cost');
         assert.ok(npvRecurring < annualRecurring * n,
-            'NPV < undiscounted sum ($6.65M) — time value of money is applied');
+            'NPV < undiscounted sum ($4.15M) — time value of money is applied');
     });
 
     it('NPV total = one-time costs + NPV of recurring costs', () => {
         var oneTime = 225000; // cOppDirect 25k + capex 200k
-        var annualRecurring = 1330000;
+        var annualRecurring = 830000;
         var r = 0.10, n = 5;
         var pvifa = (1 - Math.pow(1 + r, -n)) / r;
         var npvTotal = oneTime + annualRecurring * pvifa;
@@ -237,10 +239,10 @@ describe('Known Issue #4 (mitigated) — NPV model verifies fix is in place', ()
     });
 
     it('Single-year totalImpact still available for waterfall chart compatibility', () => {
-        var cWaste = 500000, cRisk = 80000, cOppDirect = 25000, cCascade = 750000;
+        var cWaste = 500000, cRisk = 80000, cOppDirect = 25000, cCascade = 250000;
         var totalImpact = cWaste + cRisk + cOppDirect + cCascade;
-        assert.strictEqual(totalImpact, 1355000,
-            'Single-year totalImpact = $1,355,000 — kept for legacy display');
+        assert.strictEqual(totalImpact, 855000,
+            'Single-year totalImpact = $855,000 — kept for legacy display');
     });
 
     it('IRR > WACC for a profitable investment', () => {
