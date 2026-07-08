@@ -352,33 +352,46 @@
         <!-- BLOCK 2: INVESTMENT SIMULATOR -->
         <div id="pdf-block-2" class="card mb-8">
             <h3 class="text-xs font-black uppercase mb-5 text-center tracking-widest" data-i18n="simTitle">Investment & Simulation Parameters</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="space-y-3">
-                    <label class="label" for="autoLevel" data-i18n="autoLabel">Target Automation Level (%)</label>
-                    <div class="slider-wrapper">
-                        <div class="slider-track-bg"></div>
-                        <div class="slider-track-fill" id="autoLevelFill"></div>
-                        <input type="range" id="autoLevel" min="0" max="100" value="40" class="slider">
+            <!-- Pasek zakładek -->
+            <div class="flex border-b border-border mb-5" style="gap:0;">
+                <button class="tab-btn px-4 py-2 text-xs font-bold uppercase tracking-widest" data-tab="standard"
+                        style="border-bottom:2px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;">
+                    📊 <span data-i18n="tabStandard">Standard</span>
+                </button>
+                <button class="tab-btn px-4 py-2 text-xs font-bold uppercase tracking-widest" data-tab="advanced"
+                        style="border-bottom:2px solid transparent;color:var(--text-muted);background:transparent;cursor:pointer;">
+                    ⚙ <span data-i18n="tabAdvanced">Advanced</span>
+                </button>
+            </div>
+
+            <!-- Zakładka Standard -->
+            <div class="tab-content" id="tab-standard">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-3">
+                        <label class="label" for="autoLevel" data-i18n="autoLabel">Target Automation Level (%)</label>
+                        <div class="slider-wrapper">
+                            <div class="slider-track-bg"></div>
+                            <div class="slider-track-fill" id="autoLevelFill"></div>
+                            <input type="range" id="autoLevel" min="0" max="100" value="40" class="slider">
+                        </div>
+                        <p class="text-center font-bold text-sm"><span id="autoLevelVal">40</span>% <span data-i18n="efficiencyGain">Efficiency Gain</span></p>
                     </div>
-                    <p class="text-center font-bold text-sm"><span id="autoLevelVal">40</span>% <span data-i18n="efficiencyGain">Efficiency Gain</span></p>
-                </div>
-                <div>
-                    <label class="label" for="teamSize" data-i18n="teamSizeLabel">Team Size (engineers)</label>
-                    <input type="number" id="teamSize" value="10" class="input-field">
-                    <span class="helper-text mt-1 block" data-i18n="teamSizeHelper">Total number of engineers affected by process debt.</span>
-                </div>
-                <div>
-                    <label class="label" for="capex" data-i18n="capexLabel">One-Time CAPEX Investment ($)</label>
-                    <input type="number" id="capex" value="50000" class="input-field">
-                    <span class="helper-text mt-1 block" data-i18n="capexHelper">Licenses, Implementation, and Training costs.</span>
+                    <div>
+                        <label class="label" for="teamSize" data-i18n="teamSizeLabel">Team Size (engineers)</label>
+                        <input type="number" id="teamSize" value="10" class="input-field">
+                        <span class="helper-text mt-1 block" data-i18n="teamSizeHelper">Total number of engineers affected by process debt.</span>
+                    </div>
+                    <div>
+                        <label class="label" for="capex" data-i18n="capexLabel">One-Time CAPEX Investment ($)</label>
+                        <input type="number" id="capex" value="50000" class="input-field">
+                        <span class="helper-text mt-1 block" data-i18n="capexHelper">Licenses, Implementation, and Training costs.</span>
+                    </div>
                 </div>
             </div>
 
-            <details style="grid-column:1/-1;margin-top:2rem;border:1px solid var(--purple,#6D28D9);border-left:4px solid var(--purple,#6D28D9);padding-left:12px;padding-right:12px;background:rgba(109,40,217,0.04);border-radius:10px;">
-                <summary class="label cursor-pointer select-none text-xl font-black uppercase tracking-widest"
-                         data-i18n="advancedTitle" style="opacity:1;color:var(--purple,#6D28D9);padding-top:0.75rem;padding-bottom:0.75rem;">⚙ Advanced Parameters</summary>
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-
+            <!-- Zakładka Advanced (ukryta domyślnie) -->
+            <div class="tab-content" id="tab-advanced" style="display:none;">
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                     <div>
                         <label class="label" for="cascadeMult" data-i18n="cascadeMultLabel">Cascade Multiplier</label>
                         <span class="helper-text mt-1 block" data-i18n="cascadeMultHelper">Proportion of OPEX Waste applied as cascade (0.0–1.5). Default 0.5.</span>
@@ -389,7 +402,6 @@
                         </div>
                         <p class="text-center text-xs mt-1"><span id="cascadeMultVal">0.5</span></p>
                     </div>
-
                     <div>
                         <label class="label" for="erosionRate" data-i18n="erosionRateLabel">Pipeline Erosion Rate</label>
                         <span class="helper-text mt-1 block" data-i18n="erosionRateHelper">Fraction of opportunity margin eroded yearly (0.0–1.0). Default 0.25.</span>
@@ -400,7 +412,6 @@
                         </div>
                         <p class="text-center text-xs mt-1"><span id="erosionRateVal">0.25</span></p>
                     </div>
-
                     <div>
                         <label class="label" for="discountRate" data-i18n="discountRateLabel">WACC (Discount Rate)</label>
                         <span class="helper-text mt-1 block" data-i18n="discountRateHelper">Weighted Average Cost of Capital (5%–20%). Default 10%.</span>
@@ -411,7 +422,6 @@
                         </div>
                         <p class="text-center text-xs mt-1"><span id="discountRateVal">10</span>%</p>
                     </div>
-
                     <div>
                         <label class="label" for="timeHorizon" data-i18n="timeHorizonLabel">Time Horizon (years)</label>
                         <span class="helper-text mt-1 block" data-i18n="timeHorizonHelper">NPV / payback evaluation period (3–10 yr). Default 5.</span>
@@ -422,7 +432,6 @@
                         </div>
                         <p class="text-center text-xs mt-1"><span id="timeHorizonVal">5</span></p>
                     </div>
-
                     <div>
                         <label class="label" for="leverAutomation" data-i18n="leverAutomationLabel">Automation Lever Recovery</label>
                         <span class="helper-text mt-1 block" data-i18n="leverAutomationHelper">Fraction of OPEX Waste recoverable via automation (10%–60%). Default 30%.</span>
@@ -433,7 +442,6 @@
                         </div>
                         <p class="text-center text-xs mt-1"><span id="leverAutomationVal">30</span>%</p>
                     </div>
-
                     <div>
                         <label class="label" for="leverRisk" data-i18n="leverRiskLabel">Risk Lever Recovery</label>
                         <span class="helper-text mt-1 block" data-i18n="leverRiskHelper">Fraction of Risk Exposure recoverable via CMDB/Auto-Discovery (20%–80%). Default 60%.</span>
@@ -444,9 +452,8 @@
                         </div>
                         <p class="text-center text-xs mt-1"><span id="leverRiskVal">60</span>%</p>
                     </div>
-
                 </div>
-            </details>
+            </div>
         </div>
 
         <!-- SECTION 2: RESULTS -->

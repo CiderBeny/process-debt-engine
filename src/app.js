@@ -38,7 +38,8 @@
                 teamSizeHelper: 'Total number of engineers affected by process debt.',
                 capexLabel:     'One-Time CAPEX Investment ({C})',
                 capexHelper:    'Licenses, Implementation, and Training costs.',
-                advancedTitle:        '⚙ Advanced Parameters',
+                tabStandard:          '📊 Standard',
+                tabAdvanced:          '⚙ Advanced',
                 cascadeMultLabel:     'Cascade Multiplier',
                 cascadeMultHelper:    'Proportion of OPEX Waste applied as cascade (0.0–1.5). Default 0.5.',
                 erosionRateLabel:     'Pipeline Erosion Rate',
@@ -323,7 +324,8 @@
                 teamSizeHelper: 'Łączna liczba inżynierów dotkniętych długiem procesowym.',
                 capexLabel:     'Jednorazowa Inwestycja CAPEX ({C})',
                 capexHelper:    'Licencje, wdrożenie i koszty szkoleń.',
-                advancedTitle:        '⚙ Parametry Zaawansowane',
+                tabStandard:          '📊 Standard',
+                tabAdvanced:          '⚙ Zaawansowane',
                 cascadeMultLabel:     'Mnożnik Kaskady',
                 cascadeMultHelper:    'Udział OPEX Waste stosowany jako kaskada (0,0–1,5). Domyślnie 0,5.',
                 erosionRateLabel:     'Współczynnik Erozji Pipeline',
@@ -2232,7 +2234,22 @@
                 });
             });
 
-            
+            // -- Tab switching
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll('.tab-btn').forEach(b => {
+                        b.style.borderBottomColor = 'transparent';
+                        b.style.color = 'var(--text-muted)';
+                    });
+                    this.style.borderBottomColor = 'var(--accent)';
+                    this.style.color = 'var(--accent)';
+                    document.querySelectorAll('.tab-content').forEach(tc => tc.style.display = 'none');
+                    const tabId = 'tab-' + this.getAttribute('data-tab');
+                    const target = document.getElementById(tabId);
+                    if (target) target.style.display = '';
+                });
+            });
+
             // -- Input event listeners -> recalculate (input)
             const calcIds = ['q1','q2','q3','q4','q5','q11','q6','q7','q8','q9','q10','autoLevel','teamSize','capex','cascadeMult','erosionRate','discountRate','timeHorizon','leverAutomation','leverRisk'];
             calcIds.forEach(id => {
