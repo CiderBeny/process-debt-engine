@@ -2228,7 +2228,7 @@
 
             
             // -- Input event listeners -> recalculate (input)
-            const calcIds = ['q1','q2','q3','q4','q5','q11','q6','q7','q8','q9','q10','autoLevel','teamSize','capex'];
+            const calcIds = ['q1','q2','q3','q4','q5','q11','q6','q7','q8','q9','q10','autoLevel','teamSize','capex','cascadeMult','erosionRate','discountRate','timeHorizon','leverAutomation','leverRisk'];
             calcIds.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.addEventListener('input', calculate);
