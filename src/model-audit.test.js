@@ -46,7 +46,7 @@ function calculateIRR(cashFlows) {
     var precision = 1e-6;
     var maxIter = 1000;
     var low = -0.99;
-    var high = 10;
+    var high = 1;
     for (var i = 0; i < maxIter; i++) {
         var rate = (low + high) / 2;
         var npv = 0;
