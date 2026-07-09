@@ -453,6 +453,25 @@
                         <p class="text-center text-xs mt-1"><span id="leverRiskVal">60</span>%</p>
                     </div>
                 </div>
+                <!-- ── Model enhancement toggles ── -->
+                <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:1rem;align-items:center;">
+                    <label style="display:flex;align-items:center;gap:6px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);cursor:pointer;">
+                        <input type="checkbox" id="correlationsToggle" style="accent-color:var(--accent);">
+                        <span data-i18n="toggleCorrelations">Cross-Variable Correlations</span>
+                    </label>
+                    <label style="display:flex;align-items:center;gap:6px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);cursor:pointer;">
+                        <input type="checkbox" id="nonlinearToggle" style="accent-color:var(--accent);">
+                        <span data-i18n="toggleNonlinear">Nonlinear Cost Model</span>
+                    </label>
+                    <label style="display:flex;align-items:center;gap:6px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);cursor:pointer;">
+                        <input type="checkbox" id="probabilisticToggle" style="accent-color:var(--accent);">
+                        <span data-i18n="toggleProbabilistic">Confidence Intervals (MC)</span>
+                    </label>
+                    <label style="display:flex;align-items:center;gap:6px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);cursor:pointer;">
+                        <input type="checkbox" id="advancedRiskToggle" style="accent-color:var(--accent);">
+                        <span data-i18n="toggleAdvancedRisk">Multi-Category Risk</span>
+                    </label>
+                </div>
             </div>
         </div>
 
@@ -724,6 +743,30 @@
                     <h4 data-i18n="methodologyAdvancedTitle">11. Configurable Advanced Parameters</h4>
                     <p><span data-i18n="methodologyAdvancedBody">Six parameters in the "Advanced Parameters" panel let you override default coefficients in real time: Cascade Multiplier (0.0–1.5), Pipeline Erosion Rate (0.0–1.0), WACC / Discount Rate (5–20%), NPV Time Horizon (3–10 years), Automation Lever Recovery (10–60%), and Risk Lever Recovery (20–80%). Changing any slider immediately recalculates all dependent metrics. Defaults are restored on page reload.</span></p>
                     <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyAdvancedSource">User-configurable — overrides the Economic Model defaults (Section 10) in real time.</span></p>
+                </div>
+
+                <div class="methodology-section" id="methodology-12">
+                    <h4 data-i18n="methodologyCorrelationsTitle">12. Cross-Variable Correlations</h4>
+                    <p><span data-i18n="methodologyCorrelationsBody"></span></p>
+                    <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyCorrelationsSource"></span></p>
+                </div>
+
+                <div class="methodology-section" id="methodology-13">
+                    <h4 data-i18n="methodologyNonlinearTitle">13. Nonlinear Cost Model</h4>
+                    <p><span data-i18n="methodologyNonlinearBody"></span></p>
+                    <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyNonlinearSource"></span></p>
+                </div>
+
+                <div class="methodology-section" id="methodology-14">
+                    <h4 data-i18n="methodologyMcTitle">14. Monte Carlo Confidence Intervals</h4>
+                    <p><span data-i18n="methodologyMcBody"></span></p>
+                    <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyMcSource"></span></p>
+                </div>
+
+                <div class="methodology-section" id="methodology-15">
+                    <h4 data-i18n="methodologyRiskAdvancedTitle">15. Multi-Category Risk Model</h4>
+                    <p><span data-i18n="methodologyRiskAdvancedBody"></span></p>
+                    <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyRiskAdvancedSource"></span></p>
                 </div>
 
                 <p class="methodology-footer" id="methodology-footer" data-i18n="methodologyFooter">Methodology references last updated July 2026. All estimates labelled "tool estimate" should be calibrated against your organisation's own data for greatest accuracy.</p>
