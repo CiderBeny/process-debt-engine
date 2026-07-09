@@ -1904,6 +1904,9 @@
                         swaps.push({ input, proxy });
                     });
 
+                    const savedPb = el.style.paddingBottom;
+                    el.style.paddingBottom = '3px';
+
                     const nodeList = Array.from(el.querySelectorAll('*'));
                     const savedStyles = nodeList.map(n =>
                         n instanceof HTMLElement ? n.style.cssText : undefined
@@ -1959,6 +1962,7 @@
                         input.style.display = '';
                         proxy.remove();
                     });
+                    el.style.paddingBottom = savedPb;
 
                     const imgData = canvas.toDataURL('image/png');
                     const bH = (canvas.height * UW) / canvas.width;
