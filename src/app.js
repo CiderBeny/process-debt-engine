@@ -1969,8 +1969,9 @@
                         const sW = (canvas.width * sH) / canvas.height;
                         pdf.addImage(imgData, 'PNG', ML + (UW - sW) / 2, cy, sW, sH);
                         newPage();
+                        cy = MT;
                     } else {
-                        if (cy + bH > PH - 10) newPage();
+                        if (cy + bH > PH - 10) { newPage(); cy = MT; }
                         pdf.addImage(imgData, 'PNG', ML, cy, UW, bH);
                         cy += bH + 5;
                     }
