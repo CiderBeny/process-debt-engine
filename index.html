@@ -352,25 +352,106 @@
         <!-- BLOCK 2: INVESTMENT SIMULATOR -->
         <div id="pdf-block-2" class="card mb-8">
             <h3 class="text-xs font-black uppercase mb-5 text-center tracking-widest" data-i18n="simTitle">Investment & Simulation Parameters</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="space-y-3">
-                    <label class="label" for="autoLevel" data-i18n="autoLabel">Target Automation Level (%)</label>
-                    <div class="slider-wrapper">
-                        <div class="slider-track-bg"></div>
-                        <div class="slider-track-fill" id="autoLevelFill"></div>
-                        <input type="range" id="autoLevel" min="0" max="100" value="40" class="slider">
+            <!-- Pasek zakładek -->
+            <div class="flex border-b border-border mb-5" style="gap:0;">
+                <button class="tab-btn px-4 py-2 text-xs font-bold uppercase tracking-widest" data-tab="standard"
+                        style="border-bottom:2px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;">
+                    📊 <span data-i18n="tabStandard">Standard</span>
+                </button>
+                <button class="tab-btn px-4 py-2 text-xs font-bold uppercase tracking-widest" data-tab="advanced"
+                        style="border-bottom:2px solid transparent;color:var(--text-muted);background:transparent;cursor:pointer;">
+                    ⚙ <span data-i18n="tabAdvanced">Advanced</span>
+                </button>
+            </div>
+
+            <!-- Zakładka Standard -->
+            <div class="tab-content" id="tab-standard">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-3">
+                        <label class="label" for="autoLevel" data-i18n="autoLabel">Target Automation Level (%)</label>
+                        <div class="slider-wrapper">
+                            <div class="slider-track-bg"></div>
+                            <div class="slider-track-fill" id="autoLevelFill"></div>
+                            <input type="range" id="autoLevel" min="0" max="100" value="40" class="slider">
+                        </div>
+                        <p class="text-center font-bold text-sm"><span id="autoLevelVal">40</span>% <span data-i18n="efficiencyGain">Efficiency Gain</span></p>
                     </div>
-                    <p class="text-center font-bold text-sm"><span id="autoLevelVal">40</span>% <span data-i18n="efficiencyGain">Efficiency Gain</span></p>
+                    <div>
+                        <label class="label" for="teamSize" data-i18n="teamSizeLabel">Team Size (engineers)</label>
+                        <input type="number" id="teamSize" value="10" class="input-field">
+                        <span class="helper-text mt-1 block" data-i18n="teamSizeHelper">Total number of engineers affected by process debt.</span>
+                    </div>
+                    <div>
+                        <label class="label" for="capex" data-i18n="capexLabel">One-Time CAPEX Investment ($)</label>
+                        <input type="number" id="capex" value="50000" class="input-field">
+                        <span class="helper-text mt-1 block" data-i18n="capexHelper">Licenses, Implementation, and Training costs.</span>
+                    </div>
                 </div>
-                <div>
-                    <label class="label" for="teamSize" data-i18n="teamSizeLabel">Team Size (engineers)</label>
-                    <input type="number" id="teamSize" value="10" class="input-field">
-                    <span class="helper-text mt-1 block" data-i18n="teamSizeHelper">Total number of engineers affected by process debt.</span>
-                </div>
-                <div>
-                    <label class="label" for="capex" data-i18n="capexLabel">One-Time CAPEX Investment ($)</label>
-                    <input type="number" id="capex" value="50000" class="input-field">
-                    <span class="helper-text mt-1 block" data-i18n="capexHelper">Licenses, Implementation, and Training costs.</span>
+            </div>
+
+            <!-- Zakładka Advanced (ukryta domyślnie) -->
+            <div class="tab-content" id="tab-advanced" style="display:none;">
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="label" for="cascadeMult" data-i18n="cascadeMultLabel">Cascade Multiplier</label>
+                        <span class="helper-text mt-1 block" data-i18n="cascadeMultHelper">Proportion of OPEX Waste applied as cascade (0.0–1.5). Default 0.5.</span>
+                        <div class="slider-wrapper">
+                            <div class="slider-track-bg"></div>
+                            <div class="slider-track-fill" id="cascadeMultFill"></div>
+                            <input type="range" id="cascadeMult" min="0" max="150" value="50" class="slider">
+                        </div>
+                        <p class="text-center text-xs mt-1"><span id="cascadeMultVal">0.5</span></p>
+                    </div>
+                    <div>
+                        <label class="label" for="erosionRate" data-i18n="erosionRateLabel">Pipeline Erosion Rate</label>
+                        <span class="helper-text mt-1 block" data-i18n="erosionRateHelper">Fraction of opportunity margin eroded yearly (0.0–1.0). Default 0.25.</span>
+                        <div class="slider-wrapper">
+                            <div class="slider-track-bg"></div>
+                            <div class="slider-track-fill" id="erosionRateFill"></div>
+                            <input type="range" id="erosionRate" min="0" max="100" value="25" class="slider">
+                        </div>
+                        <p class="text-center text-xs mt-1"><span id="erosionRateVal">0.25</span></p>
+                    </div>
+                    <div>
+                        <label class="label" for="discountRate" data-i18n="discountRateLabel">WACC (Discount Rate)</label>
+                        <span class="helper-text mt-1 block" data-i18n="discountRateHelper">Weighted Average Cost of Capital (5%–20%). Default 10%.</span>
+                        <div class="slider-wrapper">
+                            <div class="slider-track-bg"></div>
+                            <div class="slider-track-fill" id="discountRateFill"></div>
+                            <input type="range" id="discountRate" min="5" max="20" value="10" step="0.5" class="slider">
+                        </div>
+                        <p class="text-center text-xs mt-1"><span id="discountRateVal">10</span>%</p>
+                    </div>
+                    <div>
+                        <label class="label" for="timeHorizon" data-i18n="timeHorizonLabel">Time Horizon (years)</label>
+                        <span class="helper-text mt-1 block" data-i18n="timeHorizonHelper">NPV / payback evaluation period (3–10 yr). Default 5.</span>
+                        <div class="slider-wrapper">
+                            <div class="slider-track-bg"></div>
+                            <div class="slider-track-fill" id="timeHorizonFill"></div>
+                            <input type="range" id="timeHorizon" min="3" max="10" value="5" class="slider">
+                        </div>
+                        <p class="text-center text-xs mt-1"><span id="timeHorizonVal">5</span></p>
+                    </div>
+                    <div>
+                        <label class="label" for="leverAutomation" data-i18n="leverAutomationLabel">Automation Lever Recovery</label>
+                        <span class="helper-text mt-1 block" data-i18n="leverAutomationHelper">Fraction of OPEX Waste recoverable via automation (10%–60%). Default 30%.</span>
+                        <div class="slider-wrapper">
+                            <div class="slider-track-bg"></div>
+                            <div class="slider-track-fill" id="leverAutomationFill"></div>
+                            <input type="range" id="leverAutomation" min="10" max="60" value="30" class="slider">
+                        </div>
+                        <p class="text-center text-xs mt-1"><span id="leverAutomationVal">30</span>%</p>
+                    </div>
+                    <div>
+                        <label class="label" for="leverRisk" data-i18n="leverRiskLabel">Risk Lever Recovery</label>
+                        <span class="helper-text mt-1 block" data-i18n="leverRiskHelper">Fraction of Risk Exposure recoverable via CMDB/Auto-Discovery (20%–80%). Default 60%.</span>
+                        <div class="slider-wrapper">
+                            <div class="slider-track-bg"></div>
+                            <div class="slider-track-fill" id="leverRiskFill"></div>
+                            <input type="range" id="leverRisk" min="20" max="80" value="60" class="slider">
+                        </div>
+                        <p class="text-center text-xs mt-1"><span id="leverRiskVal">60</span>%</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -420,7 +501,7 @@
                         <p class="label" data-i18n="statNpvLabel">NPV Total Debt (5 yr)</p>
                         <span class="formula-tip" tabindex="0" role="button" data-formula="(OPEX Waste + Risk + Cascade) × PVIFA(10%,5yr) + Pipeline Erosion + CAPEX" aria-label="Formula: (OPEX Waste + Risk + Cascade) × PVIFA(10%,5yr) + Pipeline Erosion + CAPEX">ⓘ</span>
                     </div>
-                    <p class="text-3xl font-black mt-1 stat-value" id="npvTotalDebt">$0</p>
+                    <p class="text-3xl font-black mt-1 stat-value" id="npvTotalDebt" data-i18n-formula="statNpvHelper">$0</p>
                 </div>
                 <div class="card border-l-4 border-l-purple-600">
                     <div class="label-row">
@@ -556,8 +637,8 @@
                 <!-- 4 -->
                 <div class="methodology-section" id="methodology-4">
                     <h4 data-i18n="methodologyCascadeTitle">4. Cascade Impact</h4>
-                    <p><span class="methodology-label" data-i18n="methodologyFormulaLabel">Formula:</span> <code>OPEX Waste &times; 1.5</code></p>
-                    <p><strong>1.5 multiplier (tool estimate):</strong> <span data-i18n="methodologyOppFactor2">Accounts for compounding pipeline effects — each delayed project pushes downstream work, multiplying total cost. Exepron ("The True Cost of Delay," 2026) demonstrates that a pipeline cascade multiplier can reach 6&times; where multiple projects share dependent resources. This tool applies 1.5&times; as a conservative minimum.</span></p>
+                    <p><span class="methodology-label" data-i18n="methodologyFormulaLabel">Formula:</span> <code>OPEX Waste &times; 0.5</code></p>
+                    <p><strong>0.5 multiplier (tool estimate — reduced from 1.5):</strong> <span data-i18n="methodologyOppFactor2">Accounts for compounding pipeline effects — each delayed project pushes downstream work, multiplying total cost. Exepron ("The True Cost of Delay," 2026) demonstrates that a pipeline cascade multiplier can reach 6&times; where multiple projects share dependent resources. This tool applies 0.5&times; — reduced from the original 1.5&times; to avoid OPEX double-counting while retaining a conservative recognition of cascade effects.</span></p>
                     <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyOppSource">Exepron — "The True Cost of Delay" (2026). exepron.com.</span></p>
                 </div>
 
@@ -605,7 +686,7 @@
                 <!-- 6 -->
                 <div class="methodology-section" id="methodology-6">
                     <h4 data-i18n="methodologyTurnoverTitle">6. Turnover Cost Model</h4>
-                    <p><span class="methodology-label" data-i18n="methodologyFormulaLabel">Formula:</span> <code>Turnover rate &times; Team Size &times; Blended Rate (Q6) &times; 2,000 hrs</code></p>
+                    <p><span class="methodology-label" data-i18n="methodologyFormulaLabel">Formula:</span> <code>Turnover rate &times; Team Size &times; Blended Rate (Q6) &times; 1,800 hrs</code></p>
                     <p><span class="methodology-label" data-i18n="methodologyAssumptionsLabel">Assumptions:</span> <span data-i18n="methodologyTurnoverAssumptions">The 50-engineer reference and $150/hr rate are organisational defaults aligned with SHRM's total replacement cost framework. Adjust these to match your actual headcount and cost structures.</span></p>
                     <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyTurnoverSource">SHRM Foundation — "Retaining Talent: A Guide to Analyzing and Managing Employee Turnover" (2025 update). SHRM 2025 Benchmarking Reports, shrm.org/benchmarking.</span></p>
                 </div>
@@ -637,6 +718,12 @@
                     <p><span class="methodology-label" data-i18n="methodologyFormulaLabel">Formula:</span> <code data-i18n="methodologyNpvFormula">NPV = One-Time Costs + PVIFA × Annual Recurring | IRR = rate where Σ(CFₜ/(1+r)^(t/12)) = 0</code></p>
                     <p><span class="methodology-label" data-i18n="methodologyAssumptionsLabel">Note:</span> <span data-i18n="methodologyNpvNote">One-time costs = Pipeline Margin Erosion + CAPEX. Annual recurring = OPEX Waste + Risk + Cascade. PVIFA discounts the recurring stream using a 10% WACC over a 5-year horizon. Discounted Payback uses monthly DCF to find the break-even month. IRR (Internal Rate of Return) is computed via binary search over monthly cash flows — the rate at which NPV = 0. IRR > WACC (10%) indicates value creation.</span></p>
                     <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyNpvSource">Brealey, Myers & Allen — Principles of Corporate Finance. COSO ERM 2017. Damodaran — Cost of Capital by Sector (2025).</span></p>
+                </div>
+
+                <div class="methodology-section" id="methodology-11">
+                    <h4 data-i18n="methodologyAdvancedTitle">11. Configurable Advanced Parameters</h4>
+                    <p><span data-i18n="methodologyAdvancedBody">Six parameters in the "Advanced Parameters" panel let you override default coefficients in real time: Cascade Multiplier (0.0–1.5), Pipeline Erosion Rate (0.0–1.0), WACC / Discount Rate (5–20%), NPV Time Horizon (3–10 years), Automation Lever Recovery (10–60%), and Risk Lever Recovery (20–80%). Changing any slider immediately recalculates all dependent metrics. Defaults are restored on page reload.</span></p>
+                    <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyAdvancedSource">User-configurable — overrides the Economic Model defaults (Section 10) in real time.</span></p>
                 </div>
 
                 <p class="methodology-footer" id="methodology-footer" data-i18n="methodologyFooter">Methodology references last updated July 2026. All estimates labelled "tool estimate" should be calibrated against your organisation's own data for greatest accuracy.</p>

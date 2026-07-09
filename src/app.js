@@ -29,7 +29,7 @@
                 q9desc:   'Impact on ability to scale growth?',
                 q10label: '10. Employee Turnover (%)',
                 q10desc:  'What is the annual turnover rate in teams heavily burdened by manual, repetitive work (burnout indicator)?',
-                q11label: '11. MTTR ({C})',
+                q11label: '11. MTTR (hrs)',
                 q11desc:  'What is the average time (in hours) to restore a critical service after a production incident (Mean Time To Repair)?',
                 simTitle:       'Investment & Simulation Parameters',
                 autoLabel:      'Target Automation Level (%)',
@@ -38,6 +38,20 @@
                 teamSizeHelper: 'Total number of engineers affected by process debt.',
                 capexLabel:     'One-Time CAPEX Investment ({C})',
                 capexHelper:    'Licenses, Implementation, and Training costs.',
+                tabStandard:          '📊 Standard',
+                tabAdvanced:          '⚙ Advanced',
+                cascadeMultLabel:     'Cascade Multiplier',
+                cascadeMultHelper:    'Proportion of OPEX Waste applied as cascade (0.0–1.5). Default 0.5.',
+                erosionRateLabel:     'Pipeline Erosion Rate',
+                erosionRateHelper:    'Fraction of opportunity margin eroded yearly (0.0–1.0). Default 0.25.',
+                discountRateLabel:    'WACC (Discount Rate)',
+                discountRateHelper:   'Weighted Average Cost of Capital (5%–20%). Default 10%.',
+                timeHorizonLabel:     'Time Horizon (years)',
+                timeHorizonHelper:    'NPV / payback evaluation period (3–10 yr). Default 5.',
+                leverAutomationLabel: 'Automation Lever Recovery',
+                leverAutomationHelper:'Fraction of OPEX Waste recoverable via automation (10%–60%). Default 30%.',
+                leverRiskLabel:       'Risk Lever Recovery',
+                leverRiskHelper:      'Fraction of Risk Exposure recoverable via CMDB/Auto-Discovery (20%–80%). Default 60%.',
                 statWasteLabel:   'Annual OPEX Waste',
                 statRiskLabel:    'Risk Exposure',
                 statOppLabel:     'Pipeline Margin Erosion',
@@ -47,10 +61,11 @@
                 statIrrLabel:     'IRR',
                 statNetLabel:   'Net Debt After Investment',
                 statNetHelper:  'Total impact minus CAPEX',
+                statNpvHelper:  '5-year net present value at 10% WACC — includes time value of money',
                 formulaWaste: '(Manual hrs/yr + Manager chase hrs/yr) × Blended Rate × Team Size',
                 formulaRisk:  'Annual failures × MTTR × Downtime cost/hr × (Risk level / 5)',
                 formulaOpp:     '(Opportunity margin × 0.25)',
-                formulaCascade: 'OPEX Waste × 1.5 (pipeline cascade multiplier)',
+                formulaCascade: 'OPEX Waste × 0.5 (pipeline cascade multiplier — conservative)',
                 formulaTotal:   'OPEX Waste + Risk Exposure + Pipeline Margin Erosion + Cascade Impact',
                 formulaNet:   'Total Debt Impact − CAPEX Investment',
                 chart1Title: '1. Waterfall: Capacity Erosion',
@@ -232,7 +247,7 @@
                 methodologyRiskSource:         'Standard actuarial risk exposure formula (probability × impact) consistent with COSO Enterprise Risk Management framework (2017) and NIST Special Publication 800-30 Rev. 1 — Guide for Conducting Risk Assessments.',
                 methodologyOppTitle:           '3. Pipeline Margin Erosion',
                 methodologyOppFactor1:         'Reflects the portion of pipeline project margin conservatively estimated as eroded during the first year of delay due to competitive response, customer churn, or SLA penalties. No single authoritative study isolates this fraction; 0.25 is a conservative floor.',
-                methodologyOppFactor2:         'Accounts for compounding pipeline effects — each delayed project pushes downstream work, multiplying total cost. Exepron ("The True Cost of Delay," 2026) demonstrates that a pipeline cascade multiplier can reach 6× where multiple projects share dependent resources. This tool applies 1.5× as a conservative minimum.',
+                methodologyOppFactor2:         'Accounts for compounding pipeline effects — each delayed project pushes downstream work, multiplying total cost. Exepron ("The True Cost of Delay," 2026) demonstrates that a pipeline cascade multiplier can reach 6× where multiple projects share dependent resources. This tool applies 0.5× — reduced from the original 1.5× to avoid OPEX double-counting while retaining a conservative recognition of cascade effects.',
                 methodologyOppSource:          'Exepron — "The True Cost of Delay" (2026). exepron.com.',
                 methodologyCascadeTitle:      '4. Cascade Impact',
                 methodologyLeverTitle:         '5. Lever Recovery Rates',
@@ -250,7 +265,7 @@
                 methodologyLeverTurnover:      'Retention & Burnout',
                 methodologyLeverTurnoverSrc:   'SHRM Foundation — "Retaining Talent" (2025): total cost of replacing an employee ranges from 50% to 200% of annual salary. SHRM 2025 Benchmarking Reports confirm cost-per-hire averages $5,475 (nonexecutive) and $35,879 (executive). The 30% recovery reflects the portion of turnover cost deemed preventable by reducing manual-toil burnout.',
                 methodologyTurnoverTitle:      '6. Turnover Cost Model',
-                methodologyTurnoverAssumptions:'Uses your actual Team Size and Blended Rate (Q6) multiplied by 2,000 annual hours (SHRM framework). The $150/hr and 50-engineer defaults are no longer hardcoded — the model reads your diagnostic inputs in real time.',
+                methodologyTurnoverAssumptions:'Uses your actual Team Size and Blended Rate (Q6) multiplied by 1,800 annual hours (aligned with ANNUAL_HOURS_PER_ENGINEER across the model). The $150/hr and 50-engineer defaults are no longer hardcoded — the model reads your diagnostic inputs in real time.',
                 methodologyTurnoverSource:     'SHRM Foundation — "Retaining Talent: A Guide to Analyzing and Managing Employee Turnover" (2025 update). SHRM 2025 Benchmarking Reports, shrm.org/benchmarking.',
                 methodologyDoraTitle:          '7. DORA Benchmark Thresholds',
                 methodologyDoraBody:           'The four software delivery performance clusters (Elite, High, Medium, Low) correspond to the 2024 Accelerate State of DevOps Report published by Google Cloud\'s DORA team. Lead time thresholds: Elite <1 day, High 1 day–1 week, Medium 1 week–1 month, Low >1 month. Deployment frequency: Elite On-demand, High daily–weekly, Medium weekly–monthly, Low monthly–biannually. Note: DORA\'s four official metrics are Deployment Frequency, Lead Time for Changes, Change Failure Rate, and Failed Deployment Recovery Time. The manual-effort and human-error mappings in this tool are an adaptation, not official DORA categories.',
@@ -266,6 +281,9 @@
                 methodologyNpvFormula:       'NPV = One-Time Costs + PVIFA × Annual Recurring | IRR = rate where Σ(CFₜ/(1+r)^(t/12)) = 0',
                 methodologyNpvNote:          'One-time costs = Pipeline Margin Erosion + CAPEX. Annual recurring = OPEX Waste + Risk + Cascade. PVIFA discounts the recurring stream using a 10% WACC over a 5-year horizon. Discounted Payback uses monthly DCF to find the break-even month. IRR (Internal Rate of Return) is computed via binary search over monthly cash flows — the rate at which NPV = 0. IRR > WACC (10%) indicates value creation. This aligns with standard capital budgeting (Brealey, Myers & Allen) and COSO ERM 2017 guidance on multi-period risk assessment.',
                 methodologyNpvSource:        'Brealey, R.A., Myers, S.C. & Allen, F. — Principles of Corporate Finance (14th ed., McGraw-Hill). COSO — Enterprise Risk Management — Integrating with Strategy and Performance (2017). WACC benchmark: Damodaran, A. — Cost of Capital by Sector (2025), IT infrastructure median ~9.3%.',
+                methodologyAdvancedTitle:    '11. Configurable Advanced Parameters',
+                methodologyAdvancedBody:     'Six parameters in the "Advanced Parameters" panel let you override default coefficients in real time: Cascade Multiplier (0.0–1.5), Pipeline Erosion Rate (0.0–1.0), WACC / Discount Rate (5–20%), NPV Time Horizon (3–10 years), Automation Lever Recovery (10–60%), and Risk Lever Recovery (20–80%). Changing any slider immediately recalculates all dependent metrics. Defaults are restored on page reload.',
+                methodologyAdvancedSource:   'User-configurable — overrides the Economic Model defaults (Section 10) in real time.',
                 methodologyFooter:           'Methodology references last updated July 2026. All estimates labelled "tool estimate" should be calibrated against your organisation\'s own data for greatest accuracy.',
                 nbpFooter:        (date) => `NBP exchange rates table A (as of ${date})`,
                 nbpUnavailable:   'NBP exchange rates table A (unavailable — using fallback rates)',
@@ -297,7 +315,7 @@
                 q9desc:   'Wpływ na zdolność do skalowania wzrostu?',
                 q10label: '10. Rotacja Pracowników (%)',
                 q10desc:  'Jaki jest roczny wskaźnik rotacji w zespołach przeciążonych manualną, powtarzalną pracą (wskaźnik wypalenia)?',
-                q11label: '11. MTTR ({C})',
+                q11label: '11. MTTR (godz.)',
                 q11desc:  'Jaki jest średni czas (w godzinach) przywracania krytycznej usługi po awarii produkcyjnej (Mean Time To Repair)?',
                 simTitle:       'Parametry Inwestycji i Symulacji',
                 autoLabel:      'Docelowy Poziom Automatyzacji (%)',
@@ -306,6 +324,20 @@
                 teamSizeHelper: 'Łączna liczba inżynierów dotkniętych długiem procesowym.',
                 capexLabel:     'Jednorazowa Inwestycja CAPEX ({C})',
                 capexHelper:    'Licencje, wdrożenie i koszty szkoleń.',
+                tabStandard:          '📊 Standard',
+                tabAdvanced:          '⚙ Zaawansowane',
+                cascadeMultLabel:     'Mnożnik Kaskady',
+                cascadeMultHelper:    'Udział OPEX Waste stosowany jako kaskada (0,0–1,5). Domyślnie 0,5.',
+                erosionRateLabel:     'Współczynnik Erozji Pipeline',
+                erosionRateHelper:    'Udział marży szans tracony rocznie (0,0–1,0). Domyślnie 0,25.',
+                discountRateLabel:    'WACC (Stopa Dyskontowa)',
+                discountRateHelper:   'Średni ważony koszt kapitału (5%–20%). Domyślnie 10%.',
+                timeHorizonLabel:     'Horyzont Czasu (lata)',
+                timeHorizonHelper:    'Okres oceny NPV / payback (3–10 lat). Domyślnie 5.',
+                leverAutomationLabel: 'Dźwignia Automatyzacji',
+                leverAutomationHelper:'Udział OPEX Waste możliwy do odzyskania przez automatyzację (10%–60%). Domyślnie 30%.',
+                leverRiskLabel:       'Dźwignia Ryzyka',
+                leverRiskHelper:      'Udział ryzyka możliwy do odzyskania przez CMDB/Auto-Discovery (20%–80%). Domyślnie 60%.',
                 statWasteLabel:   'Roczne Marnotrawstwo OPEX',
                 statRiskLabel:    'Ekspozycja na Ryzyko',
                 statOppLabel:     'Erozja Marży Pipeline',
@@ -315,10 +347,11 @@
                 statIrrLabel:     'IRR',
                 statNetLabel:   'Dług Netto po Inwestycji',
                 statNetHelper:  'Całkowity wpływ minus CAPEX',
+                statNpvHelper:  '5-letnia wartość bieżąca netto przy 10% WACC — uwzględnia wartość pieniądza w czasie',
                 formulaWaste: '(Godz. manualne/rok + Godz. koordynacji/rok) × Stawka łączona × Liczba inżynierów',
                 formulaRisk:  'Roczne awarie × MTTR × Koszt przestoju/godz. × (Poziom ryzyka / 5)',
                 formulaOpp:     '(Marża szans × 0,25)',
-                formulaCascade: 'Marnotrawstwo OPEX × 1,5 (mnożnik kaskady pipeline)',
+                formulaCascade: 'Marnotrawstwo OPEX × 0,5 (mnożnik kaskady pipeline — konserwatywny)',
                 formulaTotal:   'Marnotrawstwo OPEX + Ekspozycja na ryzyko + Erozja Marży Pipeline + Efekt Kaskadowy',
                 formulaNet:   'Całkowity wpływ długu − Inwestycja CAPEX',
                 chart1Title: '1. Wodospad: Erozja Pojemności',
@@ -496,7 +529,7 @@
                 methodologyRiskSource:         'Standardowy wzór na ekspozycję na ryzyko aktuarialne (prawdopodobieństwo × wpływ) zgodny z ramami COSO Enterprise Risk Management (2017) i NIST Special Publication 800-30 Rev. 1 — Guide for Conducting Risk Assessments.',
                 methodologyOppTitle:           '3. Erozja Marży Pipeline',
                 methodologyOppFactor1:         'Odzwierciedla część marży projektowej, która według konserwatywnych szacunków ulega erozji w pierwszym roku opóźnienia z powodu reakcji konkurencji, utraty klientów lub kar SLA. Żadne pojedyncze autorytatywne badanie nie określa tego ułamka; 0,25 to konserwatywne minimum.',
-                methodologyOppFactor2:         'Uwzględnia kaskadowe efekty w pipeline — każdy opóźniony projekt przesuwa pracę w dół strumienia, mnożąc całkowity koszt. Exepron ("The True Cost of Delay," 2026) pokazuje, że mnożnik kaskady może osiągnąć 6×, gdy wiele projektów współdzieli zasoby. To narzędzie stosuje 1,5× jako konserwatywne minimum.',
+                methodologyOppFactor2:         'Uwzględnia kaskadowe efekty w pipeline — każdy opóźniony projekt przesuwa pracę w dół strumienia, mnożąc całkowity koszt. Exepron ("The True Cost of Delay," 2026) pokazuje, że mnożnik kaskady może osiągnąć 6×, gdy wiele projektów współdzieli zasoby. To narzędzie stosuje 0,5× — zredukowane z pierwotnego 1,5×, aby uniknąć podwójnego liczenia OPEX, przy jednoczesnym zachowaniu konserwatywnego uznania efektów kaskadowych.',
                 methodologyOppSource:          'Exepron — "The True Cost of Delay" (2026). exepron.com.',
                 methodologyCascadeTitle:      '4. Efekt Kaskadowy',
                 methodologyLeverTitle:         '5. Współczynniki Dźwigni',
@@ -514,7 +547,7 @@
                 methodologyLeverTurnover:      'Retencja i Wypalenie',
                 methodologyLeverTurnoverSrc:   'SHRM Foundation — "Retaining Talent" (2025): całkowity koszt zastąpienia pracownika wynosi od 50% do 200% rocznego wynagrodzenia. SHRM 2025 Benchmarking Reports: średni koszt zatrudnienia to $5 475 (niekierowniczy) i $35 879 (kierowniczy). 30% odzysku odzwierciedla część kosztów rotacji możliwą do uniknięcia poprzez redukcję wypalenia spowodowanego pracą manualną.',
                 methodologyTurnoverTitle:      '6. Model Kosztów Rotacji',
-                methodologyTurnoverAssumptions:'Wykorzystuje rzeczywistą liczbę członków zespołu oraz stawkę godzinową (Q6) pomnożone przez 2 000 godzin rocznych (ramy SHRM). Domyślne wartości $150/godz. i 50 inżynierów nie są już sztywno zakodowane — model odczytuje dane diagnostyczne w czasie rzeczywistym.',
+                methodologyTurnoverAssumptions:'Wykorzystuje rzeczywistą liczbę członków zespołu oraz stawkę godzinową (Q6) pomnożone przez 1 800 godzin rocznych (spójne z ANNUAL_HOURS_PER_ENGINEER w całym modelu). Domyślne wartości $150/godz. i 50 inżynierów nie są już sztywno zakodowane — model odczytuje dane diagnostyczne w czasie rzeczywistym.',
                 methodologyTurnoverSource:     'SHRM Foundation — "Retaining Talent: A Guide to Analyzing and Managing Employee Turnover" (aktualizacja 2025). SHRM 2025 Benchmarking Reports, shrm.org/benchmarking.',
                 methodologyDoraTitle:          '7. Progi Benchmarku DORA',
                 methodologyDoraBody:           'Cztery klastry wydajności dostarczania oprogramowania (Elita, Wysoki, Średni, Niski) odpowiadają raportowi Accelerate State of DevOps 2024 opublikowanemu przez zespół DORA Google Cloud. Progi czasu realizacji: Elita <1 dzień, Wysoki 1 dzień–1 tydzień, Średni 1 tydzień–1 miesiąc, Niski >1 miesiąc. Częstotliwość wdrożeń: Elita na żądanie, Wysoki codziennie–tygodniowo, Średni tygodniowo–miesięcznie, Niski miesięcznie–półrocznie. Uwaga: cztery oficjalne metryki DORA to częstotliwość wdrożeń, czas realizacji zmian, wskaźnik awaryjności zmian i czas odtworzenia po awarii. Mapowanie wysiłku manualnego i błędów ludzkich w tym narzędziu jest adaptacją, a nie oficjalnymi kategoriami DORA.',
@@ -530,6 +563,9 @@
                 methodologyNpvFormula:       'NPV = Koszty Jednorazowe + PVIFA × Koszty Cykliczne | IRR = stopa gdzie Σ(CFₜ/(1+r)^(t/12)) = 0',
                 methodologyNpvNote:          'Koszty jednorazowe = Erozja Marży Pipeline + CAPEX. Koszty cykliczne = OPEX Waste + Ryzyko + Kaskada. PVIFA dyskontuje strumień cykliczny przy użyciu 10% WACC w horyzoncie 5-letnim. Discounted Payback stosuje miesięczną DCF do wyznaczenia progu rentowności. IRR (Internal Rate of Return) jest wyliczana przez wyszukiwanie binarne na miesięcznych przepływach — stopa przy której NPV = 0. IRR > WACC (10%) oznacza tworzenie wartości. Zgodne ze standardowym budżetowaniem kapitałowym (Brealey, Myers & Allen) oraz COSO ERM 2017.',
                 methodologyNpvSource:        'Brealey, R.A., Myers, S.C. & Allen, F. — Principles of Corporate Finance (14th ed., McGraw-Hill). COSO — Zarządzanie Ryzykiem Korporacyjnym — Integracja ze Strategią i Wynikami (2017). WACC benchmark: Damodaran, A. — Cost of Capital by Sector (2025), mediana IT infrastructure ~9,3%.',
+                methodologyAdvancedTitle:    '11. Konfigurowalne Parametry Zaawansowane',
+                methodologyAdvancedBody:     'Sześć parametrów w panelu "Advanced Parameters" pozwala w czasie rzeczywistym nadpisać domyślne współczynniki: Mnożnik Kaskady (0,0–1,5), Współczynnik Erozji Pipeline (0,0–1,0), WACC / Stopa Dyskontowa (5–20%), Horyzont Czasu NPV (3–10 lat), Dźwignia Automatyzacji (10–60%) i Dźwignia Ryzyka (20–80%). Zmiana dowolnego suwaka natychmiast przelicza wszystkie zależne metryki. Wartości domyślne przywracane są przy przeładowaniu strony.',
+                methodologyAdvancedSource:   'Konfigurowalne przez użytkownika — zastępuje domyślne wartości Modelu Ekonomicznego (sekcja 10) w czasie rzeczywistym.',
                 methodologyFooter:             'Źródła metodologiczne aktualizowane w lipcu 2026. Wszystkie szacunki oznaczone "tool estimate" należy skalibrować na podstawie danych własnej organizacji dla największej dokładności.',
                 nbpFooter:         (date) => `Kursy walut NBP tabela A (z dnia ${date})`,
                 nbpUnavailable:    'Kursy walut NBP tabela A (niedostępna — użyto kursów zastępczych)',
@@ -547,52 +583,52 @@
            they are auditable, documented, and not duplicated across functions.
            Sources referenced where available.
         ─────────────────────────────────────────────────────────────────────── */
-        const COEFFICIENTS = {
-            // ── Annualised conversions ──
-            ANNUAL_HOURS_PER_ENGINEER: 1800,   // BLS ATUS 2024 / OECD (~1,811 rounded)
-            MONTHS_PER_YEAR:           12,
-            QUARTERS_PER_YEAR:         4,
+         const COEFFICIENTS = {
+             // ── Annualised conversions ──
+             ANNUAL_HOURS_PER_ENGINEER: 1800,   // BLS ATUS 2024 / OECD (~1,811 rounded)  · confidence: high
+             MONTHS_PER_YEAR:           12,
+             QUARTERS_PER_YEAR:         4,
 
-            // ── Opportunity & Cascade ──
-            PIPELINE_EROSION_RATE:     0.25,   // conservative floor — Exepron 2026
-            CASCADE_MULTIPLIER:        1.5,    // conservative minimum — Exepron 2026
+             // ── Opportunity & Cascade ──
+             PIPELINE_EROSION_RATE_DEFAULT: 0.25,   // overridden by #erosionRate              · configurable
+             CASCADE_MULTIPLIER_DEFAULT:    0.5,    // overridden by #cascadeMult               · configurable
 
-            // ── Scenario C thresholds ──
-            SCEN_C_AUTO_LEVEL:         0.8,    // 80 % full automation
-            SCEN_C_CAPEX_MULTIPLIER:   1.5,    // +50 % CAPEX for full automation
+             // ── Scenario C thresholds ──
+             SCEN_C_AUTO_LEVEL:         0.8,    // 80 % full automation                        · confidence: medium
+             SCEN_C_CAPEX_MULTIPLIER:   1.5,    // +50 % CAPEX for full automation              · confidence: medium
 
-            // ── Lever recovery rates ──
-            LEVER_AUTOMATION:          0.3,    // Forrester TEI GitLab Jul 2024
-            LEVER_RISK:                0.6,    // CMDB case studies composite
-            LEVER_INNOVATION:          0.5,    // DORA 2024 midpoint
-            LEVER_MANAGEMENT:          0.15,   // Context-switch studies (PanDev 2026)
-            LEVER_TURNOVER:            0.3,    // SHRM Foundation 2025
+             // ── Lever recovery rates ──
+             LEVER_AUTOMATION_DEFAULT:  0.3,    // overridden by #leverAutomation              · configurable
+             LEVER_RISK_DEFAULT:        0.6,    // overridden by #leverRisk                    · configurable
+             LEVER_INNOVATION:          0.5,    // DORA 2024 midpoint                          · confidence: medium
+             LEVER_MANAGEMENT:          0.15,   // Context-switch studies (PanDev 2026)         · confidence: low
+             LEVER_TURNOVER:            0.3,    // SHRM Foundation 2025                         · confidence: medium
 
-            // ── Turnover default annual hours ──
-            TURNOVER_REF_HOURS:        2000,   // hrs/yr (SHRM framework)
+             // ── Turnover default annual hours ──
+             TURNOVER_REF_HOURS:        1800,   // hrs/yr — aligned with ANNUAL_HOURS_PER_ENGINEER · confidence: high
 
-            // ── Risk normalisation ──
-            RISK_SCALE_MAX:            5,      // q9 is 1–5 scale
+             // ── Risk normalisation ──
+             RISK_SCALE_MAX:            5,      // q9 is 1–5 scale
 
-            // ── Payback colour thresholds (months) ──
-            PAYBACK_GREEN:             24,
-            PAYBACK_YELLOW:            48,
+             // ── Payback colour thresholds (months) ──
+             PAYBACK_GREEN:             24,
+             PAYBACK_YELLOW:            48,
 
-            // ── Automation — share of manual work that is automatable ──
-            AUTOMATABLE_SHARE:         0.6,    // 60% — cited in DevOps literature
+             // ── Automation — share of manual work that is automatable ──
+             AUTOMATABLE_SHARE:         0.6,    // 60% — cited in DevOps literature             · confidence: medium
 
-            // ── Risk heatmap — target-state risk reduction ──
-            TARGET_RISK_REDUCTION:     0.5,    // 50% reduction post-automation
+             // ── Risk heatmap — target-state risk reduction (unused — now inline in updateCharts)
+             TARGET_RISK_REDUCTION:     0.5,    // kept for backward compat                     · confidence: deprecated
 
-            // ── Recommendation gate thresholds ──
-            REC_AUTO_MIN_WASTE:        100000, // $
-            REC_RISK_MIN_EXPOSURE:     50000,  // $
-            REC_INNOVATION_MIN:        150000, // $
+             // ── Recommendation gate thresholds (disabled — always show when > 0) ──
+             REC_AUTO_MIN_WASTE:        0,      // $                                           · confidence: removed
+             REC_RISK_MIN_EXPOSURE:     0,      // $                                           · confidence: removed
+             REC_INNOVATION_MIN:        0,      // $                                           · confidence: removed
 
-            // ── Economic model (NPV / DCF) ──
-            DISCOUNT_RATE:              0.10,   // 10% WACC — IT infra benchmark
-            TIME_HORIZON_YEARS:         5,      // standard investment horizon
-        };
+             // ── Economic model (NPV / DCF) ──
+             DISCOUNT_RATE_DEFAULT:      0.10,   // overridden by #discountRate                · configurable
+             TIME_HORIZON_YEARS_DEFAULT: 5,      // overridden by #timeHorizon                 · configurable
+         };
 
         /* ── XSS guard ──────────────────────────────────────────────────────────
            esc() escapes the five HTML-special characters before any string-typed
@@ -733,17 +769,24 @@
                 const pct = ((input.value - min) / (max - min) * 100).toFixed(1) + '%';
                 fill.style.width = pct;
             }
-            setSliderFill('q3',        'q3Fill',        1, 5);
-            setSliderFill('q9',        'q9Fill',        1, 5);
-            setSliderFill('autoLevel', 'autoLevelFill', 0, 100);
+            setSliderFill('q3',            'q3Fill',            1, 5);
+            setSliderFill('q9',            'q9Fill',            1, 5);
+            setSliderFill('autoLevel',     'autoLevelFill',     0, 100);
+            setSliderFill('cascadeMult',   'cascadeMultFill',   0, 150);
+            setSliderFill('erosionRate',   'erosionRateFill',   0, 100);
+            setSliderFill('discountRate',  'discountRateFill',  5, 20);
+            setSliderFill('timeHorizon',   'timeHorizonFill',   3, 10);
+            setSliderFill('leverAutomation','leverAutomationFill',10, 60);
+            setSliderFill('leverRisk',     'leverRiskFill',     20, 80);
         }
 
-        function discountedPayback(annualSavings, investment) {
+        function discountedPayback(annualSavings, investment, rate, maxYears) {
             if (annualSavings <= 0 || investment <= 0) return Infinity;
-            var rate = COEFFICIENTS.DISCOUNT_RATE;
+            if (rate === undefined) rate = readAdvanced('discountRate', COEFFICIENTS.DISCOUNT_RATE_DEFAULT, 100);
+            if (maxYears === undefined) maxYears = readAdvanced('timeHorizon', COEFFICIENTS.TIME_HORIZON_YEARS_DEFAULT, 1);
             var monthly = annualSavings / 12;
             var cumulative = 0;
-            var maxMonths = COEFFICIENTS.TIME_HORIZON_YEARS * 12;
+            var maxMonths = maxYears * 12;
             for (var m = 1; m <= maxMonths; m++) {
                 cumulative += monthly / Math.pow(1 + rate, m / 12);
                 if (cumulative >= investment) return m;
@@ -769,6 +812,13 @@
             return null;
         }
 
+        function readAdvanced(id, defaultVal, divisor) {
+            var el = document.getElementById(id);
+            if (!el) return defaultVal;
+            var raw = parseFloat(el.value);
+            return isFinite(raw) ? raw / (divisor || 1) : defaultVal;
+        }
+
         function calculate() {
             const manualPercent  = clamp('q1');
             const downCost       = currencyToUsd(clamp('q4'));
@@ -782,7 +832,21 @@
             const autoLevel      = clamp('autoLevel') / 100;
             const teamSize       = clamp('teamSize');
 
+            // ── Read configurable advanced parameters from DOM ──
+            const cascadeMult   = readAdvanced('cascadeMult',   COEFFICIENTS.CASCADE_MULTIPLIER_DEFAULT, 100);
+            const erosionRate   = readAdvanced('erosionRate',   COEFFICIENTS.PIPELINE_EROSION_RATE_DEFAULT, 100);
+            const discountRate  = readAdvanced('discountRate',  COEFFICIENTS.DISCOUNT_RATE_DEFAULT, 100);
+            const horizonYears  = readAdvanced('timeHorizon',   COEFFICIENTS.TIME_HORIZON_YEARS_DEFAULT, 1);
+            const leverAuto     = readAdvanced('leverAutomation', COEFFICIENTS.LEVER_AUTOMATION_DEFAULT, 100);
+            const leverRisk     = readAdvanced('leverRisk',     COEFFICIENTS.LEVER_RISK_DEFAULT, 100);
+
             document.getElementById('autoLevelVal').textContent = Math.round(autoLevel * 100);
+            document.getElementById('cascadeMultVal').textContent  = cascadeMult.toFixed(1);
+            document.getElementById('erosionRateVal').textContent  = erosionRate.toFixed(2);
+            document.getElementById('discountRateVal').textContent = Math.round(discountRate * 100);
+            document.getElementById('timeHorizonVal').textContent  = horizonYears;
+            document.getElementById('leverAutomationVal').textContent = Math.round(leverAuto * 100);
+            document.getElementById('leverRiskVal').textContent    = Math.round(leverRisk * 100);
 
             const totalAnnualHrs   = COEFFICIENTS.ANNUAL_HOURS_PER_ENGINEER;
             const manualAnnualHrs  = totalAnnualHrs * (manualPercent / 100);
@@ -790,8 +854,8 @@
 
             const cWaste     = (manualAnnualHrs + chasingAnnualHrs) * rate * teamSize;
             const cRisk      = (failures * mttr * downCost) * (riskLevel / COEFFICIENTS.RISK_SCALE_MAX);
-            const cOppDirect = opportunityVal * COEFFICIENTS.PIPELINE_EROSION_RATE;
-            const cCascade   = cWaste * COEFFICIENTS.CASCADE_MULTIPLIER;
+            const cOppDirect = opportunityVal * erosionRate;
+            const cCascade   = cWaste * cascadeMult;
 
             const totalImpact = cWaste + cRisk + cOppDirect + cCascade;
             const netDebt     = totalImpact - capex;
@@ -799,13 +863,13 @@
             // ── NPV — Net Present Value over investment horizon ──
             const annualRecurring = cWaste + cRisk + cCascade;
             const oneTimeCosts    = cOppDirect + capex;
-            var dr = COEFFICIENTS.DISCOUNT_RATE;
-            var ny = COEFFICIENTS.TIME_HORIZON_YEARS;
+            var dr = discountRate;
+            var ny = horizonYears;
             var pvifa = dr > 0 ? (1 - Math.pow(1 + dr, -ny)) / dr : ny;
             var npvRecurring = annualRecurring * pvifa;
             var npvTotalDebt = oneTimeCosts + npvRecurring;
 
-            const potentialSavings = (cWaste + cRisk) * autoLevel;
+            const potentialSavings = (cWaste + cRisk + cCascade) * autoLevel;
             const paybackMonths    = discountedPayback(potentialSavings, capex);
 
             // ── IRR — Internal Rate of Return ──
@@ -828,9 +892,9 @@
             updateSliderFills();
 
             updateCharts(totalAnnualHrs, manualAnnualHrs, chasingAnnualHrs, cWaste, capex, potentialSavings, riskLevel, manualPercent, autoLevel);
-            updateRecs(cWaste, cRisk, cOppDirect, cCascade, paybackMonths);
+            updateRecs(cWaste, cRisk, cOppDirect, cCascade, paybackMonths, leverAuto, leverRisk);
             updateDoraBenchmark();
-            updateScenarios(cWaste, cRisk, cCascade, capex, autoLevel, totalImpact);
+            updateScenarios(cWaste, cRisk, cCascade, capex, autoLevel, totalImpact, discountRate, horizonYears);
         }
 
         const CHART_OPTS = {
@@ -892,7 +956,7 @@
                 data: {
                     datasets: [
                         { label: L.chartCurrentState, data: [{x: effort, y: risk}], backgroundColor: DARK.red, pointRadius: 14, pointHoverRadius: 18 },
-                        { label: L.chartTargetState,  data: [{x: effort*(1-auto), y: risk * COEFFICIENTS.TARGET_RISK_REDUCTION}], backgroundColor: DARK.green, pointRadius: 14, pointHoverRadius: 18 }
+                        { label: L.chartTargetState,  data: [{x: effort*(1-auto), y: risk * (1 - auto * 0.6)}], backgroundColor: DARK.green, pointRadius: 14, pointHoverRadius: 18 }
                     ]
                 },
                 options: {
@@ -906,13 +970,15 @@
             });
         }
 
-        function updateRecs(cw, cr, co, cc, pb) {
+        function updateRecs(cw, cr, co, cc, pb, leverAuto, leverRisk) {
             const L = TRANSLATIONS[currentLang];
+            if (leverAuto === undefined) leverAuto = readAdvanced('leverAutomation', COEFFICIENTS.LEVER_AUTOMATION_DEFAULT, 100);
+            if (leverRisk === undefined) leverRisk = readAdvanced('leverRisk', COEFFICIENTS.LEVER_RISK_DEFAULT, 100);
 
             // ── Block 5: compact rec list ────────────────────────────────────
             const engine = document.getElementById('recEngine');
             let html = `<ul class="list-disc ml-5 space-y-2">`;
-            if (cw > COEFFICIENTS.REC_AUTO_MIN_WASTE)  html += `<li>${L.recAutomation(Math.round(cw * COEFFICIENTS.LEVER_AUTOMATION))}</li>`;
+            if (cw > COEFFICIENTS.REC_AUTO_MIN_WASTE)  html += `<li>${L.recAutomation(Math.round(cw * leverAuto))}</li>`;
             if (cr > COEFFICIENTS.REC_RISK_MIN_EXPOSURE) html += `<li>${L.recRisk()}</li>`;
             if (co + cc > COEFFICIENTS.REC_INNOVATION_MIN) html += `<li>${L.recInnovation(Math.round((co + cc) * COEFFICIENTS.LEVER_INNOVATION))}</li>`;
             html += `<li class="mt-3 p-3 font-bold italic" style="background:var(--accent-dim);border-left:4px solid var(--accent);color:var(--accent);border-radius:0 6px 6px 0;">${esc(L.recVerdict(!isFinite(pb) || pb <= 0 ? L.scenInfinity : (pb < 1 ? '< 1' : pb.toFixed(1))))}</li>`;
@@ -940,8 +1006,8 @@
             };
 
             const levers = [
-                { key:'automation', title: L.leverAutomationTitle, recovery: Math.round(cw * COEFFICIENTS.LEVER_AUTOMATION),  effort: L.effortMedium, timeline: '2–4 ' + L.verdictPaybackUnit, color:'var(--red)',    icon: ICONS.automation, detail: L.leverAutomationDetail(Math.round(manualPct * COEFFICIENTS.AUTOMATABLE_SHARE)) },
-                { key:'risk',       title: L.leverRiskTitle,       recovery: Math.round(cr * COEFFICIENTS.LEVER_RISK),        effort: L.effortLow,    timeline: '1–2 ' + L.verdictPaybackUnit, color:'var(--orange)', icon: ICONS.risk,       detail: L.leverRiskDetail() },
+                { key:'automation', title: L.leverAutomationTitle, recovery: Math.round(cw * leverAuto),  effort: L.effortMedium, timeline: '2–4 ' + L.verdictPaybackUnit, color:'var(--red)',    icon: ICONS.automation, detail: L.leverAutomationDetail(Math.round(manualPct * COEFFICIENTS.AUTOMATABLE_SHARE)) },
+                { key:'risk',       title: L.leverRiskTitle,       recovery: Math.round(cr * leverRisk),        effort: L.effortLow,    timeline: '1–2 ' + L.verdictPaybackUnit, color:'var(--orange)', icon: ICONS.risk,       detail: L.leverRiskDetail() },
                 { key:'innovation', title: L.leverInnovationTitle, recovery: Math.round((co + cc) * COEFFICIENTS.LEVER_INNOVATION), effort: L.effortHigh, timeline: '3–6 ' + L.verdictPaybackUnit, color:'var(--purple)', icon: ICONS.innovation, detail: L.leverInnovationDetail() },
                 { key:'mgmt',       title: L.leverMgmtTitle,       recovery: Math.round(cw * COEFFICIENTS.LEVER_MANAGEMENT), effort: L.effortLow,    timeline: '1 '   + L.verdictPaybackUnit,  color:'var(--cyan)',   icon: ICONS.mgmt,       detail: L.leverMgmtDetail() },
                 { key:'turnover',   title: L.leverTurnoverTitle,   recovery: Math.round(turnoverCost * COEFFICIENTS.LEVER_TURNOVER), effort: L.effortMedium,timeline: '3–5 ' + L.verdictPaybackUnit, color:'var(--green)',  icon: ICONS.turnover,   detail: L.leverTurnoverDetail() },
@@ -1106,15 +1172,15 @@
             return { band: L.doraBandLow, color: 'var(--red)' };
         }
 
-        function updateScenarios(cWaste, cRisk, cCascade, capex, autoLevel, totalImpact) {
+        function updateScenarios(cWaste, cRisk, cCascade, capex, autoLevel, totalImpact, dr, ny) {
             const L = TRANSLATIONS[currentLang];
             const fmt = (n) => formatCurrency(Math.abs(n));
+            if (dr === undefined) dr = readAdvanced('discountRate', COEFFICIENTS.DISCOUNT_RATE_DEFAULT, 100);
+            if (ny === undefined) ny = readAdvanced('timeHorizon', COEFFICIENTS.TIME_HORIZON_YEARS_DEFAULT, 1);
 
             // Helper: compute net recovery, payback and IRR for a given autoLevel + capex
             function scenCalc(al, cx) {
                 var annualSavings = (cWaste + cRisk + cCascade) * al;
-                var dr = COEFFICIENTS.DISCOUNT_RATE;
-                var ny = COEFFICIENTS.TIME_HORIZON_YEARS;
                 var pvifa = dr > 0 ? (1 - Math.pow(1 + dr, -ny)) / dr : ny;
                 var npvSavings = annualSavings * pvifa;
                 var net = npvSavings - cx;
@@ -1196,7 +1262,7 @@
                         </div>
                         <div style="display:flex;justify-content:space-between;align-items:baseline;">
                             <span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);">IRR</span>
-                            <span style="font-size:0.9rem;font-weight:900;color:${calcResult.irr !== null && calcResult.irr > COEFFICIENTS.DISCOUNT_RATE ? 'var(--green)' : 'var(--red)'};font-family:'Space Grotesk',sans-serif;">${calcResult.irr !== null ? (calcResult.irr * 100).toFixed(1) + '%' : '—'}</span>
+                            <span style="font-size:0.9rem;font-weight:900;color:${calcResult.irr !== null && calcResult.irr > dr ? 'var(--green)' : 'var(--red)'};font-family:'Space Grotesk',sans-serif;">${calcResult.irr !== null ? (calcResult.irr * 100).toFixed(1) + '%' : '—'}</span>
                         </div>
                     </div>
                 </div>`;
@@ -1308,6 +1374,12 @@
                     const capex    = currencyToUsd(clamp('capex'));
                     const teamSize = clamp('teamSize');
 
+                    // ── Read configurable advanced parameters from DOM ──
+                    var cascadeMult   = readAdvanced('cascadeMult',   COEFFICIENTS.CASCADE_MULTIPLIER_DEFAULT, 100);
+                    var erosionRate   = readAdvanced('erosionRate',   COEFFICIENTS.PIPELINE_EROSION_RATE_DEFAULT, 100);
+                    var dr            = readAdvanced('discountRate',  COEFFICIENTS.DISCOUNT_RATE_DEFAULT, 100);
+                    var ny            = readAdvanced('timeHorizon',   COEFFICIENTS.TIME_HORIZON_YEARS_DEFAULT, 1);
+
                     // ── derived financials ───────────────────────────────────
                     const manualAnnualHrs = COEFFICIENTS.ANNUAL_HOURS_PER_ENGINEER * (q1 / 100);
                     const chasingAnnualHrs= q7 * COEFFICIENTS.MONTHS_PER_YEAR;
@@ -1316,17 +1388,15 @@
                     const mttr       = q11;
                     const cWaste     = (manualAnnualHrs + chasingAnnualHrs) * q6 * teamSize;
                     const cRisk      = (annualFailures * mttr * q4) * (q9 / COEFFICIENTS.RISK_SCALE_MAX);
-                    const cOppDirect = q8 * COEFFICIENTS.PIPELINE_EROSION_RATE;
-                    const cCascade   = cWaste * COEFFICIENTS.CASCADE_MULTIPLIER;
+                    const cOppDirect = q8 * erosionRate;
+                    const cCascade   = cWaste * cascadeMult;
                     const totalImpact = cWaste + cRisk + cOppDirect + cCascade;
                     const netDebt     = totalImpact - capex;
-                    const potSavings  = (cWaste + cRisk) * autoLvl;
+                    const potSavings  = (cWaste + cRisk + cCascade) * autoLvl;
 
                     // ── NPV ──
                     var annualRecurring = cWaste + cRisk + cCascade;
                     var oneTimeCosts    = cOppDirect + capex;
-                    var dr = COEFFICIENTS.DISCOUNT_RATE;
-                    var ny = COEFFICIENTS.TIME_HORIZON_YEARS;
                     var pvifa = dr > 0 ? (1 - Math.pow(1 + dr, -ny)) / dr : ny;
                     var npvRecurring = annualRecurring * pvifa;
                     var npvTotalDebt = oneTimeCosts + npvRecurring;
@@ -1342,10 +1412,12 @@
                     }
 
                     // ── turnover / lever calcs (Bug 2 fix: use L for titles & effort) ──
+                    var leverAuto = readAdvanced('leverAutomation', COEFFICIENTS.LEVER_AUTOMATION_DEFAULT, 100);
+                    var leverRisk = readAdvanced('leverRisk', COEFFICIENTS.LEVER_RISK_DEFAULT, 100);
                     const turnoverCost = (q10 / 100) * teamSize * q6 * COEFFICIENTS.TURNOVER_REF_HOURS;
                     const leversRaw = [
-                        { title: L.leverAutomationTitle, recovery: Math.round(cWaste * COEFFICIENTS.LEVER_AUTOMATION), effort: L.effortMedium, timeline: '2–4 mo' },
-                        { title: L.leverRiskTitle,        recovery: Math.round(cRisk  * COEFFICIENTS.LEVER_RISK),       effort: L.effortLow,    timeline: '1–2 mo' },
+                        { title: L.leverAutomationTitle, recovery: Math.round(cWaste * leverAuto), effort: L.effortMedium, timeline: '2–4 mo' },
+                        { title: L.leverRiskTitle,        recovery: Math.round(cRisk  * leverRisk),       effort: L.effortLow,    timeline: '1–2 mo' },
                         { title: L.leverInnovationTitle,  recovery: Math.round((cOppDirect + cCascade) * COEFFICIENTS.LEVER_INNOVATION), effort: L.effortHigh, timeline: '3–6 mo' },
                         { title: L.leverMgmtTitle,        recovery: Math.round(cWaste * COEFFICIENTS.LEVER_MANAGEMENT), effort: L.effortLow,  timeline: '1 mo'   },
                         { title: L.leverTurnoverTitle,    recovery: Math.round(turnoverCost * COEFFICIENTS.LEVER_TURNOVER), effort: L.effortMedium, timeline: '3–5 mo' },
@@ -1355,19 +1427,18 @@
                     const totalRecovery = top3.reduce((s, l) => s + l.recovery, 0);
 
                     // ── scenario calcs (NPV-based) ────────────────────────────
-                    function excelScenCalc(al, cx) {
+                    function excelScenCalc(al, cx, drOverride, nyOverride) {
                         var annualSavings = (cWaste + cRisk + cCascade) * al;
-                        var dr = COEFFICIENTS.DISCOUNT_RATE;
-                        var ny = COEFFICIENTS.TIME_HORIZON_YEARS;
-                        var pvifa = dr > 0 ? (1 - Math.pow(1 + dr, -ny)) / dr : ny;
+                        var d = drOverride !== undefined ? drOverride : dr;
+                        var n = nyOverride !== undefined ? nyOverride : ny;
+                        var pvifa = d > 0 ? (1 - Math.pow(1 + d, -n)) / d : n;
                         var npvSavings = annualSavings * pvifa;
                         var net = npvSavings - cx;
-                        var pb = discountedPayback(annualSavings, cx);
-                        // IRR
+                        var pb = discountedPayback(annualSavings, cx, d, n);
                         var irrVal = null;
                         if (annualSavings > 0 && cx > 0) {
                             var cf = [-cx];
-                            for (var m = 1; m <= ny * 12; m++) cf.push(annualSavings / 12);
+                            for (var m = 1; m <= n * 12; m++) cf.push(annualSavings / 12);
                             irrVal = calculateIRR(cf);
                         } else if (al === 0) {
                             irrVal = 0;
@@ -1860,7 +1931,8 @@
                                the DOM, closing the URL-hash injection vector.
         ────────────────────────────────────────────────────────────────────── */
         const ALLOWED_HASH_KEYS = new Set(
-            ['q1','q2','q3','q4','q5','q11','q6','q7','q8','q9','q10','autoLevel','capex','teamSize']
+            ['q1','q2','q3','q4','q5','q11','q6','q7','q8','q9','q10','autoLevel','capex','teamSize',
+             'cascadeMult','erosionRate','discountRate','timeHorizon','leverAutomation','leverRisk']
         );
 
         const HASH_CONSTRAINTS = {
@@ -1878,6 +1950,12 @@
             autoLevel: { min: 0,   max: 100   },  // automation level %
             capex:     { min: 0,   max: 1e9   },  // CAPEX investment $
             teamSize:  { min: 1,   max: 10000 },  // F9 fix: was missing, allowing unbounded values
+            cascadeMult:     { min: 0,   max: 150  },  // 0.0–1.5 (×100)
+            erosionRate:     { min: 0,   max: 100  },  // 0.0–1.0 (×100)
+            discountRate:    { min: 5,   max: 20   },  // 5%–20%
+            timeHorizon:     { min: 3,   max: 10   },  // years
+            leverAutomation: { min: 10,  max: 60   },  // 10%–60%
+            leverRisk:       { min: 20,  max: 80   },  // 20%–80%
         };
 
         /* ── clamp(id) ──────────────────────────────────────────────────────────
@@ -2156,9 +2234,24 @@
                 });
             });
 
-            
+            // -- Tab switching
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll('.tab-btn').forEach(b => {
+                        b.style.borderBottomColor = 'transparent';
+                        b.style.color = 'var(--text-muted)';
+                    });
+                    this.style.borderBottomColor = 'var(--accent)';
+                    this.style.color = 'var(--accent)';
+                    document.querySelectorAll('.tab-content').forEach(tc => tc.style.display = 'none');
+                    const tabId = 'tab-' + this.getAttribute('data-tab');
+                    const target = document.getElementById(tabId);
+                    if (target) target.style.display = '';
+                });
+            });
+
             // -- Input event listeners -> recalculate (input)
-            const calcIds = ['q1','q2','q3','q4','q5','q11','q6','q7','q8','q9','q10','autoLevel','teamSize','capex'];
+            const calcIds = ['q1','q2','q3','q4','q5','q11','q6','q7','q8','q9','q10','autoLevel','teamSize','capex','cascadeMult','erosionRate','discountRate','timeHorizon','leverAutomation','leverRisk'];
             calcIds.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.addEventListener('input', calculate);
