@@ -2202,7 +2202,35 @@
                     { label: t('timeHorizonLabel'),   desc: L.timeHorizonHelper,       id: 'timeHorizon',     unit: 'yr',     isSlider: true, valId: 'timeHorizonVal' },
                     { label: t('leverAutomationLabel'),desc: L.leverAutomationHelper,  id: 'leverAutomation', unit: '%',      isSlider: true, valId: 'leverAutomationVal' },
                     { label: t('leverRiskLabel'),     desc: L.leverRiskHelper,         id: 'leverRisk',       unit: '%',      isSlider: true, valId: 'leverRiskVal' },
+                    // ── Scenarios ──
+                    { label: t('scenCAutoLevelLabel'), desc: L.scenCAutoLevelHelper,   id: 'scenCAutoLevel',  unit: '%',      isSlider: true, valId: 'scenCAutoLevelVal',  min: '50%', max: '100%' },
+                    { label: t('scenCCapexMultLabel'), desc: L.scenCCapexMultHelper,   id: 'scenCCapexMult',  unit: '',       isSlider: true, valId: 'scenCCapexMultVal' },
+                    { label: t('annualHoursLabel'),    desc: L.annualHoursHelper,      id: 'annualHours',     unit: '',       isSlider: true, valId: 'annualHoursVal' },
+                    // ── Levers ──
+                    { label: t('leverInnovationLabel'),desc: L.leverInnovationHelper,  id: 'leverInnovation', unit: '%',      isSlider: true, valId: 'leverInnovationVal' },
+                    { label: t('leverManagementLabel'),desc: L.leverManagementHelper,  id: 'leverManagement', unit: '%',      isSlider: true, valId: 'leverManagementVal' },
+                    { label: t('leverTurnoverLabel'),  desc: L.leverTurnoverHelper,    id: 'leverTurnover',   unit: '%',      isSlider: true, valId: 'leverTurnoverVal' },
                 ];
+                // ── Conditional advanced parameters (only when toggles are active) ──
+                if (document.getElementById('probabilisticToggle') && document.getElementById('probabilisticToggle').checked) {
+                    paramKeys.push(
+                        { label: t('mcIterationsLabel'),     desc: L.mcIterationsHelper,        id: 'mcIterations',          unit: '',  isSlider: true, valId: 'mcIterationsVal' },
+                        { label: t('mcConfidenceLabel'),      desc: L.mcConfidenceHelper,       id: 'mcConfidence',          unit: '%', isSlider: true, valId: 'mcConfidenceVal',     min: '50%', max: '99%' },
+                        { label: t('mcUncertaintyPctLabel'),  desc: L.mcUncertaintyPctHelper,   id: 'mcUncertaintyPct',      unit: '%', isSlider: true, valId: 'mcUncertaintyPctVal', min: '5%',  max: '30%' },
+                        { label: t('mcMttrUncertaintyPctLabel'), desc: L.mcMttrUncertaintyPctHelper, id: 'mcMttrUncertaintyPct', unit: '%', isSlider: true, valId: 'mcMttrUncertaintyPctVal', min: '10%', max: '50%' },
+                    );
+                }
+                if (document.getElementById('correlationsToggle') && document.getElementById('correlationsToggle').checked) {
+                    paramKeys.push(
+                        { label: t('correlationStrengthLabel'), desc: L.correlationStrengthHelper, id: 'correlationStrength', unit: '', isSlider: true, valId: 'correlationStrengthVal' },
+                    );
+                }
+                if (document.getElementById('advancedRiskToggle') && document.getElementById('advancedRiskToggle').checked) {
+                    paramKeys.push(
+                        { label: t('riskSecurityWeightLabel'),   desc: L.riskSecurityWeightHelper,   id: 'riskSecurityWeight',   unit: '', isSlider: true, valId: 'riskSecurityWeightVal' },
+                        { label: t('riskRegulatoryWeightLabel'), desc: L.riskRegulatoryWeightHelper, id: 'riskRegulatoryWeight', unit: '', isSlider: true, valId: 'riskRegulatoryWeightVal' },
+                    );
+                }
 
                 const pCols = 3;
                 const pColW = UW / pCols - 3;
