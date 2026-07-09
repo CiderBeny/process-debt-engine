@@ -453,6 +453,81 @@
                         <p class="text-center text-xs mt-1"><span id="leverRiskVal">60</span>%</p>
                     </div>
                 </div>
+
+                <!-- ── Scenarios ── -->
+                <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);">
+                    <p style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin:0 0 0.75rem;" data-i18n="sectionScenarios">Scenarios</p>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="label" for="scenCAutoLevel" data-i18n="scenCAutoLevelLabel">Scenario C Auto Level</label>
+                            <span class="helper-text mt-1 block" data-i18n="scenCAutoLevelHelper">Target automation level for full-transformation scenario (50–100%). Default 80%.</span>
+                            <div class="slider-wrapper">
+                                <div class="slider-track-bg"></div>
+                                <div class="slider-track-fill" id="scenCAutoLevelFill"></div>
+                                <input type="range" id="scenCAutoLevel" min="50" max="100" value="80" class="slider">
+                            </div>
+                            <p class="text-center text-xs mt-1"><span id="scenCAutoLevelVal">80</span>%</p>
+                        </div>
+                        <div>
+                            <label class="label" for="scenCCapexMult" data-i18n="scenCCapexMultLabel">Scenario C CAPEX Multiplier</label>
+                            <span class="helper-text mt-1 block" data-i18n="scenCCapexMultHelper">CAPEX multiplier for full-transformation scenario (1.0–3.0). Default 1.5.</span>
+                            <div class="slider-wrapper">
+                                <div class="slider-track-bg"></div>
+                                <div class="slider-track-fill" id="scenCCapexMultFill"></div>
+                                <input type="range" id="scenCCapexMult" min="10" max="30" value="15" step="1" class="slider">
+                            </div>
+                            <p class="text-center text-xs mt-1"><span id="scenCCapexMultVal">1.5</span></p>
+                        </div>
+                        <div>
+                            <label class="label" for="annualHours" data-i18n="annualHoursLabel">Annual Hours / Engineer</label>
+                            <span class="helper-text mt-1 block" data-i18n="annualHoursHelper">Working hours per engineer per year (1500–2500). Default 1800.</span>
+                            <div class="slider-wrapper">
+                                <div class="slider-track-bg"></div>
+                                <div class="slider-track-fill" id="annualHoursFill"></div>
+                                <input type="range" id="annualHours" min="1500" max="2500" value="1800" step="10" class="slider">
+                            </div>
+                            <p class="text-center text-xs mt-1"><span id="annualHoursVal">1800</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Levers ── -->
+                <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);">
+                    <p style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin:0 0 0.75rem;" data-i18n="sectionLevers">Lever Recovery Rates</p>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="label" for="leverInnovation" data-i18n="leverInnovationLabel">Innovation Lever Recovery</label>
+                            <span class="helper-text mt-1 block" data-i18n="leverInnovationHelper">Fraction of pipeline margin recovered via innovation (10–80%). Default 50%.</span>
+                            <div class="slider-wrapper">
+                                <div class="slider-track-bg"></div>
+                                <div class="slider-track-fill" id="leverInnovationFill"></div>
+                                <input type="range" id="leverInnovation" min="10" max="80" value="50" class="slider">
+                            </div>
+                            <p class="text-center text-xs mt-1"><span id="leverInnovationVal">50</span>%</p>
+                        </div>
+                        <div>
+                            <label class="label" for="leverManagement" data-i18n="leverManagementLabel">Management Lever Recovery</label>
+                            <span class="helper-text mt-1 block" data-i18n="leverManagementHelper">Fraction of OPEX Waste recovered via management intervention (5–40%). Default 15%.</span>
+                            <div class="slider-wrapper">
+                                <div class="slider-track-bg"></div>
+                                <div class="slider-track-fill" id="leverManagementFill"></div>
+                                <input type="range" id="leverManagement" min="5" max="40" value="15" class="slider">
+                            </div>
+                            <p class="text-center text-xs mt-1"><span id="leverManagementVal">15</span>%</p>
+                        </div>
+                        <div>
+                            <label class="label" for="leverTurnover" data-i18n="leverTurnoverLabel">Turnover Lever Recovery</label>
+                            <span class="helper-text mt-1 block" data-i18n="leverTurnoverHelper">Fraction of turnover cost preventable (10–60%). Default 30%.</span>
+                            <div class="slider-wrapper">
+                                <div class="slider-track-bg"></div>
+                                <div class="slider-track-fill" id="leverTurnoverFill"></div>
+                                <input type="range" id="leverTurnover" min="10" max="60" value="30" class="slider">
+                            </div>
+                            <p class="text-center text-xs mt-1"><span id="leverTurnoverVal">30</span>%</p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- ── Model enhancement toggles ── -->
                 <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:1rem;align-items:center;">
                     <label style="display:flex;align-items:center;gap:6px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);cursor:pointer;">
@@ -471,6 +546,122 @@
                         <input type="checkbox" id="advancedRiskToggle" style="accent-color:var(--accent);">
                         <span data-i18n="toggleAdvancedRisk">Multi-Category Risk</span>
                     </label>
+                </div>
+
+                <!-- ── Correlation sliders (visible only when correlationsToggle is checked) ── -->
+                <div id="correlationSliders" style="display:none;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);">
+                    <p style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin:0 0 0.75rem;" data-i18n="sectionCorrelations">Variable Correlations</p>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="label" for="correlationStrength" data-i18n="correlationStrengthLabel">Correlation Strength</label>
+                            <span class="helper-text mt-1 block" data-i18n="correlationStrengthHelper">Global multiplier for all correlation effects (0.0–1.0). Default 0.3.</span>
+                            <div class="slider-wrapper">
+                                <div class="slider-track-bg"></div>
+                                <div class="slider-track-fill" id="correlationStrengthFill"></div>
+                                <input type="range" id="correlationStrength" min="0" max="100" value="30" step="5" class="slider">
+                            </div>
+                            <p class="text-center text-xs mt-1"><span id="correlationStrengthVal">0.30</span></p>
+                        </div>
+                    </div>
+                    <details style="margin-top:0.75rem;font-size:0.75rem;">
+                        <summary style="font-weight:600;color:var(--text-secondary);cursor:pointer;" data-i18n="correlationWeightsToggle">Show correlation weights</summary>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4" style="margin-top:0.75rem;">
+                            <div>
+                                <label class="label" for="corrQ3Q1" data-i18n="corrQ3Q1Label">Q3 → Q1 Weight</label>
+                                <input type="range" id="corrQ3Q1" min="0" max="50" value="15" class="slider">
+                                <p class="text-center text-xs mt-1"><span id="corrQ3Q1Val">15</span></p>
+                            </div>
+                            <div>
+                                <label class="label" for="corrQ1Q5" data-i18n="corrQ1Q5Label">Q1 → Q5 Weight</label>
+                                <input type="range" id="corrQ1Q5" min="0" max="10" value="3" step="0.5" class="slider">
+                                <p class="text-center text-xs mt-1"><span id="corrQ1Q5Val">3.0</span></p>
+                            </div>
+                            <div>
+                                <label class="label" for="corrQ1Q7" data-i18n="corrQ1Q7Label">Q1 → Q7 Weight</label>
+                                <input type="range" id="corrQ1Q7" min="0" max="50" value="20" class="slider">
+                                <p class="text-center text-xs mt-1"><span id="corrQ1Q7Val">20</span></p>
+                            </div>
+                            <div>
+                                <label class="label" for="corrQ3Q7" data-i18n="corrQ3Q7Label">Q3 → Q7 Weight</label>
+                                <input type="range" id="corrQ3Q7" min="0" max="30" value="10" class="slider">
+                                <p class="text-center text-xs mt-1"><span id="corrQ3Q7Val">10</span></p>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- ── MC sliders (hidden only when MC toggle is checked) ── -->
+                <div id="mcSliders" style="display:none;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);">
+                    <p style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin:0 0 0.75rem;" data-i18n="sectionMc">Monte Carlo Parameters</p>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="label" for="mcIterations" data-i18n="mcIterationsLabel">MC Iterations</label>
+                            <span class="helper-text mt-1 block" data-i18n="mcIterationsHelper">Number of simulation runs (100–10000). Default 1000.</span>
+                            <div class="slider-wrapper">
+                                <div class="slider-track-bg"></div>
+                                <div class="slider-track-fill" id="mcIterationsFill"></div>
+                                <input type="range" id="mcIterations" min="100" max="10000" value="1000" step="100" class="slider">
+                            </div>
+                            <p class="text-center text-xs mt-1"><span id="mcIterationsVal">1000</span></p>
+                        </div>
+                        <div>
+                            <label class="label" for="mcConfidence" data-i18n="mcConfidenceLabel">Confidence Level</label>
+                            <span class="helper-text mt-1 block" data-i18n="mcConfidenceHelper">Confidence level for percentile reporting (50–99%). Default 90%.</span>
+                            <div class="slider-wrapper">
+                                <div class="slider-track-bg"></div>
+                                <div class="slider-track-fill" id="mcConfidenceFill"></div>
+                                <input type="range" id="mcConfidence" min="50" max="99" value="90" class="slider">
+                            </div>
+                            <p class="text-center text-xs mt-1"><span id="mcConfidenceVal">90</span>%</p>
+                        </div>
+                        <div>
+                            <label class="label" for="mcUncertaintyPct" data-i18n="mcUncertaintyPctLabel">Input Uncertainty</label>
+                            <span class="helper-text mt-1 block" data-i18n="mcUncertaintyPctHelper">Triangular distribution spread for most inputs (5–30%). Default 15%.</span>
+                            <div class="slider-wrapper">
+                                <div class="slider-track-bg"></div>
+                                <div class="slider-track-fill" id="mcUncertaintyPctFill"></div>
+                                <input type="range" id="mcUncertaintyPct" min="5" max="30" value="15" class="slider">
+                            </div>
+                            <p class="text-center text-xs mt-1"><span id="mcUncertaintyPctVal">15</span>%</p>
+                        </div>
+                        <div>
+                            <label class="label" for="mcMttrUncertaintyPct" data-i18n="mcMttrUncertaintyPctLabel">MTTR Uncertainty</label>
+                            <span class="helper-text mt-1 block" data-i18n="mcMttrUncertaintyPctHelper">Log-normal spread for MTTR (10–50%). Default 25%.</span>
+                            <div class="slider-wrapper">
+                                <div class="slider-track-bg"></div>
+                                <div class="slider-track-fill" id="mcMttrUncertaintyPctFill"></div>
+                                <input type="range" id="mcMttrUncertaintyPct" min="10" max="50" value="25" class="slider">
+                            </div>
+                            <p class="text-center text-xs mt-1"><span id="mcMttrUncertaintyPctVal">25</span>%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Risk weight sliders (hidden when Advanced Risk toggle is unchecked) ── -->
+                <div id="riskWeightSliders" style="display:none;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);">
+                    <p style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin:0 0 0.75rem;" data-i18n="sectionRiskWeights">Risk Category Weights</p>
+                    <div class="grid grid-cols-2 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="label" for="riskSecurityWeight" data-i18n="riskSecurityWeightLabel">Security Risk Weight</label>
+                            <span class="helper-text mt-1 block" data-i18n="riskSecurityWeightHelper">Scaling factor for security risk relative to operational (0.0–1.0). Default 0.4.</span>
+                            <div class="slider-wrapper">
+                                <div class="slider-track-bg"></div>
+                                <div class="slider-track-fill" id="riskSecurityWeightFill"></div>
+                                <input type="range" id="riskSecurityWeight" min="0" max="100" value="40" step="5" class="slider">
+                            </div>
+                            <p class="text-center text-xs mt-1"><span id="riskSecurityWeightVal">0.40</span></p>
+                        </div>
+                        <div>
+                            <label class="label" for="riskRegulatoryWeight" data-i18n="riskRegulatoryWeightLabel">Regulatory Risk Weight</label>
+                            <span class="helper-text mt-1 block" data-i18n="riskRegulatoryWeightHelper">Scaling factor for regulatory risk relative to operational (0.0–1.0). Default 0.25.</span>
+                            <div class="slider-wrapper">
+                                <div class="slider-track-bg"></div>
+                                <div class="slider-track-fill" id="riskRegulatoryWeightFill"></div>
+                                <input type="range" id="riskRegulatoryWeight" min="0" max="100" value="25" step="5" class="slider">
+                            </div>
+                            <p class="text-center text-xs mt-1"><span id="riskRegulatoryWeightVal">0.25</span></p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

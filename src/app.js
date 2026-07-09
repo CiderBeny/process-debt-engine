@@ -308,6 +308,43 @@
                 toggleNonlinear:    'Nonlinear Cost Model',
                 toggleProbabilistic:'Confidence Intervals (MC)',
                 toggleAdvancedRisk: 'Multi-Category Risk',
+                // ── Nowe klucze dla rozszerzonej konfiguracji ──
+                sectionScenarios:   'Scenarios',
+                sectionLevers:      'Lever Recovery Rates',
+                sectionCorrelations:'Variable Correlations',
+                sectionMc:          'Monte Carlo Parameters',
+                sectionRiskWeights: 'Risk Category Weights',
+                correlationWeightsToggle: 'Show correlation weights',
+                scenCAutoLevelLabel:    'Scenario C Auto Level',
+                scenCAutoLevelHelper:   'Target automation level for full-transformation scenario (50–100%). Default 80%.',
+                scenCCapexMultLabel:    'Scenario C CAPEX Multiplier',
+                scenCCapexMultHelper:   'CAPEX multiplier for full-transformation scenario (1.0–3.0). Default 1.5.',
+                annualHoursLabel:       'Annual Hours / Engineer',
+                annualHoursHelper:      'Working hours per engineer per year (1500–2500). Default 1800.',
+                leverInnovationLabel:   'Innovation Lever Recovery',
+                leverInnovationHelper:  'Fraction of pipeline margin recovered via innovation (10–80%). Default 50%.',
+                leverManagementLabel:   'Management Lever Recovery',
+                leverManagementHelper:  'Fraction of OPEX Waste recovered via management intervention (5–40%). Default 15%.',
+                leverTurnoverLabel:     'Turnover Lever Recovery',
+                leverTurnoverHelper:    'Fraction of turnover cost preventable (10–60%). Default 30%.',
+                correlationStrengthLabel:    'Correlation Strength',
+                correlationStrengthHelper:   'Global multiplier for all correlation effects (0.0–1.0). Default 0.3.',
+                corrQ3Q1Label: 'Q3 → Q1 Weight',
+                corrQ1Q5Label: 'Q1 → Q5 Weight',
+                corrQ1Q7Label: 'Q1 → Q7 Weight',
+                corrQ3Q7Label: 'Q3 → Q7 Weight',
+                mcIterationsLabel:      'MC Iterations',
+                mcIterationsHelper:     'Number of simulation runs (100–10000). Default 1000.',
+                mcConfidenceLabel:      'Confidence Level',
+                mcConfidenceHelper:     'Confidence level for percentile reporting (50–99%). Default 90%.',
+                mcUncertaintyPctLabel:      'Input Uncertainty',
+                mcUncertaintyPctHelper:     'Triangular distribution spread for most inputs (5–30%). Default 15%.',
+                mcMttrUncertaintyPctLabel:  'MTTR Uncertainty',
+                mcMttrUncertaintyPctHelper: 'Log-normal spread for MTTR (10–50%). Default 25%.',
+                riskSecurityWeightLabel:    'Security Risk Weight',
+                riskSecurityWeightHelper:   'Scaling factor for security risk relative to operational (0.0–1.0). Default 0.4.',
+                riskRegulatoryWeightLabel:  'Regulatory Risk Weight',
+                riskRegulatoryWeightHelper: 'Scaling factor for regulatory risk relative to operational (0.0–1.0). Default 0.25.',
             },
             pl: {
                 navSubtitle:      'Silnik Efektywności Procesów IT i Strategii Finansowej',
@@ -611,6 +648,43 @@
                 toggleNonlinear:    'Nieliniowy model kosztów',
                 toggleProbabilistic:'Przedziały ufności (MC)',
                 toggleAdvancedRisk: 'Ryzyko wielokategorii',
+                // ── Nowe klucze PL ──
+                sectionScenarios:   'Scenariusze',
+                sectionLevers:      'Współczynniki odzysku dźwigni',
+                sectionCorrelations:'Korelacje zmiennych',
+                sectionMc:          'Parametry Monte Carlo',
+                sectionRiskWeights: 'Wagi kategorii ryzyka',
+                correlationWeightsToggle: 'Pokaż wagi korelacji',
+                scenCAutoLevelLabel:    'Poziom automatyzacji — scenariusz C',
+                scenCAutoLevelHelper:   'Docelowy poziom automatyzacji w scenariuszu pełnej transformacji (50–100%). Domyślnie 80%.',
+                scenCCapexMultLabel:    'Mnożnik CAPEX — scenariusz C',
+                scenCCapexMultHelper:   'Mnożnik CAPEX dla scenariusza pełnej transformacji (1,0–3,0). Domyślnie 1,5.',
+                annualHoursLabel:       'Godzin pracy / inżynier / rok',
+                annualHoursHelper:      'Liczba godzin pracy inżyniera rocznie (1500–2500). Domyślnie 1800.',
+                leverInnovationLabel:   'Dźwignia innowacji',
+                leverInnovationHelper:  'Udział marży pipeline odzyskiwany przez innowacje (10–80%). Domyślnie 50%.',
+                leverManagementLabel:   'Dźwignia zarządzania',
+                leverManagementHelper:  'Udział marnotrawstwa OPEX odzyskiwany przez interwencje zarządcze (5–40%). Domyślnie 15%.',
+                leverTurnoverLabel:     'Dźwignia rotacji',
+                leverTurnoverHelper:    'Udział kosztów rotacji możliwy do zapobieżenia (10–60%). Domyślnie 30%.',
+                correlationStrengthLabel:    'Siła korelacji',
+                correlationStrengthHelper:   'Globalny mnożnik dla wszystkich efektów korelacji (0,0–1,0). Domyślnie 0,3.',
+                corrQ3Q1Label: 'Waga Q3 → Q1',
+                corrQ1Q5Label: 'Waga Q1 → Q5',
+                corrQ1Q7Label: 'Waga Q1 → Q7',
+                corrQ3Q7Label: 'Waga Q3 → Q7',
+                mcIterationsLabel:      'Iteracje MC',
+                mcIterationsHelper:     'Liczba przebiegów symulacji (100–10000). Domyślnie 1000.',
+                mcConfidenceLabel:      'Poziom ufności',
+                mcConfidenceHelper:     'Poziom ufności dla raportowania percentyli (50–99%). Domyślnie 90%.',
+                mcUncertaintyPctLabel:      'Niepewność wejść',
+                mcUncertaintyPctHelper:     'Rozrzut rozkładu trójkątnego dla większości wejść (5–30%). Domyślnie 15%.',
+                mcMttrUncertaintyPctLabel:  'Niepewność MTTR',
+                mcMttrUncertaintyPctHelper: 'Rozrzut log-normalny dla MTTR (10–50%). Domyślnie 25%.',
+                riskSecurityWeightLabel:    'Waga ryzyka bezpieczeństwa',
+                riskSecurityWeightHelper:   'Współczynnik skalujący ryzyko bezpieczeństwa względem operacyjnego (0,0–1,0). Domyślnie 0,4.',
+                riskRegulatoryWeightLabel:  'Waga ryzyka regulacyjnego',
+                riskRegulatoryWeightHelper: 'Współczynnik skalujący ryzyko regulacyjne względem operacyjnego (0,0–1,0). Domyślnie 0,25.',
             }
         };
 
@@ -678,6 +752,19 @@
             confidenceLevel:  0.9,
             uncertaintyPct:   0.15,
             mttrUncertaintyPct: 0.25,
+        };
+
+        const CORRELATION_DEFAULTS = {
+            correlationMultiplier: 0.3,
+            corrQ3Q1: 15,
+            corrQ1Q5: 3,
+            corrQ1Q7: 20,
+            corrQ3Q7: 10,
+        };
+
+        const RISK_WEIGHT_DEFAULTS = {
+            securityWeight: 0.4,
+            regulatoryWeight: 0.25,
         };
 
         function seededRandom(seed) {
@@ -965,9 +1052,21 @@
             var turnover        = params.turnover        || 0;
             var correlationsEnabled = params.correlationsEnabled || false;
             var docStandard     = params.docStandard     || 3;
+            var scenCAutoLevel  = params.scenCAutoLevel  !== undefined ? params.scenCAutoLevel : COEFFICIENTS.SCEN_C_AUTO_LEVEL;
+            var scenCCapexMult  = params.scenCCapexMult  !== undefined ? params.scenCCapexMult : COEFFICIENTS.SCEN_C_CAPEX_MULTIPLIER;
+            var annualHours     = params.annualHours     || COEFFICIENTS.ANNUAL_HOURS_PER_ENGINEER;
+            var leverInnovation = params.leverInnovation || COEFFICIENTS.LEVER_INNOVATION;
+            var leverManagement = params.leverManagement || COEFFICIENTS.LEVER_MANAGEMENT;
+            var leverTurnoverL  = params.leverTurnover   || COEFFICIENTS.LEVER_TURNOVER;
+            var riskSecurityWeight = params.riskSecurityWeight !== undefined ? params.riskSecurityWeight : RISK_WEIGHT_DEFAULTS.securityWeight;
+            var riskRegulatoryWeight = params.riskRegulatoryWeight !== undefined ? params.riskRegulatoryWeight : RISK_WEIGHT_DEFAULTS.regulatoryWeight;
 
             if (correlationsEnabled) {
-                var cMult = params.correlationMultiplier || 0.3;
+                var cMult = params.correlationMultiplier || CORRELATION_DEFAULTS.correlationMultiplier;
+                var corrQ3Q1 = params.corrQ3Q1 || CORRELATION_DEFAULTS.corrQ3Q1;
+                var corrQ1Q5 = params.corrQ1Q5 || CORRELATION_DEFAULTS.corrQ1Q5;
+                var corrQ1Q7 = params.corrQ1Q7 || CORRELATION_DEFAULTS.corrQ1Q7;
+                var corrQ3Q7 = params.corrQ3Q7 || CORRELATION_DEFAULTS.corrQ3Q7;
 
                 var q1Base = manualPercent / 100;
                 var q5Base = failures;
@@ -975,22 +1074,22 @@
                 var q3Base = docStandard / 5;
                 var q9Base = riskLevel / 5;
 
-                var q1FromQ3 = manualPercent + (0.5 - q3Base) * cMult * 15;
+                var q1FromQ3 = manualPercent + (0.5 - q3Base) * cMult * corrQ3Q1;
                 manualPercent = Math.round(Math.min(100, Math.max(0, q1FromQ3)));
 
-                var q5FromQ1 = q5Base + q1Base * cMult * 3;
+                var q5FromQ1 = q5Base + q1Base * cMult * corrQ1Q5;
                 failures = Math.round(Math.min(9999, Math.max(0, q5FromQ1)));
 
-                var q7FromQ1 = q7Base + q1Base * cMult * 20;
+                var q7FromQ1 = q7Base + q1Base * cMult * corrQ1Q7;
                 managerHrs = Math.round(Math.min(744, Math.max(0, q7FromQ1)));
 
-                var q7FromQ3 = managerHrs - (1 - q3Base) * cMult * 10;
+                var q7FromQ3 = managerHrs - (1 - q3Base) * cMult * corrQ3Q7;
                 managerHrs = Math.round(Math.min(744, Math.max(0, q7FromQ3)));
             }
 
             var nonlinearEnabled = params.nonlinearEnabled || false;
 
-            var totalAnnualHrs   = COEFFICIENTS.ANNUAL_HOURS_PER_ENGINEER;
+            var totalAnnualHrs   = annualHours;
             var manualAnnualHrs  = totalAnnualHrs * (manualPercent / 100);
             var chasingAnnualHrs = managerHrs * COEFFICIENTS.MONTHS_PER_YEAR;
 
@@ -1014,8 +1113,8 @@
                 var docRatio = docStandard / 5;
                 var scaleRatio = riskLevel / 5;
 
-                riskSecurity = cRisk * manualRatio * 0.4;
-                riskRegulatory = cRisk * (1 - docRatio) * 0.25;
+                riskSecurity = cRisk * manualRatio * riskSecurityWeight;
+                riskRegulatory = cRisk * (1 - docRatio) * riskRegulatoryWeight;
 
                 cRisk = riskOperational + riskSecurity + riskRegulatory;
             }
@@ -1049,9 +1148,9 @@
 
             var leverRecoveryAuto = Math.round(cWaste * leverAuto);
             var leverRecoveryRisk = Math.round(cRisk * leverRisk);
-            var leverRecoveryInnovation = Math.round((cOppDirect + cCascade) * COEFFICIENTS.LEVER_INNOVATION);
-            var leverRecoveryMgmt = Math.round(cWaste * COEFFICIENTS.LEVER_MANAGEMENT);
-            var leverRecoveryTurnover = Math.round(turnoverCost * COEFFICIENTS.LEVER_TURNOVER);
+            var leverRecoveryInnovation = Math.round((cOppDirect + cCascade) * leverInnovation);
+            var leverRecoveryMgmt = Math.round(cWaste * leverManagement);
+            var leverRecoveryTurnover = Math.round(turnoverCost * leverTurnoverL);
 
             return {
                 cWaste:            cWaste,
@@ -1082,6 +1181,8 @@
                 leverRecoveryInnovation:  leverRecoveryInnovation,
                 leverRecoveryMgmt:        leverRecoveryMgmt,
                 leverRecoveryTurnover:    leverRecoveryTurnover,
+                scenCAutoLevel:   scenCAutoLevel,
+                scenCCapexMult:   scenCCapexMult,
             };
         }
 
@@ -1123,8 +1224,25 @@
                 horizonYears:   readAdvanced('timeHorizon',   COEFFICIENTS.TIME_HORIZON_YEARS_DEFAULT, 1),
                 leverAuto:      readAdvanced('leverAutomation', COEFFICIENTS.LEVER_AUTOMATION_DEFAULT, 100),
                 leverRisk:      readAdvanced('leverRisk',     COEFFICIENTS.LEVER_RISK_DEFAULT, 100),
+                // ── Nowe konfigurowalne parametry ──
+                scenCAutoLevel:  readAdvanced('scenCAutoLevel',  COEFFICIENTS.SCEN_C_AUTO_LEVEL, 100),
+                scenCCapexMult:  readAdvanced('scenCCapexMult',  COEFFICIENTS.SCEN_C_CAPEX_MULTIPLIER, 10),
+                annualHours:     readAdvanced('annualHours',     COEFFICIENTS.ANNUAL_HOURS_PER_ENGINEER, 1),
+                leverInnovation: readAdvanced('leverInnovation', COEFFICIENTS.LEVER_INNOVATION, 100),
+                leverManagement: readAdvanced('leverManagement', COEFFICIENTS.LEVER_MANAGEMENT, 100),
+                leverTurnover:   readAdvanced('leverTurnover',   COEFFICIENTS.LEVER_TURNOVER, 100),
+                mcIterations:    readAdvanced('mcIterations',    MC_DEFAULTS.iterations, 1),
+                mcConfidence:    readAdvanced('mcConfidence',    MC_DEFAULTS.confidenceLevel, 100),
+                mcUncertaintyPct: readAdvanced('mcUncertaintyPct', MC_DEFAULTS.uncertaintyPct, 100),
+                mcMttrUnc:       readAdvanced('mcMttrUncertaintyPct', MC_DEFAULTS.mttrUncertaintyPct, 100),
+                riskSecurityWeight:   readAdvanced('riskSecurityWeight',   RISK_WEIGHT_DEFAULTS.securityWeight, 1),
+                riskRegulatoryWeight: readAdvanced('riskRegulatoryWeight', RISK_WEIGHT_DEFAULTS.regulatoryWeight, 1),
                 correlationsEnabled: document.getElementById('correlationsToggle') ? document.getElementById('correlationsToggle').checked : false,
-                correlationMultiplier: 0.3,
+                correlationMultiplier: readAdvanced('correlationStrength', CORRELATION_DEFAULTS.correlationMultiplier, 100),
+                corrQ3Q1: readAdvanced('corrQ3Q1', CORRELATION_DEFAULTS.corrQ3Q1, 1),
+                corrQ1Q5: readAdvanced('corrQ1Q5', CORRELATION_DEFAULTS.corrQ1Q5, 1),
+                corrQ1Q7: readAdvanced('corrQ1Q7', CORRELATION_DEFAULTS.corrQ1Q7, 1),
+                corrQ3Q7: readAdvanced('corrQ3Q7', CORRELATION_DEFAULTS.corrQ3Q7, 1),
                 nonlinearEnabled: document.getElementById('nonlinearToggle') ? document.getElementById('nonlinearToggle').checked : false,
                 probabilisticEnabled: document.getElementById('probabilisticToggle') ? document.getElementById('probabilisticToggle').checked : false,
                 advancedRiskEnabled: document.getElementById('advancedRiskToggle') ? document.getElementById('advancedRiskToggle').checked : false,
@@ -1137,13 +1255,36 @@
             document.getElementById('timeHorizonVal').textContent  = p.horizonYears;
             document.getElementById('leverAutomationVal').textContent = Math.round(p.leverAuto * 100);
             document.getElementById('leverRiskVal').textContent    = Math.round(p.leverRisk * 100);
+            document.getElementById('scenCAutoLevelVal').textContent = Math.round(p.scenCAutoLevel * 100);
+            document.getElementById('scenCCapexMultVal').textContent = p.scenCCapexMult.toFixed(1);
+            document.getElementById('annualHoursVal').textContent = p.annualHours;
+            document.getElementById('leverInnovationVal').textContent = Math.round(p.leverInnovation * 100);
+            document.getElementById('leverManagementVal').textContent = Math.round(p.leverManagement * 100);
+            document.getElementById('leverTurnoverVal').textContent = Math.round(p.leverTurnover * 100);
+            document.getElementById('correlationStrengthVal').textContent = p.correlationMultiplier.toFixed(2);
+            document.getElementById('corrQ3Q1Val').textContent = p.corrQ3Q1;
+            document.getElementById('corrQ1Q5Val').textContent = p.corrQ1Q5.toFixed(1);
+            document.getElementById('corrQ1Q7Val').textContent = p.corrQ1Q7;
+            document.getElementById('corrQ3Q7Val').textContent = p.corrQ3Q7;
+            document.getElementById('riskSecurityWeightVal').textContent = p.riskSecurityWeight.toFixed(2);
+            document.getElementById('riskRegulatoryWeightVal').textContent = p.riskRegulatoryWeight.toFixed(2);
+            document.getElementById('mcIterationsVal').textContent = p.mcIterations;
+            document.getElementById('mcConfidenceVal').textContent = Math.round(p.mcConfidence * 100);
+            document.getElementById('mcUncertaintyPctVal').textContent = Math.round(p.mcUncertaintyPct * 100);
+            document.getElementById('mcMttrUncertaintyPctVal').textContent = Math.round(p.mcMttrUnc * 100);
 
             var r = computeModel(p);
 
             var mcResults = null;
 
             if (p.probabilisticEnabled) {
-                mcResults = runMonteCarlo(p, { seed: 42 });
+                mcResults = runMonteCarlo(p, {
+                    seed: 42,
+                    iterations: p.mcIterations,
+                    confidenceLevel: p.mcConfidence,
+                    uncertaintyPct: p.mcUncertaintyPct,
+                    mttrUncertaintyPct: p.mcMttrUnc,
+                });
                 var keyMap = {
                     statWaste: 'cWaste', statRisk: 'cRisk', statOpp: 'cOppDirect',
                     statCascade: 'cCascade', totalImpact: 'totalImpact',
@@ -1189,7 +1330,7 @@
             updateCharts(r.totalAnnualHrs, r.manualAnnualHrs, r.chasingAnnualHrs, r.cWaste, p.capex, r.potentialSavings, p.riskLevel, p.manualPercent, p.autoLevel / 100);
             updateRecs(r.cWaste, r.cRisk, r.cOppDirect, r.cCascade, r.paybackMonths, r.leverAuto, r.leverRisk);
             updateDoraBenchmark();
-            updateScenarios(r.cWaste, r.cRisk, r.cCascade, p.capex, p.autoLevel / 100, r.totalImpact, p.discountRate, p.horizonYears);
+            updateScenarios(r.cWaste, r.cRisk, r.cCascade, p.capex, p.autoLevel / 100, r.totalImpact, p.discountRate, p.horizonYears, r.scenCAutoLevel, r.scenCCapexMult);
         }
 
         const CHART_OPTS = {
@@ -1467,17 +1608,19 @@
             return { band: L.doraBandLow, color: 'var(--red)' };
         }
 
-        function updateScenarios(cWaste, cRisk, cCascade, capex, autoLevel, totalImpact, dr, ny) {
+        function updateScenarios(cWaste, cRisk, cCascade, capex, autoLevel, totalImpact, dr, ny, scenCAutoLevel, scenCCapexMult) {
             const L = TRANSLATIONS[currentLang];
             const fmt = (n) => formatCurrency(Math.abs(n));
             if (dr === undefined) dr = readAdvanced('discountRate', COEFFICIENTS.DISCOUNT_RATE_DEFAULT, 100);
             if (ny === undefined) ny = readAdvanced('timeHorizon', COEFFICIENTS.TIME_HORIZON_YEARS_DEFAULT, 1);
+            if (scenCAutoLevel === undefined) scenCAutoLevel = readAdvanced('scenCAutoLevel', COEFFICIENTS.SCEN_C_AUTO_LEVEL, 100);
+            if (scenCCapexMult === undefined) scenCCapexMult = readAdvanced('scenCCapexMult', COEFFICIENTS.SCEN_C_CAPEX_MULTIPLIER, 10);
 
             var annualRecurring = cWaste + cRisk + cCascade;
 
             const scenA = scenCalc(0,    0,                            annualRecurring, dr, ny);
             const scenB = scenCalc(autoLevel, capex,                   annualRecurring, dr, ny);
-            const scenC = scenCalc(COEFFICIENTS.SCEN_C_AUTO_LEVEL,  capex * COEFFICIENTS.SCEN_C_CAPEX_MULTIPLIER, annualRecurring, dr, ny);
+            const scenC = scenCalc(scenCAutoLevel,  capex * scenCCapexMult, annualRecurring, dr, ny);
 
             function netColor(val) { return val >= 0 ? 'var(--green)' : 'var(--red)'; }
             function netSign(val)  { return val >= 0 ? '+' : '-'; }
@@ -1640,18 +1783,31 @@
                         autoLevel:      clamp('autoLevel'),
                         teamSize:       clamp('teamSize'),
                         turnover:       clamp('q10'),
+                        docStandard:    clamp('q3'),
                         cascadeMult:    readAdvanced('cascadeMult',   COEFFICIENTS.CASCADE_MULTIPLIER_DEFAULT, 100),
                         erosionRate:    readAdvanced('erosionRate',   COEFFICIENTS.PIPELINE_EROSION_RATE_DEFAULT, 100),
                         discountRate:   readAdvanced('discountRate',  COEFFICIENTS.DISCOUNT_RATE_DEFAULT, 100),
                         horizonYears:   readAdvanced('timeHorizon',   COEFFICIENTS.TIME_HORIZON_YEARS_DEFAULT, 1),
                         leverAuto:      readAdvanced('leverAutomation', COEFFICIENTS.LEVER_AUTOMATION_DEFAULT, 100),
                         leverRisk:      readAdvanced('leverRisk',     COEFFICIENTS.LEVER_RISK_DEFAULT, 100),
-                        docStandard:    clamp('q3'),
-                        correlationsEnabled: false,
-                        correlationMultiplier: 0.3,
-                        nonlinearEnabled: false,
+                        // ── Nowe parametry dla exportExcel (używane w computeModel) ──
+                        scenCAutoLevel:  readAdvanced('scenCAutoLevel',  COEFFICIENTS.SCEN_C_AUTO_LEVEL, 100),
+                        scenCCapexMult:  readAdvanced('scenCCapexMult',  COEFFICIENTS.SCEN_C_CAPEX_MULTIPLIER, 10),
+                        annualHours:     readAdvanced('annualHours',     COEFFICIENTS.ANNUAL_HOURS_PER_ENGINEER, 1),
+                        leverInnovation: readAdvanced('leverInnovation', COEFFICIENTS.LEVER_INNOVATION, 100),
+                        leverManagement: readAdvanced('leverManagement', COEFFICIENTS.LEVER_MANAGEMENT, 100),
+                        leverTurnover:   readAdvanced('leverTurnover',   COEFFICIENTS.LEVER_TURNOVER, 100),
+                        riskSecurityWeight:   readAdvanced('riskSecurityWeight',   RISK_WEIGHT_DEFAULTS.securityWeight, 1),
+                        riskRegulatoryWeight: readAdvanced('riskRegulatoryWeight', RISK_WEIGHT_DEFAULTS.regulatoryWeight, 1),
+                        correlationsEnabled: document.getElementById('correlationsToggle') ? document.getElementById('correlationsToggle').checked : false,
+                        correlationMultiplier: readAdvanced('correlationStrength', CORRELATION_DEFAULTS.correlationMultiplier, 100),
+                        corrQ3Q1: readAdvanced('corrQ3Q1', CORRELATION_DEFAULTS.corrQ3Q1, 1),
+                        corrQ1Q5: readAdvanced('corrQ1Q5', CORRELATION_DEFAULTS.corrQ1Q5, 1),
+                        corrQ1Q7: readAdvanced('corrQ1Q7', CORRELATION_DEFAULTS.corrQ1Q7, 1),
+                        corrQ3Q7: readAdvanced('corrQ3Q7', CORRELATION_DEFAULTS.corrQ3Q7, 1),
+                        nonlinearEnabled: document.getElementById('nonlinearToggle') ? document.getElementById('nonlinearToggle').checked : false,
                         probabilisticEnabled: false,
-                        advancedRiskEnabled: false,
+                        advancedRiskEnabled: document.getElementById('advancedRiskToggle') ? document.getElementById('advancedRiskToggle').checked : false,
                     };
                     var r = computeModel(p);
 
@@ -1671,7 +1827,7 @@
                     var ny = p.horizonYears;
                     const scenA = scenCalc(0,    0,                            annualRecurring, dr, ny);
                     const scenB = scenCalc(p.autoLevel / 100, p.capex,         annualRecurring, dr, ny);
-                    const scenC = scenCalc(COEFFICIENTS.SCEN_C_AUTO_LEVEL,  p.capex * COEFFICIENTS.SCEN_C_CAPEX_MULTIPLIER, annualRecurring, dr, ny);
+                    const scenC = scenCalc(r.scenCAutoLevel,  p.capex * r.scenCCapexMult, annualRecurring, dr, ny);
 
                     var q1Raw = clamp('q1'), q2Raw = clamp('q2'), q3Raw = clamp('q3'),
                         q4Raw = currencyToUsd(clamp('q4')), q5Raw = clamp('q5'), q11Raw = clamp('q11'),
@@ -2571,10 +2727,49 @@
             const pdfBtn = document.getElementById('exportBtn');
             if (pdfBtn) pdfBtn.addEventListener('click', exportPDF);
 
-            ['correlationsToggle','nonlinearToggle','probabilisticToggle','advancedRiskToggle'].forEach(function (id) {
-                var el = document.getElementById(id);
-                if (el) el.addEventListener('change', calculate);
-            });
+            function initAdvancedSliders() {
+                var sliderIds = [
+                    'scenCAutoLevel','scenCCapexMult','annualHours',
+                    'leverInnovation','leverManagement','leverTurnover',
+                    'correlationStrength','corrQ3Q1','corrQ1Q5','corrQ1Q7','corrQ3Q7',
+                    'riskSecurityWeight','riskRegulatoryWeight',
+                    'mcIterations','mcConfidence','mcUncertaintyPct','mcMttrUncertaintyPct',
+                ];
+                sliderIds.forEach(function (id) {
+                    var el = document.getElementById(id);
+                    if (el) {
+                        el.addEventListener('input', calculate);
+                    }
+                });
+            }
+
+            function initToggleVisibility() {
+                var toggleMap = {
+                    correlationsToggle: ['correlationSliders'],
+                    probabilisticToggle: ['mcSliders'],
+                    advancedRiskToggle: ['riskWeightSliders'],
+                };
+                function apply(id) {
+                    var checked = document.getElementById(id) ? document.getElementById(id).checked : false;
+                    var targets = toggleMap[id];
+                    if (targets) {
+                        targets.forEach(function (tid) {
+                            var el = document.getElementById(tid);
+                            if (el) el.style.display = checked ? 'block' : 'none';
+                        });
+                    }
+                }
+                ['correlationsToggle','nonlinearToggle','probabilisticToggle','advancedRiskToggle'].forEach(function (id) {
+                    var el = document.getElementById(id);
+                    if (el) {
+                        el.addEventListener('change', function () { apply(id); calculate(); });
+                    }
+                    apply(id);
+                });
+            }
+
+            initAdvancedSliders();
+            initToggleVisibility();
             // Dismiss open tooltip when clicking anywhere outside
             document.addEventListener('click', e => {
                 if (!e.target.classList.contains('formula-tip')) {
