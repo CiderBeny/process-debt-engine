@@ -36,6 +36,7 @@
                 efficiencyGain: 'Efficiency Gain',
                 teamSizeLabel:  'Team Size (engineers)',
                 teamSizeHelper: 'Total number of engineers affected by process debt.',
+                phase2Title:    'Phase 2: Investment & Simulation Parameters',
                 capexLabel:     'One-Time CAPEX Investment ({C})',
                 capexHelper:    'Licenses, Implementation, and Training costs.',
                 tabStandard:          '📊 Standard',
@@ -322,6 +323,7 @@
                 efficiencyGain: 'Wzrost Efektywności',
                 teamSizeLabel:  'Liczba Inżynierów',
                 teamSizeHelper: 'Łączna liczba inżynierów dotkniętych długiem procesowym.',
+                phase2Title:    'Faza 2: Parametry Inwestycji i Symulacji',
                 capexLabel:     'Jednorazowa Inwestycja CAPEX ({C})',
                 capexHelper:    'Licencje, wdrożenie i koszty szkoleń.',
                 tabStandard:          '📊 Standard',
@@ -1799,8 +1801,81 @@
 
                 cy += rowH + 8;
 
+                // ── Phase 2: Investment & Simulation Parameters (9 hand-rendered cards) ──
+                needSpace(20);
+                drawRect(ML - 2, cy - 4, UW + 4, 10, [180, 83, 9]);
+                pdf.setFontSize(11); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(255, 255, 255);
+                pdf.text(t('phase2Title').toUpperCase(), ML + 2, cy + 3);
+                cy += 14;
+
+                const paramKeys = [
+                    { label: t('autoLabel'),         desc: '',                        id: 'autoLevel',       unit: '%',      isSlider: true, valId: 'autoLevelVal',       min: '0',   max: '100' },
+                    { label: t('teamSizeLabel'),      desc: L.teamSizeHelper,          id: 'teamSize',         unit: '',       isSlider: false },
+                    { label: t('capexLabel'),         desc: L.capexHelper,            id: 'capex',            unit: 'money',  isSlider: false },
+                    { label: t('cascadeMultLabel'),   desc: L.cascadeMultHelper,       id: 'cascadeMult',     unit: '',       isSlider: true, valId: 'cascadeMultVal' },
+                    { label: t('erosionRateLabel'),   desc: L.erosionRateHelper,       id: 'erosionRate',     unit: '',       isSlider: true, valId: 'erosionRateVal' },
+                    { label: t('discountRateLabel'),  desc: L.discountRateHelper,      id: 'discountRate',    unit: '%',      isSlider: true, valId: 'discountRateVal',   min: '5%',  max: '20%' },
+                    { label: t('timeHorizonLabel'),   desc: L.timeHorizonHelper,       id: 'timeHorizon',     unit: 'yr',     isSlider: true, valId: 'timeHorizonVal' },
+                    { label: t('leverAutomationLabel'),desc: L.leverAutomationHelper,  id: 'leverAutomation', unit: '%',      isSlider: true, valId: 'leverAutomationVal' },
+                    { label: t('leverRiskLabel'),     desc: L.leverRiskHelper,         id: 'leverRisk',       unit: '%',      isSlider: true, valId: 'leverRiskVal' },
+                ];
+
+                const pCols = 3;
+                const pColW = UW / pCols - 3;
+                const pRowH = 38;
+
+                for (let i = 0; i < paramKeys.length; i++) {
+                    const q   = paramKeys[i];
+                    const col = i % pCols;
+                    const x   = ML + col * (pColW + 3);
+
+                    if (col === 0 && i > 0) { cy += pRowH + 3; }
+                    if (col === 0) { needSpace(pRowH + 3); }
+
+                    var val;
+                    if (q.isSlider) {
+                        val = document.getElementById(q.valId).textContent;
+                    } else if (q.unit === 'C') {
+                        val = new Intl.NumberFormat(currentLang === 'pl' ? 'pl-PL' : 'en-US', {
+                            style: 'currency',
+                            currency: currentCurrency,
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        }).format(parseFloat(document.getElementById(q.id).value) || 0);
+                    } else {
+                        val = document.getElementById(q.id).value;
+                    }
+                    if (q.unit && q.unit !== 'C') val += q.unit;
+
+                    drawRect(x, cy, pColW, pRowH, [255, 255, 255], [214, 201, 184]);
+                    drawRect(x, cy, 2, pRowH, [180, 83, 9]);
+
+                    pdf.setFontSize(7); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(124, 79, 34);
+                    pdf.text(q.label.toUpperCase(), x + 5, cy + 6);
+
+                    if (q.desc) {
+                        pdf.setFontSize(6); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140, 123, 110);
+                        const descLines = wrapText(q.desc, x + 5, pColW - 10, 6 * 0.3528);
+                        descLines.slice(0, 2).forEach((line, li) => {
+                            pdf.text(line, x + 5, cy + 12 + li * 4);
+                        });
+                    }
+
+                    const vBoxY = cy + pRowH - 11;
+                    drawRect(x + 5, vBoxY, pColW - 10, 8, [250, 247, 242], [214, 201, 184]);
+                    pdf.setFontSize(8); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(28, 20, 16);
+                    pdf.text(String(val), x + 8, vBoxY + 5.5);
+
+                    if (q.isSlider && q.min) {
+                        pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140, 123, 110);
+                        pdf.text(q.min, x + 5, vBoxY + 5.5);
+                        pdf.text(q.max, x + pColW - 5, vBoxY + 5.5, { align: 'right' });
+                    }
+                }
+                cy += pRowH + 8;
+
                 // ── Screenshot blocks: investment, stats, charts, exec summary ─────
-                const mainIds = ['pdf-block-2','pdf-block-3','scenario-compare','pdf-block-4','pdf-block-5','pdf-block-6'];
+                const mainIds = ['pdf-block-3','scenario-compare','pdf-block-4','pdf-block-5','pdf-block-6'];
 
                 async function captureBlock(id) {
                     const el = document.getElementById(id);
