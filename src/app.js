@@ -800,7 +800,7 @@
             var precision = 1e-6;
             var maxIter = 1000;
             var low = -0.99;
-            var high = 10;
+            var high = 1;
             for (var i = 0; i < maxIter; i++) {
                 var rate = (low + high) / 2;
                 var npv = 0;
@@ -885,7 +885,7 @@
             document.getElementById('statCascade').textContent = formatCurrency(cCascade);
             document.getElementById('totalImpact').textContent = formatCurrency(totalImpact);
             document.getElementById('npvTotalDebt').textContent = formatCurrency(npvTotalDebt);
-            document.getElementById('statIrr').textContent     = irr !== null ? (irr * 100).toFixed(1) + '%' : '—';
+            document.getElementById('statIrr').textContent     = irr !== null ? (irr >= 0.999 ? '>99.9%' : (irr * 100).toFixed(1) + '%') : '—';
             document.getElementById('statNet').textContent     = formatCurrency(netDebt);
             document.getElementById('q9Val').textContent       = document.getElementById('q9').value;
             document.getElementById('q3Val').textContent       = document.getElementById('q3').value;
