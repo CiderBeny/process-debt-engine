@@ -2247,7 +2247,7 @@
                     var val;
                     if (q.isSlider) {
                         val = document.getElementById(q.valId).textContent;
-                    } else if (q.unit === 'C') {
+                    } else if (q.unit === 'C' || q.unit === 'money') {
                         val = new Intl.NumberFormat(currentLang === 'pl' ? 'pl-PL' : 'en-US', {
                             style: 'currency',
                             currency: currentCurrency,
