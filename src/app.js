@@ -6,6 +6,10 @@
                 navSubtitle:      'IT Process Efficiency & Financial Strategy Engine',
                 exportBtn:        'EXPORT STRATEGIC REPORT (PDF)',
                 exportGenerating: 'Generating PDF…',
+                exportBtnSimple:  'EXPORT SUMMARY REPORT (PDF)',
+                exportGeneratingSimple: 'Generating summary PDF…',
+                exportBtnFull:    'EXPORT DETAILED REPORT (PDF)',
+                exportGeneratingFull:   'Generating detailed PDF…',
                 phase1Title:      'Phase 1: Strategic Diagnostic Questionnaire',
                 q1label:  '1. Manual Effort (%)',
                 q1desc:   'What percentage of the sprint capacity is consumed by repetitive manual tasks such as deployments, regression testing, or environment configuration?',
@@ -350,6 +354,10 @@
                 navSubtitle:      'Silnik Efektywności Procesów IT i Strategii Finansowej',
                 exportBtn:        'EKSPORTUJ RAPORT STRATEGICZNY (PDF)',
                 exportGenerating: 'Generowanie PDF…',
+                exportBtnSimple:  'EKSPORTUJ RAPORT PODSUMOWUJĄCY (PDF)',
+                exportGeneratingSimple: 'Generowanie podsumowania PDF…',
+                exportBtnFull:    'EKSPORTUJ RAPORT SZCZEGÓŁOWY (PDF)',
+                exportGeneratingFull:   'Generowanie szczegółowego PDF…',
                 phase1Title:      'Faza 1: Strategiczny Kwestionariusz Diagnostyczny',
                 q1label:  '1. Wysiłek Manualny (%)',
                 q1desc:   'Jaki procent pojemności sprintu jest pochłaniany przez powtarzalne zadania manualne, takie jak wdrożenia, testy regresji lub konfiguracja środowisk?',
@@ -1999,7 +2007,7 @@
             });
         }
 
-        async function exportPDF() {
+        async function exportPDF(mode) {
             // ── Mobile guard ────────────────────────────────────────────────────
             if (isMobileBrowser()) {
                 const msg = currentLang === 'pl'
@@ -2009,10 +2017,15 @@
                 return;
             }
 
+            var btnId = mode === 'full' ? 'exportBtnFull' : 'exportBtnSimple';
+            var generatingKey = mode === 'full' ? 'exportGeneratingFull' : 'exportGeneratingSimple';
+            var finishedKey = mode === 'full' ? 'exportBtnFull' : 'exportBtnSimple';
+            var filename = mode === 'full' ? 'Strategic_Detailed_Report.pdf' : 'Strategic_Summary_Report.pdf';
+
             const { jsPDF } = window.jspdf;
-            const btn = document.getElementById('exportBtn');
+            const btn = document.getElementById(btnId);
             btn.disabled = true;
-            btn.textContent = t('exportGenerating');
+            btn.textContent = t(generatingKey);
             await new Promise(r => setTimeout(r, 120));
 
             try {
@@ -2189,7 +2202,35 @@
                     { label: t('timeHorizonLabel'),   desc: L.timeHorizonHelper,       id: 'timeHorizon',     unit: 'yr',     isSlider: true, valId: 'timeHorizonVal' },
                     { label: t('leverAutomationLabel'),desc: L.leverAutomationHelper,  id: 'leverAutomation', unit: '%',      isSlider: true, valId: 'leverAutomationVal' },
                     { label: t('leverRiskLabel'),     desc: L.leverRiskHelper,         id: 'leverRisk',       unit: '%',      isSlider: true, valId: 'leverRiskVal' },
+                    // ── Scenarios ──
+                    { label: t('scenCAutoLevelLabel'), desc: L.scenCAutoLevelHelper,   id: 'scenCAutoLevel',  unit: '%',      isSlider: true, valId: 'scenCAutoLevelVal',  min: '50%', max: '100%' },
+                    { label: t('scenCCapexMultLabel'), desc: L.scenCCapexMultHelper,   id: 'scenCCapexMult',  unit: '',       isSlider: true, valId: 'scenCCapexMultVal' },
+                    { label: t('annualHoursLabel'),    desc: L.annualHoursHelper,      id: 'annualHours',     unit: '',       isSlider: true, valId: 'annualHoursVal' },
+                    // ── Levers ──
+                    { label: t('leverInnovationLabel'),desc: L.leverInnovationHelper,  id: 'leverInnovation', unit: '%',      isSlider: true, valId: 'leverInnovationVal' },
+                    { label: t('leverManagementLabel'),desc: L.leverManagementHelper,  id: 'leverManagement', unit: '%',      isSlider: true, valId: 'leverManagementVal' },
+                    { label: t('leverTurnoverLabel'),  desc: L.leverTurnoverHelper,    id: 'leverTurnover',   unit: '%',      isSlider: true, valId: 'leverTurnoverVal' },
                 ];
+                // ── Conditional advanced parameters (only when toggles are active) ──
+                if (document.getElementById('probabilisticToggle') && document.getElementById('probabilisticToggle').checked) {
+                    paramKeys.push(
+                        { label: t('mcIterationsLabel'),     desc: L.mcIterationsHelper,        id: 'mcIterations',          unit: '',  isSlider: true, valId: 'mcIterationsVal' },
+                        { label: t('mcConfidenceLabel'),      desc: L.mcConfidenceHelper,       id: 'mcConfidence',          unit: '%', isSlider: true, valId: 'mcConfidenceVal',     min: '50%', max: '99%' },
+                        { label: t('mcUncertaintyPctLabel'),  desc: L.mcUncertaintyPctHelper,   id: 'mcUncertaintyPct',      unit: '%', isSlider: true, valId: 'mcUncertaintyPctVal', min: '5%',  max: '30%' },
+                        { label: t('mcMttrUncertaintyPctLabel'), desc: L.mcMttrUncertaintyPctHelper, id: 'mcMttrUncertaintyPct', unit: '%', isSlider: true, valId: 'mcMttrUncertaintyPctVal', min: '10%', max: '50%' },
+                    );
+                }
+                if (document.getElementById('correlationsToggle') && document.getElementById('correlationsToggle').checked) {
+                    paramKeys.push(
+                        { label: t('correlationStrengthLabel'), desc: L.correlationStrengthHelper, id: 'correlationStrength', unit: '', isSlider: true, valId: 'correlationStrengthVal' },
+                    );
+                }
+                if (document.getElementById('advancedRiskToggle') && document.getElementById('advancedRiskToggle').checked) {
+                    paramKeys.push(
+                        { label: t('riskSecurityWeightLabel'),   desc: L.riskSecurityWeightHelper,   id: 'riskSecurityWeight',   unit: '', isSlider: true, valId: 'riskSecurityWeightVal' },
+                        { label: t('riskRegulatoryWeightLabel'), desc: L.riskRegulatoryWeightHelper, id: 'riskRegulatoryWeight', unit: '', isSlider: true, valId: 'riskRegulatoryWeightVal' },
+                    );
+                }
 
                 const pCols = 3;
                 const pColW = UW / pCols - 3;
@@ -2246,7 +2287,9 @@
                 cy += pRowH + 8;
 
                 // ── Screenshot blocks: investment, stats, charts, exec summary ─────
-                const mainIds = ['pdf-block-3','scenario-compare','pdf-block-4','pdf-block-5','pdf-block-6'];
+                const mainIds = mode === 'simple'
+                    ? ['pdf-block-3','scenario-compare']
+                    : ['pdf-block-3','scenario-compare','pdf-block-4','pdf-block-5','pdf-block-6'];
 
                 async function captureBlock(id) {
                     const el = document.getElementById(id);
@@ -2354,17 +2397,19 @@
 
                 for (const id of mainIds) await captureBlock(id);
 
-                // ── Methodology & Sources on fresh page ─────
-                newPage();
-                const methodologySection = document.getElementById('methodologySection');
-                const wasOpen = methodologySection ? methodologySection.open : false;
-                if (methodologySection) methodologySection.open = true;
-                await new Promise(r => requestAnimationFrame(r));
-                const methodologyIds = ['methodology-header','methodology-1','methodology-2','methodology-3','methodology-4','methodology-5','methodology-6','methodology-7','methodology-8','methodology-9','methodology-10','methodology-11','methodology-12','methodology-13','methodology-14','methodology-15','methodology-footer'];
-                for (const id of methodologyIds) await captureBlock(id);
-                if (methodologySection) methodologySection.open = wasOpen;
+                // ── Methodology & Sources on fresh page (full only) ──
+                if (mode === 'full') {
+                    newPage();
+                    const methodologySection = document.getElementById('methodologySection');
+                    const wasOpen = methodologySection ? methodologySection.open : false;
+                    if (methodologySection) methodologySection.open = true;
+                    await new Promise(r => requestAnimationFrame(r));
+                    const methodologyIds = ['methodology-header','methodology-1','methodology-2','methodology-3','methodology-4','methodology-5','methodology-6','methodology-7','methodology-8','methodology-9','methodology-10','methodology-11','methodology-12','methodology-13','methodology-14','methodology-15','methodology-footer'];
+                    for (const id of methodologyIds) await captureBlock(id);
+                    if (methodologySection) methodologySection.open = wasOpen;
+                }
 
-                pdf.save('Process-Debt-Engine.pdf');
+                pdf.save(filename);
             } catch (err) {
                 console.error('PDF export error:', err);
                 const msg = currentLang === 'pl'
@@ -2373,7 +2418,7 @@
                 alert(msg);
             } finally {
                 btn.disabled = false;
-                btn.textContent = t('exportBtn');
+                btn.textContent = t(finishedKey);
             }
         }
 
@@ -2724,8 +2769,10 @@
             const excelBtn = document.getElementById('exportExcelBtn');
             if (excelBtn) excelBtn.addEventListener('click', exportExcel);
 
-            const pdfBtn = document.getElementById('exportBtn');
-            if (pdfBtn) pdfBtn.addEventListener('click', exportPDF);
+            const pdfBtnSimple = document.getElementById('exportBtnSimple');
+            if (pdfBtnSimple) pdfBtnSimple.addEventListener('click', function () { exportPDF('simple'); });
+            const pdfBtnFull = document.getElementById('exportBtnFull');
+            if (pdfBtnFull) pdfBtnFull.addEventListener('click', function () { exportPDF('full'); });
 
             function initAdvancedSliders() {
                 var sliderIds = [
@@ -2823,16 +2870,18 @@
 
             // ── Mobile PDF export guard (visual) ──────────────────────────────
             if (isMobileBrowser()) {
-                const btn = document.getElementById('exportBtn');
-                if (btn) {
-                    btn.disabled = true;
-                    btn.title = currentLang === 'pl'
-                        ? 'Eksport PDF niedostępny na urządzeniach mobilnych — otwórz na komputerze'
-                        : 'PDF export unavailable on mobile — open on a desktop browser';
-                    btn.style.opacity = '0.45';
-                    btn.style.cursor  = 'not-allowed';
-                    btn.textContent = '🖥 PDF (DESKTOP ONLY)';
-                }
+                ['exportBtnSimple','exportBtnFull'].forEach(function (id) {
+                    const btn = document.getElementById(id);
+                    if (btn) {
+                        btn.disabled = true;
+                        btn.title = currentLang === 'pl'
+                            ? 'Eksport PDF niedostępny na urządzeniach mobilnych — otwórz na komputerze'
+                            : 'PDF export unavailable on mobile — open on a desktop browser';
+                        btn.style.opacity = '0.45';
+                        btn.style.cursor  = 'not-allowed';
+                        btn.textContent = '🖥 PDF (DESKTOP ONLY)';
+                    }
+                });
             }
 
             // ── Eager font prefetch (desktop only) ────────────────────────────
