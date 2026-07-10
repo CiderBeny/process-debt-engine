@@ -240,6 +240,8 @@
                 xlsSheetLevers:   'Top 3 Levers',
                 xlsSheetScenarios:'Scenarios',
                 xlsSheetDora:     'DORA Benchmark',
+                xlsAdvancedTitle:  'Advanced Parameters',
+                xlsToggleTitle:    'Model Enhancement Toggles',
                 // ── Methodology & Sources (EN) ──
                 methodologyTitle:              'Methodology & Sources',
                 methodologyFormulaLabel:       'Formula:',
@@ -584,6 +586,8 @@
                 xlsSheetLevers:    'Top 3 Dźwignie',
                 xlsSheetScenarios: 'Scenariusze',
                 xlsSheetDora:      'Benchmark DORA',
+                xlsAdvancedTitle:  'Parametry Zaawansowane',
+                xlsToggleTitle:    'Przełączniki Modelu',
                 // ── Methodology & Sources (PL) ──
                 methodologyTitle:              'Metodologia i Źródła',
                 methodologyFormulaLabel:       'Wzór:',
@@ -1814,7 +1818,11 @@
                         corrQ1Q7: readAdvanced('corrQ1Q7', CORRELATION_DEFAULTS.corrQ1Q7, 1),
                         corrQ3Q7: readAdvanced('corrQ3Q7', CORRELATION_DEFAULTS.corrQ3Q7, 1),
                         nonlinearEnabled: document.getElementById('nonlinearToggle') ? document.getElementById('nonlinearToggle').checked : false,
-                        probabilisticEnabled: false,
+probabilisticEnabled: document.getElementById('probabilisticToggle') ? document.getElementById('probabilisticToggle').checked : false,
+                        mcIterations:    readAdvanced('mcIterations',    MC_DEFAULTS.iterations, 1),
+                        mcConfidence:    readAdvanced('mcConfidence',    MC_DEFAULTS.confidenceLevel, 100),
+                        mcUncertaintyPct: readAdvanced('mcUncertaintyPct', MC_DEFAULTS.uncertaintyPct, 100),
+                        mcMttrUnc:       readAdvanced('mcMttrUncertaintyPct', MC_DEFAULTS.mttrUncertaintyPct, 100),
                         advancedRiskEnabled: document.getElementById('advancedRiskToggle') ? document.getElementById('advancedRiskToggle').checked : false,
                     };
                     var r = computeModel(p);
@@ -1845,6 +1853,45 @@
 
                     // ── Sheet 1: Inputs ───────────────────────────────────────
                     const inputQValues = [q1Raw, q2Raw, q3Raw, q4Raw, q5Raw, q11Raw, q6Raw, q7Raw, q8Raw, q9Raw, q10Raw];
+                    var advancedRows = [
+                        [],
+                        [L.xlsAdvancedTitle],
+                        [L.cascadeMultLabel,    p.cascadeMult.toFixed(1), ''],
+                        [L.erosionRateLabel,    p.erosionRate.toFixed(2), ''],
+                        [L.discountRateLabel,   Math.round(p.discountRate * 100) + '%', ''],
+                        [L.timeHorizonLabel,    p.horizonYears + ' yr', ''],
+                        [L.leverAutomationLabel, Math.round(p.leverAuto * 100) + '%', ''],
+                        [L.leverRiskLabel,      Math.round(p.leverRisk * 100) + '%', ''],
+                        [L.scenCAutoLevelLabel, Math.round(p.scenCAutoLevel * 100) + '%', ''],
+                        [L.scenCCapexMultLabel, p.scenCCapexMult.toFixed(1), ''],
+                        [L.annualHoursLabel,    p.annualHours, ''],
+                        [L.leverInnovationLabel, Math.round(p.leverInnovation * 100) + '%', ''],
+                        [L.leverManagementLabel, Math.round(p.leverManagement * 100) + '%', ''],
+                        [L.leverTurnoverLabel,   Math.round(p.leverTurnover * 100) + '%', ''],
+                        [],
+                        [L.xlsToggleTitle],
+                        [L.toggleCorrelations,  p.correlationsEnabled ? 'ON' : 'OFF', ''],
+                        [L.toggleNonlinear,     p.nonlinearEnabled ? 'ON' : 'OFF', ''],
+                        ['Confidence Intervals (MC)', p.probabilisticEnabled ? 'ON' : 'OFF', ''],
+                        [L.toggleAdvancedRisk,  p.advancedRiskEnabled ? 'ON' : 'OFF', ''],
+                        [],
+                        [L.sectionCorrelations],
+                        [L.correlationStrengthLabel, p.correlationMultiplier.toFixed(2), ''],
+                        [L.corrQ3Q1Label, String(p.corrQ3Q1), ''],
+                        [L.corrQ1Q5Label, p.corrQ1Q5.toFixed(1), ''],
+                        [L.corrQ1Q7Label, String(p.corrQ1Q7), ''],
+                        [L.corrQ3Q7Label, String(p.corrQ3Q7), ''],
+                        [],
+                        [L.sectionRiskWeights],
+                        [L.riskSecurityWeightLabel,   p.riskSecurityWeight.toFixed(2), ''],
+                        [L.riskRegulatoryWeightLabel, p.riskRegulatoryWeight.toFixed(2), ''],
+                        [],
+                        [L.sectionMc],
+                        ['MC Iterations',    String(p.mcIterations), ''],
+                        ['Confidence Level', Math.round(p.mcConfidence * 100) + '%', ''],
+                        ['Input Uncertainty', Math.round(p.mcUncertaintyPct * 100) + '%', ''],
+                        ['MTTR Uncertainty', Math.round(p.mcMttrUnc * 100) + '%', ''],
+                    ];
                     const inputsData = [
                         [L.xlsInputsTitle],
                         [L.xlsGenerated, new Date().toLocaleString()],
@@ -1856,6 +1903,7 @@
                         [L.xlsAutoLevel,  autoLvlRaw, '%'           ],
                         [L.xlsTeamSize,   teamSizeRaw, L.xlsTeamSizeUnit],
                         [L.xlsCapex,      capexRaw,   currentCurrency      ],
+                        ...advancedRows,
                     ];
                     const wsInputs = XLSX.utils.aoa_to_sheet(sanitizeSheetData(inputsData));
                     wsInputs['!cols'] = [{wch:6},{wch:38},{wch:18},{wch:14}];
