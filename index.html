@@ -201,8 +201,6 @@
         #exportBtnSimple,
         #exportBtnFull {
             background: transparent;
-            border: 1px solid #3B82F6;
-            color: #3B82F6;
             font-family: 'Space Grotesk', sans-serif;
             font-size: 0.7rem;
             font-weight: 700;
@@ -215,10 +213,21 @@
             align-items: center;
             gap: 6px;
         }
-        #exportBtnSimple:hover,
-        #exportBtnFull:hover {
+        #exportBtnSimple {
+            border: 1px solid #3B82F6;
+            color: #3B82F6;
+        }
+        #exportBtnSimple:hover {
             background: rgba(59, 130, 246, 0.08);
             box-shadow: 0 0 12px rgba(59, 130, 246, 0.20);
+        }
+        #exportBtnFull {
+            border: 1px solid #1D4ED8;
+            color: #1D4ED8;
+        }
+        #exportBtnFull:hover {
+            background: rgba(29, 78, 216, 0.08);
+            box-shadow: 0 0 12px rgba(29, 78, 216, 0.20);
         }
         #exportBtnSimple:disabled,
         #exportBtnFull:disabled {
