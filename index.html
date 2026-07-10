@@ -198,6 +198,33 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+        #exportBtnSimple,
+        #exportBtnFull {
+            background: transparent;
+            border: 1px solid #3B82F6;
+            color: #3B82F6;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            padding: 0.35rem 0.85rem;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: border-color 0.2s, color 0.2s, box-shadow 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        #exportBtnSimple:hover,
+        #exportBtnFull:hover {
+            background: rgba(59, 130, 246, 0.08);
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.20);
+        }
+        #exportBtnSimple:disabled,
+        #exportBtnFull:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
