@@ -2257,7 +2257,7 @@
                     } else {
                         val = document.getElementById(q.id).value;
                     }
-                    if (q.unit && q.unit !== 'C') val += q.unit;
+                    if (q.unit && q.unit !== 'C' && q.unit !== 'money') val += q.unit;
 
                     drawRect(x, cy, pColW, pRowH, [255, 255, 255], [214, 201, 184]);
                     drawRect(x, cy, 2, pRowH, [180, 83, 9]);
