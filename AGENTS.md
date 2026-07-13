@@ -16,7 +16,15 @@
 ```
 ├── fonts/                # Inter TTF files for PDF export (Polish support)
 ├── src/
-│   ├── app.js             # All application logic (~1959 lines)
+│   ├── config.js          # Constants, coefficients, defaults (~135 lines)
+│   ├── i18n.js            # Translations (EN + PL, ~711 lines)
+│   ├── utils.js           # Utility functions (~194 lines)
+│   ├── state.js           # URL hash state — encode/decode/copy (~76 lines)
+│   ├── model.js           # Financial model — pure computation (~298 lines)
+│   ├── charts.js          # Chart.js wrappers (~120 lines)
+│   ├── ui-renderers.js    # UI rendering — calculate, recs, roadmap, scenarios (~395 lines)
+│   ├── exports.js         # Excel + PDF export, font cache (~700 lines)
+│   ├── main.js            # Entry point — DOMContentLoaded + window.onload
 │   ├── input.css          # Tailwind CSS entry point
 │   ├── security.test.js   # Security/safety unit tests
 │   └── model-audit.test.js# Model integrity audit tests
@@ -27,6 +35,17 @@
 ├── package.json
 └── AGENTS.md
 ```
+
+## Module Dependency Order (script tags in index.html)
+1. `config.js` — pure constants (no PDE dependency)
+2. `i18n.js` — `PDE.TRANSLATIONS`, `PDE.currentLang`, `PDE.currentCurrency`, `PDE.nbpDate`
+3. `utils.js` — helpers (depends on config + i18n)
+4. `state.js` — URL hash (depends on config + utils)
+5. `model.js` — computation engine (depends on config + utils)
+6. `charts.js` — Chart.js rendering (depends on i18n + config + utils)
+7. `ui-renderers.js` — DOM updates (depends on all above)
+8. `exports.js` — export features (depends on all above)
+9. `main.js` — startup (depends on all above)
 
 ## How to Run
 ```sh
@@ -48,14 +67,14 @@ npm test
 ```
 
 ## i18n Conventions
-- Translations live in `TRANSLATIONS` object (`src/app.js:4-421`) — keys `en` and `pl`
+- Translations live in `PDE.TRANSLATIONS` object (`src/i18n.js`) — keys `en` and `pl`
 - ~140 keys per language, with `{C}` (currency symbol) and `{CC}` (currency code) placeholders
 - HTML elements tagged with `data-i18n="key"` for text, `data-i18n-formula="key"` for tooltips
-- To add a language: add a new key to `TRANSLATIONS`, add entries for all existing keys
-- `applyTranslations()` iterates `[data-i18n]` elements and sets `textContent`
+- To add a language: add a new key to `PDE.TRANSLATIONS`, add entries for all existing keys
+- `PDE.applyTranslations()` iterates `[data-i18n]` elements and sets `textContent`
 
 ## JavaScript Conventions
-- Vanilla JS — no imports, no modules (all global scope in `app.js`)
+- Vanilla JS — no imports, no modules (all global scope under `window.PDE` namespace)
 - Uses both `var` and `let`/`const` (legacy patterns exist)
 - Helper functions use classic `function` keyword, not arrow
 - CSS custom properties (e.g., `--bg-base`, `--text-primary`, `--accent`) define the theme
