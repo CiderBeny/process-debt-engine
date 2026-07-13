@@ -13,4 +13,4 @@ h.createServer((r, s) => {
     s.writeHead(404);
     s.end('not found');
   }
-}).listen(8080, () => console.log('OK'));
+}).listen(parseInt(process.argv[2] || '8080'), () => console.log('OK ' + (process.argv[2] || '8080')));

@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Permissions-Policy" content="geolocation=(), camera=(), microphone=(), payment=(), usb=(), magnetometer=(), accelerometer=(), gyroscope=(), midi=(), sync-xhr=()">
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
-        script-src 'self' 'sha384-tsCQS0ke6XMJa8OsPrBXsKsk6Y40fbUxlCfnLi3xWPtgH7TZXjLfXY6pv/Kb0FoU' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
+        script-src 'self' 'sha384-tsCQS0ke6XMJa8OsPrBXsKsk6Y40fbUxlCfnLi3xWPtgH7TZXjLfXY6pv/Kb0FoU' 'sha384-K/z7LCHje3Z/54NgukqQS50/YdZf/J1Fqw9+gDQyTB/sdX7V6dllS72CzevUF8Pt' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
         style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
         font-src 'self' data: https://fonts.gstatic.com;
         img-src 'self' data:;
@@ -14,6 +15,7 @@
         frame-ancestors 'none';
         form-action 'none';
         base-uri 'self';
+        object-src 'none';
     ">
     <title>Process Debt Engine</title>
     <link rel="stylesheet" href="output.css">
@@ -21,8 +23,8 @@
     <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.js"
             integrity="sha384-G436+Z2nlA8+PNoeRvWdxKbvOf8E/y+lYxqht2iBwNHTQDV5CJr3+AGVj8fGZi5t"
             crossorigin="anonymous"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"
-            integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk"
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.2.1/jspdf.umd.min.js"
+            integrity="sha384-K/z7LCHje3Z/54NgukqQS50/YdZf/J1Fqw9+gDQyTB/sdX7V6dllS72CzevUF8Pt"
             crossorigin="anonymous"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
             integrity="sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H"
