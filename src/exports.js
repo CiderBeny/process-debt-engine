@@ -274,7 +274,7 @@ PDE.resolveCSSVarsOnElement = function resolveCSSVarsOnElement(el) {
 PDE.exportPDF = async function exportPDF(mode) {
     if (PDE.isMobileBrowser()) {
         const msg = PDE.currentLang === 'pl'
-            ? 'Eksport PDF nie jest obs�ugiwany na urz�dzeniach mobilnych (iOS Safari / Android WebView nie obs�uguj� renderowania CSS). Otw�rz t� stron� na komputerze, aby wygenerowa� raport.'
+            ? 'Eksport PDF nie jest obs\u0142ugiwany na urz\u0105dzeniach mobilnych (iOS Safari / Android WebView nie obs\u0142uguj\u0105 renderowania CSS). Otw\u00f3rz t\u0119 stron\u0119 na komputerze, aby wygenerowa\u0107 raport.'
             : 'PDF export is not supported on mobile browsers (iOS Safari / Android WebView cannot reliably render CSS custom properties). Please open this page on a desktop browser to generate the report.';
         alert(msg);
         return;
@@ -299,6 +299,7 @@ PDE.exportPDF = async function exportPDF(mode) {
         let   cy     = MT;
         const L      = PDE.TRANSLATIONS[PDE.currentLang];
 
+        // register Inter font (Polish character support)
         let pdfFont = 'helvetica';
         try {
             const [regResp, bldResp] = await Promise.all([
@@ -326,6 +327,7 @@ PDE.exportPDF = async function exportPDF(mode) {
             console.warn('Could not load Inter font for PDF:', e.message);
         }
 
+        // helpers
         function newPage() { pdf.addPage(); cy = MT; }
         function needSpace(h) { if (cy + h > PH - 10) newPage(); }
 
@@ -356,6 +358,7 @@ PDE.exportPDF = async function exportPDF(mode) {
             return lines.length * (fontSize * 0.3528 * 1.35);
         }
 
+        // PAGE 1: Phase 1 header + all questions
         drawRect(0, 0, PW, 12, [92, 64, 18]);
         pdf.setFontSize(9); pdf.setFont(pdfFont, 'bold');
         pdf.setTextColor(253, 245, 230);
@@ -383,94 +386,183 @@ PDE.exportPDF = async function exportPDF(mode) {
             { label: PDE.t('q10label'), desc: L.q10desc, id: 'q10', type: 'number' },
         ];
 
-        const colW = UW / 2 - 4;
-        let col1 = ML, col2 = ML + colW + 8;
-        function drawQuestion(q, x) {
-            const el = document.getElementById(q.id);
-            const val = el ? el.value : '0';
-            let displayVal = val;
-            if (q.valId) {
-                const valEl = document.getElementById(q.valId);
-                if (valEl) displayVal = valEl.textContent;
+        // 2-column card layout
+        const colW  = UW / 2 - 3;
+        const cols  = [ML, ML + UW / 2 + 3];
+        const rowH  = 38;
+
+        for (let i = 0; i < qKeys.length; i++) {
+            const q   = qKeys[i];
+            const col = i % 2;
+            const x   = cols[col];
+
+            if (col === 0 && i > 0) { cy += rowH + 3; }
+            if (col === 0) { needSpace(rowH + 3); }
+
+            const val = document.getElementById(q.id).value;
+            const monetaryIds = ['q4', 'q6', 'q8'];
+            const displayVal = q.type === 'slider'
+                ? document.getElementById(q.valId).textContent
+                : monetaryIds.includes(q.id)
+                    ? new Intl.NumberFormat(PDE.currentLang === 'pl' ? 'pl-PL' : 'en-US', {
+                        style: 'currency',
+                        currency: PDE.currentCurrency,
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      }).format(parseFloat(val) || 0)
+                    : val;
+
+            drawRect(x, cy, colW, rowH, [255, 255, 255], [214, 201, 184]);
+            drawRect(x, cy, 2, rowH, [180, 83, 9]);
+
+            pdf.setFontSize(7); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(124, 79, 34);
+            pdf.text(q.label.toUpperCase(), x + 5, cy + 6);
+
+            pdf.setFontSize(6.2); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140, 123, 110);
+            const descLines = wrapText(q.desc, x + 5, colW - 10, 6.2 * 0.3528);
+            const maxDescLines = 3;
+            descLines.slice(0, maxDescLines).forEach((line, li) => {
+                pdf.text(line, x + 5, cy + 12 + li * 4);
+            });
+
+            const vBoxY = cy + rowH - 11;
+            drawRect(x + 5, vBoxY, colW - 10, 8, [250, 247, 242], [214, 201, 184]);
+            pdf.setFontSize(8); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(28, 20, 16);
+            pdf.text(String(displayVal), x + 8, vBoxY + 5.5);
+
+            if (q.type === 'slider' && q.min) {
+                pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140, 123, 110);
+                pdf.text(q.min, x + 5, vBoxY + 5.5);
+                pdf.text(q.max, x + colW - 5, vBoxY + 5.5, { align: 'right' });
             }
-            const isCur = ['q4','q6','q8'].includes(q.id);
-            const suffix = q.id === 'capex' ? '' : (q.id === 'q2' ? ' hrs' : (q.id === 'q4' ? ' /h' : (q.id === 'q7' ? ' h/m' : (q.id === 'q10' ? '%' : (q.id === 'autoLevel' ? '%' : '')))));
-            const prefix = isCur ? PDE.CURRENCY_SYMBOLS[PDE.currentCurrency] : '';
-            const fullVal = prefix + (isCur ? parseFloat(val).toLocaleString(PDE.currentLang === 'pl' ? 'pl-PL' : 'en-US', {minimumFractionDigits:2}) : displayVal) + suffix;
-            const qName = q.label.replace(/\d+\.\s*/, '');
-            needSpace(10);
-            drawRect(x - 1, cy - 1, colW + 2, 8, null, [92, 64, 18]);
-            pdf.setFontSize(7); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140, 123, 110);
-            pdf.text(qName, x, cy + 2.5);
-            pdf.setFont(pdfFont, 'bold'); pdf.setFontSize(7); pdf.setTextColor(92, 64, 18);
-            pdf.text(fullVal, x + colW - 2, cy + 2.5, { align: 'right' });
-            cy += 11;
         }
 
-        qKeys.forEach((q, i) => {
-            if (i < 6) drawQuestion(q, col1);
-            else drawQuestion(q, col2);
-        });
+        cy += rowH + 8;
 
-        cy = Math.max(cy, MT + 4);
-        needSpace(10);
-        cy += 4;
-
-        drawRect(ML - 2, cy - 4, UW + 4, 10, [92, 64, 18]);
+        // Phase 2: Investment & Simulation Parameters
+        needSpace(20);
+        drawRect(ML - 2, cy - 4, UW + 4, 10, [180, 83, 9]);
         pdf.setFontSize(11); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(255, 255, 255);
-        pdf.text(L.phase2Title.toUpperCase(), ML + 2, cy + 3);
+        pdf.text(PDE.t('phase2Title').toUpperCase(), ML + 2, cy + 3);
         cy += 14;
 
         const paramKeys = [
-            { label: PDE.t('autoLabel'),  id: 'autoLevel',  suffix: '%', prefix: '' },
-            { label: PDE.t('teamSizeLabel'), id: 'teamSize', suffix: '', prefix: '' },
-            { label: PDE.t('capexLabel'),   id: 'capex',    suffix: '', prefix: PDE.CURRENCY_SYMBOLS[PDE.currentCurrency] },
-            { label: PDE.t('cascadeMultLabel'), id: 'cascadeMult', suffix: '', prefix: '' },
-            { label: PDE.t('erosionRateLabel'), id: 'erosionRate', suffix: '', prefix: '' },
-            { label: PDE.t('discountRateLabel'),id: 'discountRate',suffix: '%', prefix: '' },
-            { label: PDE.t('timeHorizonLabel'), id: 'timeHorizon', suffix: ' yr', prefix: '' },
-            { label: PDE.t('leverAutomationLabel'), id: 'leverAutomation', suffix: '%', prefix: '' },
-            { label: PDE.t('leverRiskLabel'),    id: 'leverRisk',    suffix: '%', prefix: '' },
+            { label: PDE.t('autoLabel'),         desc: '',                        id: 'autoLevel',       unit: '%',      isSlider: true, valId: 'autoLevelVal',       min: '0',   max: '100' },
+            { label: PDE.t('teamSizeLabel'),      desc: PDE.t('teamSizeHelper'),          id: 'teamSize',         unit: '',       isSlider: false },
+            { label: PDE.t('capexLabel'),         desc: PDE.t('capexHelper'),            id: 'capex',            unit: 'money',  isSlider: false },
+            { label: PDE.t('cascadeMultLabel'),   desc: PDE.t('cascadeMultHelper'),       id: 'cascadeMult',     unit: '',       isSlider: true, valId: 'cascadeMultVal' },
+            { label: PDE.t('erosionRateLabel'),   desc: PDE.t('erosionRateHelper'),       id: 'erosionRate',     unit: '',       isSlider: true, valId: 'erosionRateVal' },
+            { label: PDE.t('discountRateLabel'),  desc: PDE.t('discountRateHelper'),      id: 'discountRate',    unit: '%',      isSlider: true, valId: 'discountRateVal',   min: '5%',  max: '20%' },
+            { label: PDE.t('timeHorizonLabel'),   desc: PDE.t('timeHorizonHelper'),       id: 'timeHorizon',     unit: 'yr',     isSlider: true, valId: 'timeHorizonVal' },
+            { label: PDE.t('leverAutomationLabel'),desc: PDE.t('leverAutomationHelper'),  id: 'leverAutomation', unit: '%',      isSlider: true, valId: 'leverAutomationVal' },
+            { label: PDE.t('leverRiskLabel'),     desc: PDE.t('leverRiskHelper'),         id: 'leverRisk',       unit: '%',      isSlider: true, valId: 'leverRiskVal' },
+            // Scenarios
+            { label: PDE.t('scenCAutoLevelLabel'), desc: PDE.t('scenCAutoLevelHelper'),   id: 'scenCAutoLevel',  unit: '%',      isSlider: true, valId: 'scenCAutoLevelVal',  min: '50%', max: '100%' },
+            { label: PDE.t('scenCCapexMultLabel'), desc: PDE.t('scenCCapexMultHelper'),   id: 'scenCCapexMult',  unit: '',       isSlider: true, valId: 'scenCCapexMultVal' },
+            { label: PDE.t('annualHoursLabel'),    desc: PDE.t('annualHoursHelper'),      id: 'annualHours',     unit: '',       isSlider: true, valId: 'annualHoursVal' },
+            // Levers
+            { label: PDE.t('leverInnovationLabel'),desc: PDE.t('leverInnovationHelper'),  id: 'leverInnovation', unit: '%',      isSlider: true, valId: 'leverInnovationVal' },
+            { label: PDE.t('leverManagementLabel'),desc: PDE.t('leverManagementHelper'),  id: 'leverManagement', unit: '%',      isSlider: true, valId: 'leverManagementVal' },
+            { label: PDE.t('leverTurnoverLabel'),  desc: PDE.t('leverTurnoverHelper'),    id: 'leverTurnover',   unit: '%',      isSlider: true, valId: 'leverTurnoverVal' },
         ];
-        const pColW = UW / 3 - 4;
-        paramKeys.forEach((p, i) => {
-            const x = ML + (i % 3) * (pColW + 6);
-            if (i % 3 === 0 && i > 0) { cy += 2; needSpace(10); }
-            const el = document.getElementById(p.id);
-            let val = el ? el.value : '0';
-            if (p.id === 'discountRate' || p.id === 'leverAutomation' || p.id === 'leverRisk') {
-                val = Math.round(parseFloat(val) * 100) + '%';
-            } else if (p.id === 'cascadeMult') { val = parseFloat(val).toFixed(1); }
-            else if (p.id === 'erosionRate') { val = parseFloat(val).toFixed(2); }
-            else if (p.id === 'capex') {
-                val = PDE.CURRENCY_SYMBOLS[PDE.currentCurrency] + parseFloat(val).toLocaleString(PDE.currentLang === 'pl' ? 'pl-PL' : 'en-US', {minimumFractionDigits:2});
-            }
-            drawRect(x - 1, cy - 1, pColW + 2, 8, null, [92, 64, 18]);
-            pdf.setFontSize(6); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140, 123, 110);
-            pdf.text(p.label, x, cy + 2.5);
-            pdf.setFont(pdfFont, 'bold'); pdf.setFontSize(6); pdf.setTextColor(92, 64, 18);
-            pdf.text(val + p.suffix, x + pColW - 2, cy + 2.5, { align: 'right' });
-            cy += 10;
-        });
+        // Conditional advanced params
+        if (document.getElementById('probabilisticToggle') && document.getElementById('probabilisticToggle').checked) {
+            paramKeys.push(
+                { label: PDE.t('mcIterationsLabel'),     desc: PDE.t('mcIterationsHelper'),        id: 'mcIterations',          unit: '',  isSlider: true, valId: 'mcIterationsVal' },
+                { label: PDE.t('mcConfidenceLabel'),      desc: PDE.t('mcConfidenceHelper'),       id: 'mcConfidence',          unit: '%', isSlider: true, valId: 'mcConfidenceVal',     min: '50%', max: '99%' },
+                { label: PDE.t('mcUncertaintyPctLabel'),  desc: PDE.t('mcUncertaintyPctHelper'),   id: 'mcUncertaintyPct',      unit: '%', isSlider: true, valId: 'mcUncertaintyPctVal', min: '5%',  max: '30%' },
+                { label: PDE.t('mcMttrUncertaintyPctLabel'), desc: PDE.t('mcMttrUncertaintyPctHelper'), id: 'mcMttrUncertaintyPct', unit: '%', isSlider: true, valId: 'mcMttrUncertaintyPctVal', min: '10%', max: '50%' },
+            );
+        }
+        if (document.getElementById('correlationsToggle') && document.getElementById('correlationsToggle').checked) {
+            paramKeys.push(
+                { label: PDE.t('correlationStrengthLabel'), desc: PDE.t('correlationStrengthHelper'), id: 'correlationStrength', unit: '', isSlider: true, valId: 'correlationStrengthVal' },
+            );
+        }
+        if (document.getElementById('advancedRiskToggle') && document.getElementById('advancedRiskToggle').checked) {
+            paramKeys.push(
+                { label: PDE.t('riskSecurityWeightLabel'),   desc: PDE.t('riskSecurityWeightHelper'),   id: 'riskSecurityWeight',   unit: '', isSlider: true, valId: 'riskSecurityWeightVal' },
+                { label: PDE.t('riskRegulatoryWeightLabel'), desc: PDE.t('riskRegulatoryWeightHelper'), id: 'riskRegulatoryWeight', unit: '', isSlider: true, valId: 'riskRegulatoryWeightVal' },
+            );
+        }
 
-        cy += 6;
-        const BLOCK_HEIGHT = 8;
-        const footerH = 6;
-        needSpace(BLOCK_HEIGHT + footerH);
-        drawRect(ML - 2, cy - 2, UW + 4, 4, [180, 83, 9]);
-        pdf.setFontSize(6); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(255, 255, 255);
-        pdf.text('Page 1 / 2 \u2013 Strategic Diagnostic Data', ML + 2, cy + 1.5);
-        cy += 6;
+        const pCols = 3;
+        const pColW = UW / pCols - 3;
+        const pRowH = 38;
+
+        for (let i = 0; i < paramKeys.length; i++) {
+            const q   = paramKeys[i];
+            const col = i % pCols;
+            const x   = ML + col * (pColW + 3);
+
+            if (col === 0 && i > 0) { cy += pRowH + 3; }
+            if (col === 0) { needSpace(pRowH + 3); }
+
+            var val;
+            if (q.isSlider) {
+                val = document.getElementById(q.valId).textContent;
+            } else if (q.unit === 'money') {
+                val = new Intl.NumberFormat(PDE.currentLang === 'pl' ? 'pl-PL' : 'en-US', {
+                    style: 'currency',
+                    currency: PDE.currentCurrency,
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }).format(parseFloat(document.getElementById(q.id).value) || 0);
+            } else {
+                val = document.getElementById(q.id).value;
+            }
+            if (q.unit && q.unit !== 'money') val += q.unit;
+
+            drawRect(x, cy, pColW, pRowH, [255, 255, 255], [214, 201, 184]);
+            drawRect(x, cy, 2, pRowH, [180, 83, 9]);
+
+            pdf.setFontSize(7); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(124, 79, 34);
+            pdf.text(q.label.toUpperCase(), x + 5, cy + 6);
+
+            if (q.desc) {
+                pdf.setFontSize(6); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140, 123, 110);
+                const descLines = wrapText(q.desc, x + 5, pColW - 10, 6 * 0.3528);
+                descLines.slice(0, 2).forEach((line, li) => {
+                    pdf.text(line, x + 5, cy + 12 + li * 4);
+                });
+            }
+
+            const vBoxY = cy + pRowH - 11;
+            drawRect(x + 5, vBoxY, pColW - 10, 8, [250, 247, 242], [214, 201, 184]);
+            pdf.setFontSize(8); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(28, 20, 16);
+            pdf.text(String(val), x + 8, vBoxY + 5.5);
+
+            if (q.isSlider && q.min) {
+                pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140, 123, 110);
+                pdf.text(q.min, x + 5, vBoxY + 5.5);
+                pdf.text(q.max, x + pColW - 5, vBoxY + 5.5, { align: 'right' });
+            }
+        }
+        cy += pRowH + 8;
+
+        // Screenshot blocks
+        const mainIds = mode === 'simple'
+            ? ['pdf-block-3','scenario-compare']
+            : ['pdf-block-3','scenario-compare','pdf-block-4','pdf-block-5','pdf-block-6'];
 
         async function captureBlock(id) {
             const el = document.getElementById(id);
-            if (!el) return;
+            if (!el || !el.offsetHeight) return;
+
             const swaps = [];
-            el.querySelectorAll('input, select, textarea').forEach(input => {
-                const rect = input.getBoundingClientRect();
-                if (rect.width === 0 && rect.height === 0) return;
+            el.querySelectorAll('input').forEach(input => {
                 const proxy = document.createElement('div');
-                proxy.style.cssText = 'display:inline-block;white-space:pre-wrap;overflow:hidden;';
+                proxy.style.cssText = window.getComputedStyle(input).cssText;
+                proxy.style.display = 'flex';
+                proxy.style.alignItems = 'center';
+                proxy.style.boxSizing = 'border-box';
+                proxy.style.color = '#1C1410';
+                proxy.style.fontWeight = '700';
+                proxy.style.fontSize = '0.875rem';
+                proxy.style.background = '#FAF7F2';
+                proxy.style.border = '1px solid #D6C9B8';
+                proxy.style.borderRadius = '6px';
+                proxy.style.padding = '0.5rem 0.75rem';
                 proxy.style.width = input.offsetWidth + 'px';
                 proxy.style.height = input.offsetHeight + 'px';
                 proxy.style.minHeight = '36px';
@@ -557,12 +649,9 @@ PDE.exportPDF = async function exportPDF(mode) {
             }
         }
 
-        var mainIds = ['pdf-block-3', 'scenario-compare'];
-        if (mode === 'full') {
-            mainIds = ['pdf-block-2', 'pdf-block-3', 'scenario-compare', 'pdf-block-5', 'pdf-block-6', 'pdf-block-7'];
-        }
         for (const id of mainIds) await captureBlock(id);
 
+        // Methodology page (full only)
         if (mode === 'full') {
             newPage();
             const methodologySection = document.getElementById('methodologySection');
@@ -578,7 +667,7 @@ PDE.exportPDF = async function exportPDF(mode) {
     } catch (err) {
         console.error('PDF export error:', err);
         const msg = PDE.currentLang === 'pl'
-            ? 'Eksport PDF nie powi�d� si�: ' + err.message
+            ? 'Eksport PDF nie powi\u00f3d\u0142 si\u0119: ' + err.message
             : 'PDF export failed: ' + err.message;
         alert(msg);
     } finally {
