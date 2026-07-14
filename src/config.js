@@ -18,7 +18,7 @@ PDE.COEFFICIENTS = {
     QUARTERS_PER_YEAR:         4,
 
     // Opportunity & Cascade
-    PIPELINE_EROSION_RATE_DEFAULT: 0.25,   // overridden by #erosionRate              · configurable
+    PIPELINE_EROSION_RATE_DEFAULT: 0.1,   // overridden by #erosionRate               · configurable
     OPEX_ADJ_MULTIPLIER_DEFAULT:    0.15,    // overridden by #opexAdjMult                  · configurable
 
     // Scenario C thresholds

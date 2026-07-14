@@ -6,7 +6,7 @@ const COEFFICIENTS = {
     ANNUAL_HOURS_PER_ENGINEER: 1800,
     MONTHS_PER_YEAR:           12,
     QUARTERS_PER_YEAR:         4,
-    PIPELINE_EROSION_RATE_DEFAULT: 0.25,
+    PIPELINE_EROSION_RATE_DEFAULT: 0.1,
     OPEX_ADJ_MULTIPLIER_DEFAULT:    0.15,
     SCEN_C_AUTO_LEVEL:         0.8,
     SCEN_C_CAPEX_MULTIPLIER:   1.5,
@@ -140,8 +140,8 @@ describe('Known Issue #2 — OPEX Waste appears 2.15× in Total Debt Impact', ()
 
 // ── Known Issue #3: Arbitrary coefficients ─────────────────────
 describe('Known Issue #3 — Hardcoded coefficients without direct empirical basis', () => {
-    it('Pipeline erosion rate default = 0.25 (25%) — no single authoritative study isolates this fraction', () => {
-        assert.strictEqual(COEFFICIENTS.PIPELINE_EROSION_RATE_DEFAULT, 0.25);
+    it('Pipeline erosion rate default = 0.1 (10%) — user-defined estimate, no industry standard', () => {
+        assert.strictEqual(COEFFICIENTS.PIPELINE_EROSION_RATE_DEFAULT, 0.1);
     });
 
     it('OPEX-adjusted estimate multiplier default = 0.15 (reduced from 0.5 to avoid OPEX double-counting)', () => {
@@ -366,13 +366,13 @@ describe('Known Issue #5 — Runtime integrity: calculate() logic audit', () => 
             'cOpexAdj at 0.3 = 2× cOpexAdj at 0.15 — slider override propagates correctly');
     });
 
-    it('Overriding erosionRate to 0 halves cOppDirect', () => {
-        var rDefault = calcRuntime({ erosionRate: 0.25 });
+    it('Overriding erosionRate to 0 zeroes cOppDirect', () => {
+        var rDefault = calcRuntime({ erosionRate: 0.1 });
         var rZero = calcRuntime({ erosionRate: 0 });
         assert.strictEqual(rZero.cOppDirect, 0,
             'With erosionRate=0, cOppDirect = $0');
-        assert.strictEqual(rDefault.cOppDirect, 25000,
-            'cOppDirect = $100k × 0.25 = $25,000 — linear relationship');
+        assert.strictEqual(rDefault.cOppDirect, 10000,
+            'cOppDirect = $100k × 0.1 = $10,000 — linear relationship');
     });
 
     // ── Test 4: NPV in calculate() is consistent with PVIFA ──
