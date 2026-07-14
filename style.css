@@ -619,6 +619,17 @@ section h2 {
   display: inline-block;
 }
 
+/* ── DORA adapted metric annotation ── */
+.dora-adapted {
+  display: block;
+  font-size: 0.55rem;
+  font-weight: 400;
+  color: #ffb74d;
+  font-style: italic;
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
 /* ── Scenario Compare Block ── */
 #scenario-compare {
   border-color: var(--border) !important;
@@ -823,4 +834,19 @@ details.methodology-card[open] summary {
     margin-top: 0.5rem;
     padding-top: 0.75rem;
     border-top: 1px solid var(--border-subtle);
+}
+
+/* ── Disclaimer bar ── */
+.disclaimer-bar {
+    background: rgba(255, 183, 77, 0.08);
+    border: 1px solid rgba(255, 183, 77, 0.25);
+    border-left: 4px solid #ffb74d;
+    border-radius: 0;
+    padding: 0.5rem 1rem;
+    margin: 0 auto;
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    text-align: center;
+    max-width: 80rem;
 }

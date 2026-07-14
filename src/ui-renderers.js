@@ -376,15 +376,18 @@ PDE.updateDoraBenchmark = function updateDoraBenchmark() {
     const q5 = PDE.clamp('q5');
 
     const rows = [
-        { metric: L.doraMetricLeadTime, value: L.doraLeadTimeDesc(q2), bandDesc: L.doraLeadTimeBand, result: PDE.getDoraBand('leadTime', q2) },
-        { metric: L.doraMetricManual,   value: L.doraManualDesc(q1),   bandDesc: L.doraManualBand,   result: PDE.getDoraBand('manual', q1) },
-        { metric: L.doraMetricErrors,   value: L.doraErrorsDesc(q5),   bandDesc: L.doraErrorsBand,   result: PDE.getDoraBand('errors', q5) },
+        { metric: L.doraMetricLeadTime, value: L.doraLeadTimeDesc(q2), bandDesc: L.doraLeadTimeBand, result: PDE.getDoraBand('leadTime', q2), adapted: false },
+        { metric: L.doraMetricManual,   value: L.doraManualDesc(q1),   bandDesc: L.doraManualBand,   result: PDE.getDoraBand('manual', q1), adapted: true  },
+        { metric: L.doraMetricErrors,   value: L.doraErrorsDesc(q5),   bandDesc: L.doraErrorsBand,   result: PDE.getDoraBand('errors', q5), adapted: true  },
     ];
 
     const tbody = document.getElementById('doraTableBody');
     tbody.innerHTML = rows.map((r, i) => `
         <tr style="border-bottom:1px solid var(--border-subtle);${i % 2 === 0 ? 'background:var(--bg-elevated);' : ''}">
-            <td style="padding:0.65rem 0.75rem;font-size:0.75rem;font-weight:600;color:var(--text-primary);">${PDE.esc(r.metric)}</td>
+            <td style="padding:0.65rem 0.75rem;font-size:0.75rem;font-weight:600;color:var(--text-primary);">
+                ${PDE.esc(r.metric)}
+                ${r.adapted ? '<span class="dora-adapted">' + PDE.esc(L.doraAdaptedLabel) + '</span>' : ''}
+            </td>
             <td style="padding:0.65rem 0.75rem;font-size:0.75rem;font-family:'Space Grotesk',sans-serif;font-weight:700;color:var(--accent);">${PDE.esc(r.value)}</td>
             <td style="padding:0.65rem 0.75rem;font-size:0.6rem;color:var(--text-muted);line-height:1.5;">${PDE.esc(r.bandDesc)}</td>
             <td style="padding:0.65rem 0.75rem;">
