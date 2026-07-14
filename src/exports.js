@@ -23,48 +23,7 @@ PDE.exportExcel = function exportExcel() {
                     ? row.map(cell => PDE.sanitizeCell(cell))
                     : PDE.sanitizeCell(row));
 
-            var p = {
-                manualPercent:  PDE.clamp('q1'),
-                downCost:       PDE.currencyToUsd(PDE.clamp('q4')),
-                failures:       PDE.clamp('q5'),
-                mttr:           PDE.clamp('q11'),
-                rate:           PDE.currencyToUsd(PDE.clamp('q6')),
-                managerHrs:     PDE.clamp('q7'),
-                opportunityVal: PDE.currencyToUsd(PDE.clamp('q8')),
-                riskLevel:      PDE.clamp('q9'),
-                capex:          PDE.currencyToUsd(PDE.clamp('capex')),
-                autoLevel:      PDE.clamp('autoLevel'),
-                teamSize:       PDE.clamp('teamSize'),
-                turnover:       PDE.clamp('q10'),
-                docStandard:    PDE.clamp('q3'),
-                opexAdjMult:    PDE.readAdvanced('opexAdjMult',   PDE.COEFFICIENTS.OPEX_ADJ_MULTIPLIER_DEFAULT, 100),
-                erosionRate:    PDE.readAdvanced('erosionRate',   PDE.COEFFICIENTS.PIPELINE_EROSION_RATE_DEFAULT, 100),
-                discountRate:   PDE.readAdvanced('discountRate',  PDE.COEFFICIENTS.DISCOUNT_RATE_DEFAULT, 100),
-                horizonYears:   PDE.readAdvanced('timeHorizon',   PDE.COEFFICIENTS.TIME_HORIZON_YEARS_DEFAULT, 1),
-                leverAuto:      PDE.readAdvanced('leverAutomation', PDE.COEFFICIENTS.LEVER_AUTOMATION_DEFAULT, 100),
-                leverRisk:      PDE.readAdvanced('leverRisk',     PDE.COEFFICIENTS.LEVER_RISK_DEFAULT, 100),
-                scenCAutoLevel:  PDE.readAdvanced('scenCAutoLevel',  PDE.COEFFICIENTS.SCEN_C_AUTO_LEVEL, 100),
-                scenCCapexMult:  PDE.readAdvanced('scenCCapexMult',  PDE.COEFFICIENTS.SCEN_C_CAPEX_MULTIPLIER, 10),
-                annualHours:     PDE.readAdvanced('annualHours',     PDE.COEFFICIENTS.ANNUAL_HOURS_PER_ENGINEER, 1),
-                leverInnovation: PDE.readAdvanced('leverInnovation', PDE.COEFFICIENTS.LEVER_INNOVATION, 100),
-                leverManagement: PDE.readAdvanced('leverManagement', PDE.COEFFICIENTS.LEVER_MANAGEMENT, 100),
-                leverTurnover:   PDE.readAdvanced('leverTurnover',   PDE.COEFFICIENTS.LEVER_TURNOVER, 100),
-                riskSecurityWeight:   PDE.readAdvanced('riskSecurityWeight',   PDE.RISK_WEIGHT_DEFAULTS.securityWeight, 1),
-                riskRegulatoryWeight: PDE.readAdvanced('riskRegulatoryWeight', PDE.RISK_WEIGHT_DEFAULTS.regulatoryWeight, 1),
-                correlationsEnabled: document.getElementById('correlationsToggle') ? document.getElementById('correlationsToggle').checked : false,
-                correlationMultiplier: PDE.readAdvanced('correlationStrength', PDE.CORRELATION_DEFAULTS.correlationMultiplier, 100),
-                corrQ3Q1: PDE.readAdvanced('corrQ3Q1', PDE.CORRELATION_DEFAULTS.corrQ3Q1, 1),
-                corrQ1Q5: PDE.readAdvanced('corrQ1Q5', PDE.CORRELATION_DEFAULTS.corrQ1Q5, 1),
-                corrQ1Q7: PDE.readAdvanced('corrQ1Q7', PDE.CORRELATION_DEFAULTS.corrQ1Q7, 1),
-                corrQ3Q7: PDE.readAdvanced('corrQ3Q7', PDE.CORRELATION_DEFAULTS.corrQ3Q7, 1),
-                nonlinearEnabled: document.getElementById('nonlinearToggle') ? document.getElementById('nonlinearToggle').checked : false,
-                probabilisticEnabled: document.getElementById('probabilisticToggle') ? document.getElementById('probabilisticToggle').checked : false,
-                mcIterations:    PDE.readAdvanced('mcIterations',    PDE.MC_DEFAULTS.iterations, 1),
-                mcConfidence:    PDE.readAdvanced('mcConfidence',    PDE.MC_DEFAULTS.confidenceLevel, 100),
-                mcUncertaintyPct: PDE.readAdvanced('mcUncertaintyPct', PDE.MC_DEFAULTS.uncertaintyPct, 100),
-                mcMttrUnc:       PDE.readAdvanced('mcMttrUncertaintyPct', PDE.MC_DEFAULTS.mttrUncertaintyPct, 100),
-                advancedRiskEnabled: document.getElementById('advancedRiskToggle') ? document.getElementById('advancedRiskToggle').checked : false,
-            };
+            var p = PDE.getParams();
             var r = PDE.computeModel(p);
 
             const leversRaw = [
