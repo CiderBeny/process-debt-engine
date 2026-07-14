@@ -141,4 +141,8 @@ window.onload = () => {
     }
 
     PDE.prefetchFontsToBase64();
+
+    window.addEventListener('beforeunload', function () {
+        if (PDE._mcWorker) PDE._mcWorker.terminate();
+    });
 };

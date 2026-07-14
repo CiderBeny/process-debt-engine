@@ -321,6 +321,7 @@ recInnovation: (val) => `<strong style="color:var(--purple)">Innovation Lever:</
                 toggleCorrelations: 'Cross-Variable Correlations',
                 toggleNonlinear:    'Nonlinear Cost Model',
                 toggleProbabilistic:'Confidence Intervals (MC)',
+                mcWarning:          '\u26A0 Simulation based on your estimates — not measured data. Results reflect uncertainty in your inputs, not empirical benchmarks.',
                 toggleAdvancedRisk: 'Multi-Category Risk',
                 // ── Nowe klucze dla rozszerzonej konfiguracji ──
                 sectionScenarios:   'Scenarios',
@@ -674,6 +675,7 @@ recInnovation: (val) => `<strong style="color:var(--purple)">Innovation Lever:</
                 toggleCorrelations: 'Korelacje między zmiennymi',
                 toggleNonlinear:    'Nieliniowy model kosztów',
                 toggleProbabilistic:'Przedziały ufności (MC)',
+                mcWarning:          '⚠ Symulacja oparta na Twoich szacunkach — nie na danych pomiarowych. Wyniki odzwierciedlają niepewność Twoich danych wejściowych, a nie benchmarki empiryczne.',
                 toggleAdvancedRisk: 'Ryzyko wielokategorii',
                 // ── Nowe klucze PL ──
                 sectionScenarios:   'Scenariusze',

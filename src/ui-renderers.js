@@ -79,40 +79,79 @@ PDE.calculate = function calculate() {
     var mcResults = null;
 
     if (p.probabilisticEnabled) {
-        mcResults = PDE.runMonteCarlo(p, {
+        // Terminate any previous worker
+        if (PDE._mcWorker) PDE._mcWorker.terminate();
+
+        // Show progress bar + warning
+        var prEl = document.getElementById('mcProgress');
+        if (prEl) prEl.style.display = 'block';
+        var wrEl = document.getElementById('mcWarning');
+        if (wrEl) wrEl.style.display = 'block';
+
+        // Start worker
+        PDE._mcWorker = new Worker('src/mc-worker.js');
+        PDE._mcWorker.postMessage({
+            baseParams: p,
+            opts: {
+                iterations: p.mcIterations,
+                confidenceLevel: p.mcConfidence,
+                uncertaintyPct: p.mcUncertaintyPct,
+                mttrUncertaintyPct: p.mcMttrUnc,
+            },
             seed: 42,
-            iterations: p.mcIterations,
-            confidenceLevel: p.mcConfidence,
-            uncertaintyPct: p.mcUncertaintyPct,
-            mttrUncertaintyPct: p.mcMttrUnc,
         });
-        var keyMap = {
-            statWaste: 'cWaste', statRisk: 'cRisk', statOpp: 'cOppDirect',
-            statCascade: 'cOpexAdj', totalImpact: 'totalImpact',
-            npvTotalDebt: 'npvTotalDebt', statNet: 'netDebt',
-        };
-        Object.keys(keyMap).forEach(function (id) {
-            var mk = keyMap[id];
-            var mc = mcResults[mk];
-            if (mc) {
-                document.getElementById(id).textContent =
-                    PDE.formatCurrency(mc.median) + ' [' + PDE.formatCurrency(mc.p5) + ' \u2013 ' + PDE.formatCurrency(mc.p95) + ']';
+
+        PDE._mcWorker.onmessage = function (e) {
+            var d = e.data;
+            if (d.type === 'progress') {
+                var pct = Math.round(d.current / d.total * 100);
+                var fill = document.getElementById('mcProgressFill');
+                var txt = document.getElementById('mcProgressText');
+                if (fill) fill.style.width = pct + '%';
+                if (txt) txt.textContent = d.current + ' / ' + d.total + ' (' + pct + '%)';
+            } else if (d.type === 'result') {
+                mcResults = d.data;
+                var keyMap = {
+                    statWaste: 'cWaste', statRisk: 'cRisk', statOpp: 'cOppDirect',
+                    statCascade: 'cOpexAdj', totalImpact: 'totalImpact',
+                    npvTotalDebt: 'npvTotalDebt', statNet: 'netDebt',
+                };
+                Object.keys(keyMap).forEach(function (id) {
+                    var mk = keyMap[id];
+                    var mc = mcResults[mk];
+                    if (mc) {
+                        document.getElementById(id).textContent =
+                            PDE.formatCurrency(mc.median) + ' [' + PDE.formatCurrency(mc.p5) + ' \u2013 ' + PDE.formatCurrency(mc.p95) + ']';
+                    }
+                });
+                var irrMc = mcResults.irr;
+                if (irrMc && irrMc.median !== undefined) {
+                    document.getElementById('statIrr').textContent =
+                        (irrMc.median >= 0.999 ? '>99.9%' : (irrMc.median * 100).toFixed(1) + '%')
+                        + ' [' + (irrMc.p5 * 100).toFixed(1) + '% \u2013 ' + (irrMc.p95 * 100).toFixed(1) + '%]';
+                }
+                var pbMc = mcResults.paybackMonths;
+                if (pbMc && pbMc.median !== undefined) {
+                    var medianPb = isFinite(pbMc.median) ? pbMc.median.toFixed(1) + ' mo' : '\u221E';
+                    var p5Pb = isFinite(pbMc.p5) ? pbMc.p5.toFixed(1) + ' mo' : '\u221E';
+                    var p95Pb = isFinite(pbMc.p95) ? pbMc.p95.toFixed(1) + ' mo' : '\u221E';
+                    document.getElementById('statIrr').textContent += ' | PB: ' + medianPb + ' [' + p5Pb + ' \u2013 ' + p95Pb + ']';
+                }
+                var pr2 = document.getElementById('mcProgress');
+                if (pr2) pr2.style.display = 'none';
+            } else if (d.type === 'error') {
+                var pr3 = document.getElementById('mcProgress');
+                if (pr3) pr3.style.display = 'none';
             }
-        });
-        var irrMc = mcResults.irr;
-        if (irrMc && irrMc.median !== undefined) {
-            document.getElementById('statIrr').textContent =
-                (irrMc.median >= 0.999 ? '>99.9%' : (irrMc.median * 100).toFixed(1) + '%')
-                + ' [' + (irrMc.p5 * 100).toFixed(1) + '% \u2013 ' + (irrMc.p95 * 100).toFixed(1) + '%]';
-        }
-        var pbMc = mcResults.paybackMonths;
-        if (pbMc && pbMc.median !== undefined) {
-            var medianPb = isFinite(pbMc.median) ? pbMc.median.toFixed(1) + ' mo' : '\u221E';
-            var p5Pb = isFinite(pbMc.p5) ? pbMc.p5.toFixed(1) + ' mo' : '\u221E';
-            var p95Pb = isFinite(pbMc.p95) ? pbMc.p95.toFixed(1) + ' mo' : '\u221E';
-            document.getElementById('statIrr').textContent += ' | PB: ' + medianPb + ' [' + p5Pb + ' \u2013 ' + p95Pb + ']';
-        }
+        };
     } else {
+        // Terminate worker and hide UI
+        if (PDE._mcWorker) { PDE._mcWorker.terminate(); PDE._mcWorker = null; }
+        var pr4 = document.getElementById('mcProgress');
+        if (pr4) pr4.style.display = 'none';
+        var wr2 = document.getElementById('mcWarning');
+        if (wr2) wr2.style.display = 'none';
+
         document.getElementById('statWaste').textContent   = PDE.formatCurrency(r.cWaste);
         document.getElementById('statRisk').textContent    = PDE.formatCurrency(r.cRisk);
         document.getElementById('statOpp').textContent     = PDE.formatCurrency(r.cOppDirect);

@@ -208,65 +208,7 @@ PDE.scenCalc = function scenCalc(al, cx, annualRecurring, dr, ny) {
     return { savings: annualSavings, npvSavings: npvSavings, net: net, pb: pb, irr: irrVal };
 };
 
-PDE.runMonteCarlo = function runMonteCarlo(baseParams, opts) {
-    var iters    = opts.iterations      || PDE.MC_DEFAULTS.iterations;
-    var cl       = opts.confidenceLevel || PDE.MC_DEFAULTS.confidenceLevel;
-    var uncPct   = opts.uncertaintyPct  || PDE.MC_DEFAULTS.uncertaintyPct;
-    var mttrUnc  = opts.mttrUncertaintyPct || PDE.MC_DEFAULTS.mttrUncertaintyPct;
-    var rng      = opts.rng || PDE.seededRandom(opts.seed);
-
-    var results = [];
-
-    for (var i = 0; i < iters; i++) {
-        var p = {};
-        Object.keys(baseParams).forEach(function (k) { p[k] = baseParams[k]; });
-
-        p.manualPercent  = Math.max(0, Math.min(100, p.manualPercent  * (1 + (rng() - 0.5) * 2 * uncPct)));
-        p.downCost       = Math.max(0, p.downCost       * (1 + (rng() - 0.5) * 2 * uncPct));
-        p.failures       = Math.max(0, Math.min(9999, Math.round(p.failures + (rng() - 0.5) * uncPct * 4)));
-        p.mttr           = Math.max(0, Math.min(168, p.mttr * (1 + PDE.randn(rng) * mttrUnc)));
-        p.rate           = Math.max(0, p.rate           * (1 + (rng() - 0.5) * 2 * uncPct));
-        p.managerHrs     = Math.max(0, Math.min(744, Math.round(p.managerHrs  + (rng() - 0.5) * uncPct * p.managerHrs)));
-        p.opportunityVal = Math.max(0, p.opportunityVal * (1 + (rng() - 0.5) * 2 * uncPct));
-        p.riskLevel      = p.riskLevel;
-        p.capex          = Math.max(0, p.capex          * (1 + (rng() - 0.5) * 2 * uncPct * 0.5));
-
-        var r = PDE.computeModel(p);
-        results.push({
-            cWaste: r.cWaste, cRisk: r.cRisk, cOppDirect: r.cOppDirect,
-            cOpexAdj: r.cOpexAdj, totalImpact: r.totalImpact,
-            netDebt: r.netDebt, npvTotalDebt: r.npvTotalDebt,
-            potentialSavings: r.potentialSavings, paybackMonths: r.paybackMonths,
-            irr: r.irr,
-        });
-    }
-
-    var keys = ['cWaste','cRisk','cOppDirect','cOpexAdj','totalImpact','netDebt','npvTotalDebt','potentialSavings','paybackMonths','irr'];
-    var output = {};
-    keys.forEach(function (key) {
-        var sorted = results.map(function (r) { return r[key]; }).sort(function (a, b) { return a - b; });
-        var mean = sorted.reduce(function (s, v) { return s + v; }, 0) / sorted.length;
-        var loIdx = Math.floor((1 - cl) / 2 * sorted.length);
-        var hiIdx = Math.ceil((1 - (1 - cl) / 2) * sorted.length) - 1;
-        if (loIdx < 0) loIdx = 0;
-        if (hiIdx >= sorted.length) hiIdx = sorted.length - 1;
-        var median = sorted.length % 2 === 1
-            ? sorted[Math.floor(sorted.length / 2)]
-            : (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2;
-        output[key] = {
-            mean:   mean,
-            median: median,
-            p5:     sorted[Math.max(0, Math.floor(0.05 * sorted.length))],
-            p25:    sorted[Math.max(0, Math.floor(0.25 * sorted.length))],
-            p75:    sorted[Math.min(sorted.length - 1, Math.floor(0.75 * sorted.length))],
-            p95:    sorted[Math.min(sorted.length - 1, Math.floor(0.95 * sorted.length))],
-            min:    sorted[0],
-            max:    sorted[sorted.length - 1],
-        };
-    });
-    output._allResults = results;
-    return output;
-};
+// runMonteCarlo migrated to src/mc-worker.js (Web Worker)
 
 PDE.getDoraBand = function getDoraBand(metric, value) {
     const L = PDE.TRANSLATIONS[PDE.currentLang];

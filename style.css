@@ -293,6 +293,38 @@ section h2 {
   font-style: italic;
 }
 
+/* ── Monte Carlo warning & progress ── */
+.mc-warning {
+  background: rgba(251,191,36,0.15);
+  border: 1px solid rgba(251,191,36,0.3);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+.mc-progress {
+  margin-bottom: 0.75rem;
+}
+.mc-progress-track {
+  background: var(--border);
+  border-radius: 4px;
+  height: 6px;
+  overflow: hidden;
+}
+.mc-progress-fill {
+  background: var(--accent);
+  height: 100%;
+  width: 0%;
+  transition: width 0.2s ease;
+}
+.mc-progress-text {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+  display: block;
+}
+
 /* ── Inputs ── */
 .input-field {
   background: var(--bg-input) !important;

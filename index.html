@@ -649,6 +649,13 @@
                 <!-- ── MC sliders (hidden only when MC toggle is checked) ── -->
                 <div id="mcSliders" style="display:none;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);">
                     <p style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin:0 0 0.75rem;" data-i18n="sectionMc">Monte Carlo Parameters</p>
+                    <div id="mcWarning" class="mc-warning" style="display:none;" data-i18n="mcWarning"></div>
+                    <div id="mcProgress" style="display:none;" class="mc-progress">
+                        <div class="mc-progress-track">
+                            <div class="mc-progress-fill" id="mcProgressFill"></div>
+                        </div>
+                        <span class="mc-progress-text" id="mcProgressText">0 / 0 (0%)</span>
+                    </div>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div>
                             <label class="label" for="mcIterations" data-i18n="mcIterationsLabel">MC Iterations</label>

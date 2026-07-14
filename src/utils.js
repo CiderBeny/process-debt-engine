@@ -4,20 +4,7 @@
 window.PDE = window.PDE || {};
 var PDE = window.PDE;
 
-PDE.seededRandom = function seededRandom(seed) {
-    var s = seed || Date.now();
-    return function () {
-        s = (s * 1664525 + 1013904223) & 0xFFFFFFFF;
-        return (s >>> 0) / 0xFFFFFFFF;
-    };
-};
-
-PDE.randn = function randn(rng) {
-    var u = 0, v = 0;
-    while (u === 0) u = rng();
-    while (v === 0) v = rng();
-    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
-};
+// seededRandom + randn migrated to src/mc-worker.js (Web Worker)
 
 PDE.esc = function esc(str) {
     return String(str)
