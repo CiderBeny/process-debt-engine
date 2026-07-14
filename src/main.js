@@ -104,7 +104,8 @@ window.onload = () => {
     }
     document.getElementById('currencySelect').value = PDE.currentCurrency;
     PDE.applyTranslations();
-    document.getElementById('nbpFooter').textContent = PDE.TRANSLATIONS[PDE.currentLang].nbpUnavailable;
+    PDE.nbpFetching = true;
+    document.getElementById('nbpFooter').textContent = PDE.TRANSLATIONS[PDE.currentLang].nbpFetching;
     PDE.decodeState();
     PDE.calculate();
     requestAnimationFrame(() => { PDE.calculate(); });

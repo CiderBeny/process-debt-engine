@@ -51,9 +51,13 @@ PDE.toggleLang = function toggleLang() {
     const footerEl = document.getElementById('nbpFooter');
     if (footerEl) {
         const t = PDE.TRANSLATIONS[PDE.currentLang];
-        footerEl.textContent = PDE.nbpDate
-            ? t.nbpFooter(new Date(PDE.nbpDate).toLocaleDateString(PDE.currentLang === 'pl' ? 'pl-PL' : 'en-US'))
-            : t.nbpUnavailable;
+        if (PDE.nbpDate) {
+            footerEl.textContent = t.nbpFooter(new Date(PDE.nbpDate).toLocaleDateString(PDE.currentLang === 'pl' ? 'pl-PL' : 'en-US'));
+        } else if (PDE.nbpFetching) {
+            footerEl.textContent = t.nbpFetching;
+        } else {
+            footerEl.textContent = t.nbpUnavailable;
+        }
     }
 };
 
@@ -98,9 +102,13 @@ PDE.toggleCurrency = function toggleCurrency(currency) {
     const footerEl = document.getElementById('nbpFooter');
     if (footerEl) {
         const t = PDE.TRANSLATIONS[PDE.currentLang];
-        footerEl.textContent = PDE.nbpDate
-            ? t.nbpFooter(new Date(PDE.nbpDate).toLocaleDateString(PDE.currentLang === 'pl' ? 'pl-PL' : 'en-US'))
-            : t.nbpUnavailable;
+        if (PDE.nbpDate) {
+            footerEl.textContent = t.nbpFooter(new Date(PDE.nbpDate).toLocaleDateString(PDE.currentLang === 'pl' ? 'pl-PL' : 'en-US'));
+        } else if (PDE.nbpFetching) {
+            footerEl.textContent = t.nbpFetching;
+        } else {
+            footerEl.textContent = t.nbpUnavailable;
+        }
     }
 };
 
@@ -213,12 +221,14 @@ PDE.fetchNbpRates = async function fetchNbpRates() {
         PDE.EXCHANGE_RATES['USD'] = 1;
 
         PDE.nbpDate = data[0].effectiveDate;
+        PDE.nbpFetching = false;
         const footerEl = document.getElementById('nbpFooter');
         if (footerEl) footerEl.textContent = PDE.TRANSLATIONS[PDE.currentLang].nbpFooter(new Date(PDE.nbpDate).toLocaleDateString(PDE.currentLang === 'pl' ? 'pl-PL' : 'en-US'));
 
         if (PDE.currentCurrency !== 'USD') PDE.calculate();
     } catch (e) {
         console.error('NBP API fetch failed:', e);
+        PDE.nbpFetching = false;
         const footerEl = document.getElementById('nbpFooter');
         if (footerEl) footerEl.textContent = PDE.TRANSLATIONS[PDE.currentLang].nbpUnavailable;
     }
