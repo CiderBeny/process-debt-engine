@@ -2,7 +2,6 @@
 // Export functions — Excel, PDF, font cache
 // ═══════════════════════════════════════════════════════════════
 window.PDE = window.PDE || {};
-const PDE = window.PDE;
 
 PDE.sanitizeCell = function sanitizeCell(v) {
     return typeof v === 'string' && /^[=+\-@\t\r]/.test(v) ? "'" + v : v;

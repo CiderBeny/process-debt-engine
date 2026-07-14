@@ -2,7 +2,6 @@
 // Main entry — DOMContentLoaded + window.onload
 // ═══════════════════════════════════════════════════════════════
 window.PDE = window.PDE || {};
-const PDE = window.PDE;
 
 document.addEventListener('DOMContentLoaded', () => {
     const gFont = document.getElementById('googleFontsSheet');

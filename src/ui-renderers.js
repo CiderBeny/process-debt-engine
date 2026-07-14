@@ -3,7 +3,6 @@
 // scenarios, DORA benchmark. All write to DOM.
 // ═══════════════════════════════════════════════════════════════
 window.PDE = window.PDE || {};
-const PDE = window.PDE;
 
 PDE.calculate = function calculate() {
     const p = PDE.getParams();

@@ -2,7 +2,6 @@
 // Financial model engine — pure computation, no DOM access
 // ═══════════════════════════════════════════════════════════════
 window.PDE = window.PDE || {};
-const PDE = window.PDE;
 
 PDE.discountedPayback = function discountedPayback(annualSavings, investment, rate, maxYears) {
     if (annualSavings <= 0 || investment <= 0) return Infinity;
