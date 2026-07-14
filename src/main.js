@@ -2,7 +2,7 @@
 // Main entry — DOMContentLoaded + window.onload
 // ═══════════════════════════════════════════════════════════════
 window.PDE = window.PDE || {};
-var PDE = window.PDE;
+const PDE = window.PDE;
 
 document.addEventListener('DOMContentLoaded', () => {
     const gFont = document.getElementById('googleFontsSheet');
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const pdfBtnFull = document.getElementById('exportBtnFull');
     if (pdfBtnFull) pdfBtnFull.addEventListener('click', function () { PDE.exportPDF('full'); });
 
-    var sliderIds = [
+    const sliderIds = [
         'scenCAutoLevel','scenCCapexMult','annualHours',
         'leverInnovation','leverManagement','leverTurnover',
         'correlationStrength','corrQ3Q1','corrQ1Q5','corrQ1Q7','corrQ3Q7',
@@ -74,29 +74,29 @@ document.addEventListener('DOMContentLoaded', () => {
         'mcIterations','mcConfidence','mcUncertaintyPct','mcMttrUncertaintyPct',
     ];
     sliderIds.forEach(function (id) {
-        var el = document.getElementById(id);
+        const el = document.getElementById(id);
         if (el) {
             el.addEventListener('input', PDE.calculate);
         }
     });
 
-    var toggleMap = {
+    const toggleMap = {
         correlationsToggle: ['correlationSliders'],
         probabilisticToggle: ['mcSliders'],
         advancedRiskToggle: ['riskWeightSliders'],
     };
     function apply(id) {
-        var checked = document.getElementById(id) ? document.getElementById(id).checked : false;
-        var targets = toggleMap[id];
+        const checked = document.getElementById(id) ? document.getElementById(id).checked : false;
+        const targets = toggleMap[id];
         if (targets) {
             targets.forEach(function (tid) {
-                var el = document.getElementById(tid);
+                const el = document.getElementById(tid);
                 if (el) el.style.display = checked ? 'block' : 'none';
             });
         }
     }
     ['correlationsToggle','nonlinearToggle','probabilisticToggle','advancedRiskToggle'].forEach(function (id) {
-        var el = document.getElementById(id);
+        const el = document.getElementById(id);
         if (el) {
             el.addEventListener('change', function () { apply(id); PDE.calculate(); });
         }

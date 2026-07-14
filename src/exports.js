@@ -2,7 +2,7 @@
 // Export functions — Excel, PDF, font cache
 // ═══════════════════════════════════════════════════════════════
 window.PDE = window.PDE || {};
-var PDE = window.PDE;
+const PDE = window.PDE;
 
 PDE.sanitizeCell = function sanitizeCell(v) {
     return typeof v === 'string' && /^[=+\-@\t\r]/.test(v) ? "'" + v : v;
@@ -23,8 +23,8 @@ PDE.exportExcel = function exportExcel() {
                     ? row.map(cell => PDE.sanitizeCell(cell))
                     : PDE.sanitizeCell(row));
 
-            var p = PDE.getParams();
-            var r = PDE.computeModel(p);
+            const p = PDE.getParams();
+            const r = PDE.computeModel(p);
 
             const leversRaw = [
                 { title: L.leverAutomationTitle, recovery: r.leverRecoveryAuto, effort: L.effortMedium, timeline: '2\u20134 mo' },
@@ -37,21 +37,21 @@ PDE.exportExcel = function exportExcel() {
             const top3 = leversRaw.slice(0, 3);
             const totalRecovery = top3.reduce((s, l) => s + l.recovery, 0);
 
-            var annualRecurring = r.cWaste + r.cRisk + r.cOpexAdj;
-            var dr = p.discountRate;
-            var ny = p.horizonYears;
+            const annualRecurring = r.cWaste + r.cRisk + r.cOpexAdj;
+            const dr = p.discountRate;
+            const ny = p.horizonYears;
             const scenA = PDE.scenCalc(0,    0,                            annualRecurring, dr, ny);
             const scenB = PDE.scenCalc(p.autoLevel / 100, p.capex,         annualRecurring, dr, ny);
             const scenC = PDE.scenCalc(r.scenCAutoLevel,  p.capex * r.scenCCapexMult, annualRecurring, dr, ny);
 
-            var q1Raw = PDE.clamp('q1'), q2Raw = PDE.clamp('q2'), q3Raw = PDE.clamp('q3'),
+            const q1Raw = PDE.clamp('q1'), q2Raw = PDE.clamp('q2'), q3Raw = PDE.clamp('q3'),
                 q4Raw = PDE.currencyToUsd(PDE.clamp('q4')), q5Raw = PDE.clamp('q5'), q11Raw = PDE.clamp('q11'),
                 q6Raw = PDE.currencyToUsd(PDE.clamp('q6')), q7Raw = PDE.clamp('q7'), q8Raw = PDE.currencyToUsd(PDE.clamp('q8')),
                 q9Raw = PDE.clamp('q9'), q10Raw = PDE.clamp('q10');
-            var autoLvlRaw = PDE.clamp('autoLevel'), teamSizeRaw = PDE.clamp('teamSize'), capexRaw = PDE.currencyToUsd(PDE.clamp('capex'));
+            const autoLvlRaw = PDE.clamp('autoLevel'), teamSizeRaw = PDE.clamp('teamSize'), capexRaw = PDE.currencyToUsd(PDE.clamp('capex'));
 
             const inputQValues = [q1Raw, q2Raw, q3Raw, q4Raw, q5Raw, q11Raw, q6Raw, q7Raw, q8Raw, q9Raw, q10Raw];
-            var advancedRows = [
+            const advancedRows = [
                 [],
                 [L.xlsAdvancedTitle],
                 [L.cascadeMultLabel,    p.opexAdjMult.toFixed(2), ''],
@@ -137,8 +137,8 @@ PDE.exportExcel = function exportExcel() {
             wsLevers['!cols'] = [{wch:22},{wch:32},{wch:28},{wch:12},{wch:14}];
             XLSX.utils.book_append_sheet(wb, wsLevers, L.xlsSheetLevers);
 
-            var scenC_cap = p.capex * PDE.COEFFICIENTS.SCEN_C_CAPEX_MULTIPLIER;
-            var scenValues = [
+            const scenC_cap = p.capex * PDE.COEFFICIENTS.SCEN_C_CAPEX_MULTIPLIER;
+            const scenValues = [
                 [Math.round(scenA.net), Math.round(r.totalImpact), Math.round(r.totalImpact)],
                 [0,                     Math.round(p.capex),       Math.round(scenC_cap)  ],
                 [0,                     Math.round(scenB.net),     Math.round(scenC.net)  ],
@@ -239,10 +239,10 @@ PDE.exportPDF = async function exportPDF(mode) {
         return;
     }
 
-    var btnId = mode === 'full' ? 'exportBtnFull' : 'exportBtnSimple';
-    var generatingKey = mode === 'full' ? 'exportGeneratingFull' : 'exportGeneratingSimple';
-    var finishedKey = mode === 'full' ? 'exportBtnFull' : 'exportBtnSimple';
-    var filename = mode === 'full' ? 'Strategic_Detailed_Report.pdf' : 'Strategic_Summary_Report.pdf';
+    const btnId = mode === 'full' ? 'exportBtnFull' : 'exportBtnSimple';
+    const generatingKey = mode === 'full' ? 'exportGeneratingFull' : 'exportGeneratingSimple';
+    const finishedKey = mode === 'full' ? 'exportBtnFull' : 'exportBtnSimple';
+    const filename = mode === 'full' ? 'Strategic_Detailed_Report.pdf' : 'Strategic_Summary_Report.pdf';
 
     const { jsPDF } = window.jspdf;
     const btn = document.getElementById(btnId);
@@ -457,7 +457,7 @@ PDE.exportPDF = async function exportPDF(mode) {
             if (col === 0 && i > 0) { cy += pRowH + 3; }
             if (col === 0) { needSpace(pRowH + 3); }
 
-            var val;
+            let val;
             if (q.isSlider) {
                 val = document.getElementById(q.valId).textContent;
             } else if (q.unit === 'money') {
@@ -649,7 +649,7 @@ PDE.validateFontFace = function validateFontFace(f) {
     if (!f || typeof f !== 'object')                          return null;
     if (!_FONT_ALLOWED_FAMILIES[f.family])                    return null;
     if (!/^\d+$/.test(String(f.weight)))                      return null;
-    var w = parseInt(f.weight, 10);
+    const w = parseInt(f.weight, 10);
     if (w < 100 || w > 900 || w % 100 !== 0)                  return null;
     if (!_FONT_ALLOWED_STYLES[f.style])                       return null;
     if (!_FONT_ALLOWED_FMTS[f.fmt])                           return null;

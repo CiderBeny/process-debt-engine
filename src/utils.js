@@ -2,7 +2,7 @@
 // Utility functions — XSS guard, i18n, currency, sliders, IO
 // ═══════════════════════════════════════════════════════════════
 window.PDE = window.PDE || {};
-var PDE = window.PDE;
+const PDE = window.PDE;
 
 // seededRandom + randn migrated to src/mc-worker.js (Web Worker)
 
@@ -125,9 +125,9 @@ PDE.updateSliderFills = function updateSliderFills() {
 };
 
 PDE.readAdvanced = function readAdvanced(id, defaultVal, divisor) {
-    var el = document.getElementById(id);
+    const el = document.getElementById(id);
     if (!el) return defaultVal;
-    var raw = parseFloat(el.value);
+    const raw = parseFloat(el.value);
     return isFinite(raw) ? raw / (divisor || 1) : defaultVal;
 };
 

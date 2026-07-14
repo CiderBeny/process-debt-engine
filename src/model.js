@@ -2,16 +2,16 @@
 // Financial model engine — pure computation, no DOM access
 // ═══════════════════════════════════════════════════════════════
 window.PDE = window.PDE || {};
-var PDE = window.PDE;
+const PDE = window.PDE;
 
 PDE.discountedPayback = function discountedPayback(annualSavings, investment, rate, maxYears) {
     if (annualSavings <= 0 || investment <= 0) return Infinity;
     if (rate === undefined) rate = PDE.readAdvanced('discountRate', PDE.COEFFICIENTS.DISCOUNT_RATE_DEFAULT, 100);
     if (maxYears === undefined) maxYears = PDE.readAdvanced('timeHorizon', PDE.COEFFICIENTS.TIME_HORIZON_YEARS_DEFAULT, 1);
-    var monthly = annualSavings / 12;
-    var cumulative = 0;
-    var maxMonths = maxYears * 12;
-    for (var m = 1; m <= maxMonths; m++) {
+    const monthly = annualSavings / 12;
+    let cumulative = 0;
+    const maxMonths = maxYears * 12;
+    for (let m = 1; m <= maxMonths; m++) {
         cumulative += monthly / Math.pow(1 + rate, m / 12);
         if (cumulative >= investment) return m;
     }
@@ -19,14 +19,14 @@ PDE.discountedPayback = function discountedPayback(annualSavings, investment, ra
 };
 
 PDE.calculateIRR = function calculateIRR(cashFlows) {
-    var precision = 1e-6;
-    var maxIter = 1000;
-    var low = -0.99;
-    var high = 1;
-    for (var i = 0; i < maxIter; i++) {
-        var rate = (low + high) / 2;
-        var npv = 0;
-        for (var t = 0; t < cashFlows.length; t++) {
+    const precision = 1e-6;
+    const maxIter = 1000;
+    let low = -0.99;
+    let high = 1;
+    for (let i = 0; i < maxIter; i++) {
+        let rate = (low + high) / 2;
+        let npv = 0;
+        for (let t = 0; t < cashFlows.length; t++) {
             npv += cashFlows[t] / Math.pow(1 + rate, t / 12);
         }
         if (Math.abs(npv) < precision) return rate;
@@ -37,86 +37,86 @@ PDE.calculateIRR = function calculateIRR(cashFlows) {
 };
 
 PDE.computeModel = function computeModel(params) {
-    var manualPercent  = params.manualPercent  || 0;
-    var downCost       = params.downCost       || 0;
-    var failures       = (params.failures      || 0) * PDE.COEFFICIENTS.QUARTERS_PER_YEAR;
-    var mttr           = params.mttr           || 0;
-    var rate           = params.rate           || 0;
-    var managerHrs     = params.managerHrs     || 0;
-    var opportunityVal = params.opportunityVal || 0;
-    var riskLevel      = params.riskLevel      || 0;
-    var capex          = params.capex          || 0;
-    var autoLevel      = (params.autoLevel     || 0) / 100;
-    var teamSize       = params.teamSize        || 0;
-    var opexAdjMult    = params.opexAdjMult   || PDE.COEFFICIENTS.OPEX_ADJ_MULTIPLIER_DEFAULT;
-    var erosionRate    = params.erosionRate    || PDE.COEFFICIENTS.PIPELINE_EROSION_RATE_DEFAULT;
-    var discountRate   = params.discountRate   || PDE.COEFFICIENTS.DISCOUNT_RATE_DEFAULT;
-    var horizonYears   = params.horizonYears   || PDE.COEFFICIENTS.TIME_HORIZON_YEARS_DEFAULT;
-    var leverAuto      = params.leverAuto      || PDE.COEFFICIENTS.LEVER_AUTOMATION_DEFAULT;
-    var leverRisk      = params.leverRisk      || PDE.COEFFICIENTS.LEVER_RISK_DEFAULT;
-    var turnover        = params.turnover        || 0;
-    var correlationsEnabled = params.correlationsEnabled || false;
-    var docStandard     = params.docStandard     || 3;
-    var scenCAutoLevel  = params.scenCAutoLevel  !== undefined ? params.scenCAutoLevel : PDE.COEFFICIENTS.SCEN_C_AUTO_LEVEL;
-    var scenCCapexMult  = params.scenCCapexMult  !== undefined ? params.scenCCapexMult : PDE.COEFFICIENTS.SCEN_C_CAPEX_MULTIPLIER;
-    var annualHours     = params.annualHours     || PDE.COEFFICIENTS.ANNUAL_HOURS_PER_ENGINEER;
-    var leverInnovation = params.leverInnovation || PDE.COEFFICIENTS.LEVER_INNOVATION;
-    var leverManagement = params.leverManagement || PDE.COEFFICIENTS.LEVER_MANAGEMENT;
-    var leverTurnoverL  = params.leverTurnover   || PDE.COEFFICIENTS.LEVER_TURNOVER;
-    var riskSecurityWeight = params.riskSecurityWeight !== undefined ? params.riskSecurityWeight : PDE.RISK_WEIGHT_DEFAULTS.securityWeight;
-    var riskRegulatoryWeight = params.riskRegulatoryWeight !== undefined ? params.riskRegulatoryWeight : PDE.RISK_WEIGHT_DEFAULTS.regulatoryWeight;
+    let manualPercent  = params.manualPercent  || 0;
+    const downCost       = params.downCost       || 0;
+    let failures       = (params.failures      || 0) * PDE.COEFFICIENTS.QUARTERS_PER_YEAR;
+    const mttr           = params.mttr           || 0;
+    const rate           = params.rate           || 0;
+    let managerHrs     = params.managerHrs     || 0;
+    const opportunityVal = params.opportunityVal || 0;
+    const riskLevel      = params.riskLevel      || 0;
+    const capex          = params.capex          || 0;
+    let autoLevel      = (params.autoLevel     || 0) / 100;
+    const teamSize       = params.teamSize        || 0;
+    const opexAdjMult    = params.opexAdjMult   || PDE.COEFFICIENTS.OPEX_ADJ_MULTIPLIER_DEFAULT;
+    const erosionRate    = params.erosionRate    || PDE.COEFFICIENTS.PIPELINE_EROSION_RATE_DEFAULT;
+    const discountRate   = params.discountRate   || PDE.COEFFICIENTS.DISCOUNT_RATE_DEFAULT;
+    const horizonYears   = params.horizonYears   || PDE.COEFFICIENTS.TIME_HORIZON_YEARS_DEFAULT;
+    const leverAuto      = params.leverAuto      || PDE.COEFFICIENTS.LEVER_AUTOMATION_DEFAULT;
+    const leverRisk      = params.leverRisk      || PDE.COEFFICIENTS.LEVER_RISK_DEFAULT;
+    const turnover        = params.turnover        || 0;
+    const correlationsEnabled = params.correlationsEnabled || false;
+    const docStandard     = params.docStandard     || 3;
+    const scenCAutoLevel  = params.scenCAutoLevel  !== undefined ? params.scenCAutoLevel : PDE.COEFFICIENTS.SCEN_C_AUTO_LEVEL;
+    const scenCCapexMult  = params.scenCCapexMult  !== undefined ? params.scenCCapexMult : PDE.COEFFICIENTS.SCEN_C_CAPEX_MULTIPLIER;
+    const annualHours     = params.annualHours     || PDE.COEFFICIENTS.ANNUAL_HOURS_PER_ENGINEER;
+    const leverInnovation = params.leverInnovation || PDE.COEFFICIENTS.LEVER_INNOVATION;
+    const leverManagement = params.leverManagement || PDE.COEFFICIENTS.LEVER_MANAGEMENT;
+    const leverTurnoverL  = params.leverTurnover   || PDE.COEFFICIENTS.LEVER_TURNOVER;
+    const riskSecurityWeight = params.riskSecurityWeight !== undefined ? params.riskSecurityWeight : PDE.RISK_WEIGHT_DEFAULTS.securityWeight;
+    const riskRegulatoryWeight = params.riskRegulatoryWeight !== undefined ? params.riskRegulatoryWeight : PDE.RISK_WEIGHT_DEFAULTS.regulatoryWeight;
 
     if (correlationsEnabled) {
-        var cMult = params.correlationMultiplier || PDE.CORRELATION_DEFAULTS.correlationMultiplier;
-        var corrQ3Q1 = params.corrQ3Q1 || PDE.CORRELATION_DEFAULTS.corrQ3Q1;
-        var corrQ1Q5 = params.corrQ1Q5 || PDE.CORRELATION_DEFAULTS.corrQ1Q5;
-        var corrQ1Q7 = params.corrQ1Q7 || PDE.CORRELATION_DEFAULTS.corrQ1Q7;
-        var corrQ3Q7 = params.corrQ3Q7 || PDE.CORRELATION_DEFAULTS.corrQ3Q7;
+        const cMult = params.correlationMultiplier || PDE.CORRELATION_DEFAULTS.correlationMultiplier;
+        const corrQ3Q1 = params.corrQ3Q1 || PDE.CORRELATION_DEFAULTS.corrQ3Q1;
+        const corrQ1Q5 = params.corrQ1Q5 || PDE.CORRELATION_DEFAULTS.corrQ1Q5;
+        const corrQ1Q7 = params.corrQ1Q7 || PDE.CORRELATION_DEFAULTS.corrQ1Q7;
+        const corrQ3Q7 = params.corrQ3Q7 || PDE.CORRELATION_DEFAULTS.corrQ3Q7;
 
-        var q1Base = manualPercent / 100;
-        var q5Base = failures;
-        var q7Base = managerHrs;
-        var q3Base = docStandard / 5;
-        var q9Base = riskLevel / 5;
+        const q1Base = manualPercent / 100;
+        const q5Base = failures;
+        const q7Base = managerHrs;
+        const q3Base = docStandard / 5;
+        const q9Base = riskLevel / 5;
 
-        var q1FromQ3 = manualPercent + (0.5 - q3Base) * cMult * corrQ3Q1;
+        const q1FromQ3 = manualPercent + (0.5 - q3Base) * cMult * corrQ3Q1;
         manualPercent = Math.round(Math.min(100, Math.max(0, q1FromQ3)));
 
-        var q5FromQ1 = q5Base + q1Base * cMult * corrQ1Q5;
+        const q5FromQ1 = q5Base + q1Base * cMult * corrQ1Q5;
         failures = Math.round(Math.min(9999, Math.max(0, q5FromQ1)));
 
-        var q7FromQ1 = q7Base + q1Base * cMult * corrQ1Q7;
+        const q7FromQ1 = q7Base + q1Base * cMult * corrQ1Q7;
         managerHrs = Math.round(Math.min(744, Math.max(0, q7FromQ1)));
 
-        var q7FromQ3 = managerHrs - (1 - q3Base) * cMult * corrQ3Q7;
+        const q7FromQ3 = managerHrs - (1 - q3Base) * cMult * corrQ3Q7;
         managerHrs = Math.round(Math.min(744, Math.max(0, q7FromQ3)));
     }
 
-    var nonlinearEnabled = params.nonlinearEnabled || false;
+    const nonlinearEnabled = params.nonlinearEnabled || false;
 
-    var totalAnnualHrs   = annualHours;
-    var manualAnnualHrs  = PDE.COEFFICIENTS.SPRINT_HOURS * PDE.COEFFICIENTS.SPRINTS_PER_YEAR * (manualPercent / 100);
-    var chasingAnnualHrs = managerHrs * PDE.COEFFICIENTS.MONTHS_PER_YEAR;
+    const totalAnnualHrs   = annualHours;
+    const manualAnnualHrs  = PDE.COEFFICIENTS.SPRINT_HOURS * PDE.COEFFICIENTS.SPRINTS_PER_YEAR * (manualPercent / 100);
+    const chasingAnnualHrs = managerHrs * PDE.COEFFICIENTS.MONTHS_PER_YEAR;
 
-    var effectiveTeamSize = teamSize;
+    let effectiveTeamSize = teamSize;
     if (nonlinearEnabled) {
         effectiveTeamSize = Math.pow(teamSize, 0.9);
     }
 
-    var cWaste     = (manualAnnualHrs + chasingAnnualHrs) * rate * effectiveTeamSize;
-    var cRisk      = (failures * mttr * downCost) * (riskLevel / PDE.COEFFICIENTS.RISK_SCALE_MAX);
-    var cOppDirect = opportunityVal * erosionRate;
-    var cOpexAdj   = cWaste * opexAdjMult;
+    const cWaste     = (manualAnnualHrs + chasingAnnualHrs) * rate * effectiveTeamSize;
+    let cRisk      = (failures * mttr * downCost) * (riskLevel / PDE.COEFFICIENTS.RISK_SCALE_MAX);
+    const cOppDirect = opportunityVal * erosionRate;
+    let cOpexAdj   = cWaste * opexAdjMult;
 
-    var riskOperational = cRisk;
-    var riskSecurity    = 0;
-    var riskRegulatory  = 0;
-    var advancedRiskEnabled = params.advancedRiskEnabled || false;
+    const riskOperational = cRisk;
+    let riskSecurity    = 0;
+    let riskRegulatory  = 0;
+    const advancedRiskEnabled = params.advancedRiskEnabled || false;
 
     if (advancedRiskEnabled) {
-        var manualRatio = manualPercent / 100;
-        var docRatio = docStandard / 5;
-        var scaleRatio = riskLevel / 5;
+        const manualRatio = manualPercent / 100;
+        const docRatio = docStandard / 5;
+        const scaleRatio = riskLevel / 5;
 
         riskSecurity = cRisk * manualRatio * riskSecurityWeight;
         riskRegulatory = cRisk * (1 - docRatio) * riskRegulatoryWeight;
@@ -125,37 +125,37 @@ PDE.computeModel = function computeModel(params) {
     }
 
     if (nonlinearEnabled) {
-        var cWasteRatio = cWaste / 1e6;
-        var sigmoidMult = 2 / (1 + Math.exp(-cWasteRatio * 2)) - 1;
+        const cWasteRatio = cWaste / 1e6;
+        const sigmoidMult = 2 / (1 + Math.exp(-cWasteRatio * 2)) - 1;
         cOpexAdj = cWaste * opexAdjMult * (0.5 + sigmoidMult * 0.5);
         autoLevel = 1 - Math.pow(1 - autoLevel, 1.2);
     }
 
-    var totalImpact = cWaste + cRisk + cOppDirect + cOpexAdj;
-    var netDebt      = totalImpact - capex;
+    const totalImpact = cWaste + cRisk + cOppDirect + cOpexAdj;
+    const netDebt      = totalImpact - capex;
 
-    var annualRecurring = cWaste + cRisk + cOpexAdj;
-    var oneTimeCosts    = cOppDirect + capex;
-    var dr = discountRate;
-    var ny = horizonYears;
-    var pvifa = dr > 0 ? (1 - Math.pow(1 + dr, -ny)) / dr : ny;
-    var npvRecurring = annualRecurring * pvifa;
-    var npvTotalDebt = oneTimeCosts + npvRecurring;
+    const annualRecurring = cWaste + cRisk + cOpexAdj;
+    const oneTimeCosts    = cOppDirect + capex;
+    const dr = discountRate;
+    const ny = horizonYears;
+    const pvifa = dr > 0 ? (1 - Math.pow(1 + dr, -ny)) / dr : ny;
+    const npvRecurring = annualRecurring * pvifa;
+    const npvTotalDebt = oneTimeCosts + npvRecurring;
 
-    var potentialSavings = (cWaste + cRisk + cOpexAdj) * autoLevel;
-    var paybackMonths    = PDE.discountedPayback(potentialSavings, capex);
+    const potentialSavings = (cWaste + cRisk + cOpexAdj) * autoLevel;
+    const paybackMonths    = PDE.discountedPayback(potentialSavings, capex);
 
-    var irrCashFlows = [-capex];
-    for (var mi = 1; mi <= ny * 12; mi++) irrCashFlows.push(potentialSavings / 12);
-    var irr = PDE.calculateIRR(irrCashFlows);
+    const irrCashFlows = [-capex];
+    for (let mi = 1; mi <= ny * 12; mi++) irrCashFlows.push(potentialSavings / 12);
+    const irr = PDE.calculateIRR(irrCashFlows);
 
-    var turnoverCost = (turnover / 100) * teamSize * rate * PDE.COEFFICIENTS.TURNOVER_REF_HOURS;
+    const turnoverCost = (turnover / 100) * teamSize * rate * PDE.COEFFICIENTS.TURNOVER_REF_HOURS;
 
-    var leverRecoveryAuto = Math.round(cWaste * leverAuto);
-    var leverRecoveryRisk = Math.round(cRisk * leverRisk);
-    var leverRecoveryInnovation = Math.round((cOppDirect + cOpexAdj) * leverInnovation);
-    var leverRecoveryMgmt = Math.round(cWaste * leverManagement);
-    var leverRecoveryTurnover = Math.round(turnoverCost * leverTurnoverL);
+    const leverRecoveryAuto = Math.round(cWaste * leverAuto);
+    const leverRecoveryRisk = Math.round(cRisk * leverRisk);
+    const leverRecoveryInnovation = Math.round((cOppDirect + cOpexAdj) * leverInnovation);
+    const leverRecoveryMgmt = Math.round(cWaste * leverManagement);
+    const leverRecoveryTurnover = Math.round(turnoverCost * leverTurnoverL);
 
     return {
         cWaste:            cWaste,
@@ -192,15 +192,15 @@ PDE.computeModel = function computeModel(params) {
 };
 
 PDE.scenCalc = function scenCalc(al, cx, annualRecurring, dr, ny) {
-    var annualSavings = annualRecurring * al;
-    var pvifa = dr > 0 ? (1 - Math.pow(1 + dr, -ny)) / dr : ny;
-    var npvSavings = annualSavings * pvifa;
-    var net = npvSavings - cx;
-    var pb = PDE.discountedPayback(annualSavings, cx, dr, ny);
-    var irrVal = null;
+    const annualSavings = annualRecurring * al;
+    const pvifa = dr > 0 ? (1 - Math.pow(1 + dr, -ny)) / dr : ny;
+    const npvSavings = annualSavings * pvifa;
+    const net = npvSavings - cx;
+    const pb = PDE.discountedPayback(annualSavings, cx, dr, ny);
+    let irrVal = null;
     if (annualSavings > 0 && cx > 0) {
-        var cf = [-cx];
-        for (var m = 1; m <= ny * 12; m++) cf.push(annualSavings / 12);
+        const cf = [-cx];
+        for (let m = 1; m <= ny * 12; m++) cf.push(annualSavings / 12);
         irrVal = PDE.calculateIRR(cf);
     } else if (al === 0) {
         irrVal = 0;

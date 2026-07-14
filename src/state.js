@@ -2,7 +2,7 @@
 // URL hash state — encode, decode, copy share link
 // ═══════════════════════════════════════════════════════════════
 window.PDE = window.PDE || {};
-var PDE = window.PDE;
+const PDE = window.PDE;
 
 PDE.encodeState = function encodeState() {
     const ids = [...PDE.ALLOWED_HASH_KEYS];

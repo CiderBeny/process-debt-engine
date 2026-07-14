@@ -26,7 +26,7 @@ function validateFontFace(f) {
     if (!f || typeof f !== 'object')                          return null;
     if (!_FONT_ALLOWED_FAMILIES[f.family])                    return null;
     if (!/^\d+$/.test(String(f.weight)))                      return null;
-    var w = parseInt(f.weight, 10);
+    const w = parseInt(f.weight, 10);
     if (w < 100 || w > 900 || w % 100 !== 0)                 return null;
     if (!_FONT_ALLOWED_STYLES[f.style])                       return null;
     if (!_FONT_ALLOWED_FMTS[f.fmt])                           return null;

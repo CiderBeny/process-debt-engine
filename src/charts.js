@@ -2,7 +2,7 @@
 // Charts — Chart.js waterfall, bridge, heatmap
 // ═══════════════════════════════════════════════════════════════
 window.PDE = window.PDE || {};
-var PDE = window.PDE;
+const PDE = window.PDE;
 
 PDE.waterfallChart = null;
 PDE.bridgeChart = null;

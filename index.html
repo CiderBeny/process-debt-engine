@@ -74,17 +74,17 @@
 
            Returns the validated entry or null. Callers MUST discard null.
         ────────────────────────────────────────────────────────────────────── */
-        var _FONT_ALLOWED_FAMILIES = { 'Space Grotesk': true, 'Inter': true };
-        var _FONT_ALLOWED_STYLES   = { 'normal': true, 'italic': true, 'oblique': true };
-        var _FONT_ALLOWED_FMTS     = { 'woff2': true, 'woff': true, 'truetype': true };
-        var _FONT_B64_RE           = /^[A-Za-z0-9+/]+=*$/;
-        var _FONT_B64_MAX_LEN      = 700000; // ~512 KB binary ceiling
+        const _FONT_ALLOWED_FAMILIES = { 'Space Grotesk': true, 'Inter': true };
+        const _FONT_ALLOWED_STYLES   = { 'normal': true, 'italic': true, 'oblique': true };
+        const _FONT_ALLOWED_FMTS     = { 'woff2': true, 'woff': true, 'truetype': true };
+        const _FONT_B64_RE           = /^[A-Za-z0-9+/]+=*$/;
+        const _FONT_B64_MAX_LEN      = 700000; // ~512 KB binary ceiling
 
         function validateFontFace(f) {
             if (!f || typeof f !== 'object')                          return null;
             if (!_FONT_ALLOWED_FAMILIES[f.family])                    return null;
             if (!/^\d+$/.test(String(f.weight)))                      return null;
-            var w = parseInt(f.weight, 10);
+            const w = parseInt(f.weight, 10);
             if (w < 100 || w > 900 || w % 100 !== 0)                 return null;
             if (!_FONT_ALLOWED_STYLES[f.style])                       return null;
             if (!_FONT_ALLOWED_FMTS[f.fmt])                           return null;
@@ -98,26 +98,26 @@
         }
 
         (function injectCachedFonts() {
-            var FONT_CACHE_KEY = 'fontCache_v1';
+            const FONT_CACHE_KEY = 'fontCache_v1';
             try {
-                var cached = localStorage.getItem(FONT_CACHE_KEY);
+                const cached = localStorage.getItem(FONT_CACHE_KEY);
                 if (!cached) return; // first load — nothing to inject yet
-                var faces = JSON.parse(cached);
+                const faces = JSON.parse(cached);
                 if (!Array.isArray(faces) || faces.length === 0) return;
-                var valid = [];
-                for (var i = 0; i < faces.length; i++) {
-                    var f = validateFontFace(faces[i]);
+                const valid = [];
+                for (let i = 0; i < faces.length; i++) {
+                    const f = validateFontFace(faces[i]);
                     if (f) valid.push(f);
                 }
                 if (valid.length === 0) return;
-                var css = valid.map(function(f) {
+                const css = valid.map(function(f) {
                     return "@font-face{font-family:'" + f.family + "';"
                          + "font-weight:" + f.weight + ";"
                          + "font-style:" + f.style + ";"
                          + "font-display:swap;"
                          + "src:url('data:font/" + f.fmt + ";base64," + f.b64 + "') format('" + f.fmt + "');}";
                 }).join('\n');
-                var el = document.createElement('style');
+                const el = document.createElement('style');
                 el.id = 'font-cache-inject';
                 el.textContent = css;
                 document.currentScript.parentNode.insertBefore(el, document.currentScript.nextSibling);
