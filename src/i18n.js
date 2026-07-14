@@ -7,7 +7,8 @@ window.PDE = window.PDE || {};
         // ═══════════════════════════════════════════════════════════════
         const TRANSLATIONS = {
             en: {
-                navSubtitle:      'IT Process Efficiency & Financial Strategy Engine',
+                navSubtitle:      'IT Process Inefficiency Visualisation Tool',
+                disclaimer:       'This tool provides directional estimates only. Always validate with your organisation\u0027s actual financial data before making investment decisions.',
                 exportBtn:        'EXPORT STRATEGIC REPORT (PDF)',
                 exportGenerating: 'Generating PDF…',
                 exportBtnSimple:  'EXPORT SUMMARY REPORT (PDF)',
@@ -162,6 +163,7 @@ recInnovation: (val) => `<strong style="color:var(--purple)">Innovation Lever:</
                 doraLeadTimeBand:  'Elite <1h · High <24h · Medium <168h · Low >168h',
                 doraManualBand:    'Elite <5% · High <15% · Medium <30% · Low >30%',
                 doraErrorsBand:    'Elite 0 · High ≤1 · Medium ≤3 · Low >3',
+                doraAdaptedLabel: '⚠️ Adapted metric — not part of official DORA framework',
                 // Scenario comparison
                 scenarioTitle:       'Investment Scenario Comparison',
                 scenarioSubtitle:    'Three strategic paths — same debt, different outcomes',
@@ -235,9 +237,9 @@ recInnovation: (val) => `<strong style="color:var(--purple)">Innovation Lever:</
                 xlsDoraTitle:    'DORA Benchmark Context',
                 xlsDoraHeaders:  ['Metric', 'Your Value', 'DORA Band (Reference)', 'Your Classification'],
                 xlsDoraRows: [
-                    ['Lead Time (hrs)',         null, 'Elite <1h · High <24h · Medium <168h · Low >168h', null],
-                    ['Manual Effort (%)',        null, 'Elite <5% · High <15% · Medium <30% · Low >30%',   null],
-                    ['Human Errors / Quarter',  null, 'Elite 0 · High ≤1 · Medium ≤3 · Low >3',            null],
+                    ['Lead Time (hrs)',                                null, 'Elite <1h · High <24h · Medium <168h · Low >168h', null],
+                    ['Manual Effort (%)  [⚠️ Adapted metric]',          null, 'Elite <5% · High <15% · Medium <30% · Low >30%',   null],
+                    ['Human Errors / Quarter  [⚠️ Adapted metric]',   null, 'Elite 0 · High ≤1 · Medium ≤3 · Low >3',            null],
                 ],
                 xlsSheetInputs:   'Inputs',
                 xlsSheetResults:  'Financial Results',
@@ -357,7 +359,8 @@ recInnovation: (val) => `<strong style="color:var(--purple)">Innovation Lever:</
                 riskRegulatoryWeightHelper: 'Scaling factor for regulatory risk relative to operational (0.0–1.0). Default 0.25.',
             },
             pl: {
-                navSubtitle:      'Silnik Efektywności Procesów IT i Strategii Finansowej',
+                navSubtitle:      'Narz\u0119dzie Wizualizacji Nieefektywno\u015Bci Proces\u00F3w IT',
+                disclaimer:       'To narz\u0119dzie dostarcza jedynie szacunkowe wskazania. Zawsze weryfikuj z rzeczywistymi danymi finansowymi swojej organizacji przed podj\u0119ciem decyzji inwestycyjnych.',
                 exportBtn:        'EKSPORTUJ RAPORT STRATEGICZNY (PDF)',
                 exportGenerating: 'Generowanie PDF…',
                 exportBtnSimple:  'EKSPORTUJ RAPORT PODSUMOWUJĄCY (PDF)',
@@ -509,6 +512,7 @@ recInnovation: (val) => `<strong style="color:var(--purple)">Innovation Lever:</
                 doraLeadTimeBand:  'Elita <1h · Wysoki <24h · Średni <168h · Niski >168h',
                 doraManualBand:    'Elita <5% · Wysoki <15% · Średni <30% · Niski >30%',
                 doraErrorsBand:    'Elita 0 · Wysoki ≤1 · Średni ≤3 · Niski >3',
+                doraAdaptedLabel: '⚠️ Metryka adaptowana — nie nale\u017Cy do oficjalnego frameworka DORA',
                 // Scenario comparison
                 scenarioTitle:       'Porównanie Scenariuszy Inwestycyjnych',
                 scenarioSubtitle:    'Trzy ścieżki strategiczne — ten sam dług, różne rezultaty',
@@ -581,9 +585,9 @@ recInnovation: (val) => `<strong style="color:var(--purple)">Innovation Lever:</
                 xlsDoraTitle:    'Kontekst Benchmarku DORA',
                 xlsDoraHeaders:  ['Metryka', 'Twoja Wartość', 'Pasmo DORA (Odniesienie)', 'Twoja Klasyfikacja'],
                 xlsDoraRows: [
-                    ['Czas Realizacji (godz.)', null, 'Elita <1h · Wysoki <24h · Średni <168h · Niski >168h', null],
-                    ['Wysiłek Manualny (%)',    null, 'Elita <5% · Wysoki <15% · Średni <30% · Niski >30%',   null],
-                    ['Błędy Ludzkie / Kwartał',null, 'Elita 0 · Wysoki ≤1 · Średni ≤3 · Niski >3',            null],
+                    ['Czas Realizacji (godz.)',                              null, 'Elita <1h · Wysoki <24h · Średni <168h · Niski >168h', null],
+                    ['Wysiłek Manualny (%)  [⚠️ Metryka adaptowana]',         null, 'Elita <5% · Wysoki <15% · Średni <30% · Niski >30%',   null],
+                    ['Błędy Ludzkie / Kwartał  [⚠️ Metryka adaptowana]',    null, 'Elita 0 · Wysoki ≤1 · Średni ≤3 · Niski >3',            null],
                 ],
                 xlsSheetInputs:    'Dane Wejściowe',
                 xlsSheetResults:   'Wyniki Finansowe',

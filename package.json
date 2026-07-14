@@ -1,7 +1,7 @@
 {
   "name": "process-debt-engine",
   "version": "1.0.0",
-  "description": "IT Process Efficiency & Financial Strategy Engine — quantify process debt and simulate ROI of automation investments.",
+  "description": "IT Process Inefficiency Visualisation Tool — quantify process debt and simulate ROI of automation investments.",
   "main": "index.js",
   "scripts": {
     "test": "node src/security.test.js"
