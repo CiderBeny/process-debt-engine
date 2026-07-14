@@ -43,7 +43,6 @@ PDE.applyTranslations = function applyTranslations() {
 
 PDE.toggleLang = function toggleLang() {
     PDE.currentLang = PDE.currentLang === 'en' ? 'pl' : 'en';
-    const btn = document.getElementById('langBtn');
     document.getElementById('langFlag').textContent = PDE.currentLang === 'en' ? '🇵🇱' : '🇬🇧';
     document.getElementById('langLabel').textContent = PDE.currentLang === 'en' ? 'PL' : 'EN';
     PDE.applyTranslations();

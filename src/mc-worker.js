@@ -68,7 +68,7 @@ function calculateIRR(cashFlows) {
     let low = -0.99;
     let high = 1;
     for (let i = 0; i < maxIter; i++) {
-        let rate = (low + high) / 2;
+        const rate = (low + high) / 2;
         let npv = 0;
         for (let t = 0; t < cashFlows.length; t++) {
             npv += cashFlows[t] / Math.pow(1 + rate, t / 12);
@@ -97,17 +97,8 @@ function computeModel(params, coeffs) {
     const erosionRate    = params.erosionRate    !== undefined ? params.erosionRate    : coeffs.PIPELINE_EROSION_RATE_DEFAULT;
     const discountRate   = params.discountRate   !== undefined ? params.discountRate   : coeffs.DISCOUNT_RATE_DEFAULT;
     const horizonYears   = params.horizonYears   || coeffs.TIME_HORIZON_YEARS_DEFAULT;
-    const leverAuto      = params.leverAuto      !== undefined ? params.leverAuto      : coeffs.LEVER_AUTOMATION_DEFAULT;
-    const leverRisk      = params.leverRisk      !== undefined ? params.leverRisk      : coeffs.LEVER_RISK_DEFAULT;
-    const turnover       = params.turnover       || 0;
     const correlationsEnabled = params.correlationsEnabled || false;
     const docStandard    = params.docStandard    || 3;
-    const scenCAutoLevel = params.scenCAutoLevel !== undefined ? params.scenCAutoLevel : coeffs.SCEN_C_AUTO_LEVEL;
-    const scenCCapexMult = params.scenCCapexMult !== undefined ? params.scenCCapexMult : coeffs.SCEN_C_CAPEX_MULTIPLIER;
-    const annualHours    = params.annualHours    || coeffs.ANNUAL_HOURS_PER_ENGINEER;
-    const leverInnovation= params.leverInnovation!== undefined ? params.leverInnovation: coeffs.LEVER_INNOVATION;
-    const leverManagement= params.leverManagement!== undefined ? params.leverManagement: coeffs.LEVER_MANAGEMENT;
-    const leverTurnoverL = params.leverTurnover  !== undefined ? params.leverTurnover  : coeffs.LEVER_TURNOVER;
     const riskSecurityWeight   = params.riskSecurityWeight   !== undefined ? params.riskSecurityWeight   : RD.securityWeight;
     const riskRegulatoryWeight = params.riskRegulatoryWeight !== undefined ? params.riskRegulatoryWeight : RD.regulatoryWeight;
 
@@ -122,8 +113,6 @@ function computeModel(params, coeffs) {
         const q5Base = failures;
         const q7Base = managerHrs;
         const q3Base = docStandard / 5;
-        const q9Base = riskLevel / 5;
-
         const q1FromQ3 = manualPercent + (0.5 - q3Base) * cMult * corrQ3Q1;
         manualPercent = Math.round(Math.min(100, Math.max(0, q1FromQ3)));
 
@@ -139,7 +128,6 @@ function computeModel(params, coeffs) {
 
     const nonlinearEnabled = params.nonlinearEnabled || false;
 
-    const totalAnnualHrs   = annualHours;
     const manualAnnualHrs  = coeffs.SPRINT_HOURS * coeffs.SPRINTS_PER_YEAR * (manualPercent / 100);
     const chasingAnnualHrs = managerHrs * coeffs.MONTHS_PER_YEAR;
 
@@ -154,14 +142,13 @@ function computeModel(params, coeffs) {
     let cOpexAdj   = cWaste * opexAdjMult;
 
     const riskOperational = cRisk;
-    let riskSecurity    = 0;
-    let riskRegulatory  = 0;
+    let riskSecurity;
+    let riskRegulatory;
     const advancedRiskEnabled = params.advancedRiskEnabled || false;
 
     if (advancedRiskEnabled) {
         const manualRatio = manualPercent / 100;
         const docRatio = docStandard / 5;
-        const scaleRatio = riskLevel / 5;
         riskSecurity = cRisk * manualRatio * riskSecurityWeight;
         riskRegulatory = cRisk * (1 - docRatio) * riskRegulatoryWeight;
         cRisk = riskOperational + riskSecurity + riskRegulatory;
@@ -192,8 +179,6 @@ function computeModel(params, coeffs) {
     for (let mi = 1; mi <= ny * 12; mi++) irrCashFlows.push(potentialSavings / 12);
     const irr = calculateIRR(irrCashFlows);
 
-    const turnoverCost = (turnover / 100) * teamSize * rate * coeffs.TURNOVER_REF_HOURS;
-
     return {
         cWaste:            cWaste,
         cRisk:             cRisk,
@@ -215,24 +200,22 @@ function computeModel(params, coeffs) {
 function computeStats(results, cl) {
     const keys = ['cWaste','cRisk','cOppDirect','cOpexAdj','totalImpact','netDebt',
                 'npvTotalDebt','potentialSavings','paybackMonths','irr'];
+    const lowPct = (1 - cl) / 2;
+    const highPct = 1 - lowPct;
     const output = {};
     keys.forEach(function (key) {
         const sorted = results.map(function (r) { return r[key]; }).sort(function (a, b) { return a - b; });
         const mean = sorted.reduce(function (s, v) { return s + v; }, 0) / sorted.length;
-        let loIdx = Math.floor((1 - cl) / 2 * sorted.length);
-        let hiIdx = Math.ceil((1 - (1 - cl) / 2) * sorted.length) - 1;
-        if (loIdx < 0) loIdx = 0;
-        if (hiIdx >= sorted.length) hiIdx = sorted.length - 1;
         const median = sorted.length % 2 === 1
             ? sorted[Math.floor(sorted.length / 2)]
             : (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2;
         output[key] = {
             mean:   mean,
             median: median,
-            p5:     sorted[Math.max(0, Math.floor(0.05 * sorted.length))],
+            p5:     sorted[Math.max(0, Math.floor(lowPct * sorted.length))],
             p25:    sorted[Math.max(0, Math.floor(0.25 * sorted.length))],
             p75:    sorted[Math.min(sorted.length - 1, Math.floor(0.75 * sorted.length))],
-            p95:    sorted[Math.min(sorted.length - 1, Math.floor(0.95 * sorted.length))],
+            p95:    sorted[Math.min(sorted.length - 1, Math.floor(highPct * sorted.length))],
             min:    sorted[0],
             max:    sorted[sorted.length - 1],
         };
@@ -259,7 +242,7 @@ self.onmessage = function (e) {
         let i;
 
         for (i = 0; i < iters; i++) {
-            let p = {};
+            const p = {};
             Object.keys(baseParams).forEach(function (k) { p[k] = baseParams[k]; });
 
             p.manualPercent  = Math.max(0, Math.min(100, p.manualPercent  * (1 + (rng() - 0.5) * 2 * uncPct)));
@@ -269,7 +252,6 @@ self.onmessage = function (e) {
             p.rate           = Math.max(0, p.rate           * (1 + (rng() - 0.5) * 2 * uncPct));
             p.managerHrs     = Math.max(0, Math.min(744, Math.round(p.managerHrs + (rng() - 0.5) * uncPct * p.managerHrs)));
             p.opportunityVal = Math.max(0, p.opportunityVal * (1 + (rng() - 0.5) * 2 * uncPct));
-            p.riskLevel      = p.riskLevel;
             p.capex          = Math.max(0, p.capex          * (1 + (rng() - 0.5) * 2 * uncPct * 0.5));
 
             const r = computeModel(p, C);

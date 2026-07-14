@@ -294,7 +294,7 @@ PDE.exportPDF = async function exportPDF(mode) {
             if (stroke) { pdf.setDrawColor(...stroke); pdf.setLineWidth(0.3); pdf.rect(x, y, w, h, 'S'); }
         }
 
-        function wrapText(text, x, maxW, lineH) {
+        function wrapText(text, x, maxW) {
             const words = String(text).split(' ');
             const lines = [];
             let cur = '';
@@ -305,15 +305,6 @@ PDE.exportPDF = async function exportPDF(mode) {
             });
             if (cur) lines.push(cur);
             return lines;
-        }
-
-        function textBlock(text, x, y, maxW, fontSize, color, bold) {
-            pdf.setFontSize(fontSize);
-            pdf.setFont(pdfFont, bold ? 'bold' : 'normal');
-            pdf.setTextColor(...color);
-            const lines = wrapText(text, x, maxW, fontSize * 0.3528);
-            lines.forEach((line, i) => { pdf.text(line, x, y + i * (fontSize * 0.3528 * 1.35)); });
-            return lines.length * (fontSize * 0.3528 * 1.35);
         }
 
         // PAGE 1: Phase 1 header + all questions
@@ -574,7 +565,7 @@ PDE.exportPDF = async function exportPDF(mode) {
                                     sheet.deleteRule(i);
                                 }
                             }
-                        } catch { }
+                        } catch { /* empty */ }
                     }
                 }
             });
@@ -665,14 +656,12 @@ PDE.validateFontFace = function validateFontFace(f) {
         if (!stored) return;
         const faces = JSON.parse(stored);
         if (!Array.isArray(faces)) return;
-        let seeded = 0;
         faces.forEach(raw => {
             const f = PDE.validateFontFace(raw);
             if (!f) return;
             _fontCache.set(`${f.family}||${f.weight}||${f.style}`, f);
-            seeded++;
         });
-    } catch(e) { }
+    } catch { /* empty */ }
 })();
 
 PDE.prefetchFontsToBase64 = async function prefetchFontsToBase64() {
@@ -683,7 +672,7 @@ PDE.prefetchFontsToBase64 = async function prefetchFontsToBase64() {
     const urlsByRule = [];
     for (const sheet of document.styleSheets) {
         let rules;
-        try { rules = sheet.cssRules; } catch { continue; }
+        try { rules = sheet.cssRules; } catch { /* empty */ continue; }
         for (const rule of rules) {
             if (rule.type !== CSSRule.FONT_FACE_RULE) continue;
             const family = rule.style.getPropertyValue('font-family')
@@ -719,13 +708,13 @@ PDE.prefetchFontsToBase64 = async function prefetchFontsToBase64() {
             const fmt = url.endsWith('.woff2') ? 'woff2'
                       : url.endsWith('.woff')  ? 'woff' : 'truetype';
             _fontCache.set(key, { b64, fmt, family, weight, style });
-        } catch (e) { }
+        } catch { /* empty */ }
     }));
 
     try {
         const faces = Array.from(_fontCache.values());
         localStorage.setItem(FONT_CACHE_KEY, JSON.stringify(faces));
-    } catch(e) { }
+    } catch { /* empty */ }
 };
 
 PDE.buildFontFaceCSS = function buildFontFaceCSS() {

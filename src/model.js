@@ -23,7 +23,7 @@ PDE.calculateIRR = function calculateIRR(cashFlows) {
     let low = -0.99;
     let high = 1;
     for (let i = 0; i < maxIter; i++) {
-        let rate = (low + high) / 2;
+        const rate = (low + high) / 2;
         let npv = 0;
         for (let t = 0; t < cashFlows.length; t++) {
             npv += cashFlows[t] / Math.pow(1 + rate, t / 12);
@@ -76,8 +76,6 @@ PDE.computeModel = function computeModel(params) {
         const q5Base = failures;
         const q7Base = managerHrs;
         const q3Base = docStandard / 5;
-        const q9Base = riskLevel / 5;
-
         const q1FromQ3 = manualPercent + (0.5 - q3Base) * cMult * corrQ3Q1;
         manualPercent = Math.round(Math.min(100, Math.max(0, q1FromQ3)));
 
@@ -115,8 +113,6 @@ PDE.computeModel = function computeModel(params) {
     if (advancedRiskEnabled) {
         const manualRatio = manualPercent / 100;
         const docRatio = docStandard / 5;
-        const scaleRatio = riskLevel / 5;
-
         riskSecurity = cRisk * manualRatio * riskSecurityWeight;
         riskRegulatory = cRisk * (1 - docRatio) * riskRegulatoryWeight;
 

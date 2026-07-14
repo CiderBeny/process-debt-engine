@@ -50,7 +50,7 @@ function calculateIRR(cashFlows) {
     let low = -0.99;
     let high = 1;
     for (let i = 0; i < maxIter; i++) {
-        let rate = (low + high) / 2;
+        const rate = (low + high) / 2;
         let npv = 0;
         for (let t = 0; t < cashFlows.length; t++) {
             npv += cashFlows[t] / Math.pow(1 + rate, t / 12);

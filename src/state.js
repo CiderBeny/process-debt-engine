@@ -64,7 +64,7 @@ PDE.fallbackCopy = function fallbackCopy(btn, orig, url) {
         document.execCommand('copy');
         ta.remove();
         PDE.flashBtn(btn, orig);
-    } catch (e) {
+    } catch {
         prompt('Copy this link (Ctrl+C / \u2318+C):', url);
     }
 };
