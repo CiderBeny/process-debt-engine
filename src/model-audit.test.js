@@ -4,6 +4,8 @@ const assert = require('node:assert');
 // ── Replicate constants from app.js for testing in Node ──────────
 const COEFFICIENTS = {
     ANNUAL_HOURS_PER_ENGINEER: 1800,
+    SPRINT_HOURS:              70,
+    SPRINTS_PER_YEAR:          26,
     MONTHS_PER_YEAR:           12,
     QUARTERS_PER_YEAR:         4,
     PIPELINE_EROSION_RATE_DEFAULT: 0.1,
@@ -296,8 +298,7 @@ describe('Known Issue #5 — Runtime integrity: calculate() logic audit', () => 
             leverRisk: COEFFICIENTS.LEVER_RISK_DEFAULT,
         }, sample);
 
-        var totalAnnualHrs = COEFFICIENTS.ANNUAL_HOURS_PER_ENGINEER;
-        var manualAnnualHrs = totalAnnualHrs * (s.manualPercent / 100);
+        var manualAnnualHrs = COEFFICIENTS.SPRINT_HOURS * COEFFICIENTS.SPRINTS_PER_YEAR * (s.manualPercent / 100);
         var chasingAnnualHrs = s.managerHrs * COEFFICIENTS.MONTHS_PER_YEAR;
         var annualFailures = s.failures * COEFFICIENTS.QUARTERS_PER_YEAR;
 

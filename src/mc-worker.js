@@ -6,6 +6,8 @@
 // ── Constants (mirrors PDE.COEFFICIENTS) ──
 var C = {
     ANNUAL_HOURS_PER_ENGINEER: 1800,
+    SPRINT_HOURS: 70,
+    SPRINTS_PER_YEAR: 26,
     MONTHS_PER_YEAR: 12,
     QUARTERS_PER_YEAR: 4,
     PIPELINE_EROSION_RATE_DEFAULT: 0.1,
@@ -138,7 +140,7 @@ function computeModel(params, coeffs) {
     var nonlinearEnabled = params.nonlinearEnabled || false;
 
     var totalAnnualHrs   = annualHours;
-    var manualAnnualHrs  = totalAnnualHrs * (manualPercent / 100);
+    var manualAnnualHrs  = coeffs.SPRINT_HOURS * coeffs.SPRINTS_PER_YEAR * (manualPercent / 100);
     var chasingAnnualHrs = managerHrs * coeffs.MONTHS_PER_YEAR;
 
     var effectiveTeamSize = teamSize;

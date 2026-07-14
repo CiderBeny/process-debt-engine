@@ -4,7 +4,7 @@
   "description": "IT Process Inefficiency Visualisation Tool — quantify process debt and simulate ROI of automation investments.",
   "main": "index.js",
   "scripts": {
-    "test": "node src/security.test.js"
+    "test": "node --test src/security.test.js src/model-audit.test.js"
   },
   "repository": {
     "type": "git",

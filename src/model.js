@@ -95,7 +95,7 @@ PDE.computeModel = function computeModel(params) {
     var nonlinearEnabled = params.nonlinearEnabled || false;
 
     var totalAnnualHrs   = annualHours;
-    var manualAnnualHrs  = totalAnnualHrs * (manualPercent / 100);
+    var manualAnnualHrs  = PDE.COEFFICIENTS.SPRINT_HOURS * PDE.COEFFICIENTS.SPRINTS_PER_YEAR * (manualPercent / 100);
     var chasingAnnualHrs = managerHrs * PDE.COEFFICIENTS.MONTHS_PER_YEAR;
 
     var effectiveTeamSize = teamSize;

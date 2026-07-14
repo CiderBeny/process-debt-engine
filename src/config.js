@@ -14,6 +14,8 @@ PDE.COEFFICIENTS = {
     // ── Annualised conversions ──
     // Annualised conversions
     ANNUAL_HOURS_PER_ENGINEER: 1800,   // BLS ATUS 2024 / OECD (~1,811 rounded)  · confidence: high
+    SPRINT_HOURS:              70,    // 2-week sprint capacity after ceremonies (planning, daily, retro, review, refinement) · confidence: high
+    SPRINTS_PER_YEAR:          26,    // Math.round(1800 / 70) — sprints aligning with annual hours
     MONTHS_PER_YEAR:           12,
     QUARTERS_PER_YEAR:         4,
 
