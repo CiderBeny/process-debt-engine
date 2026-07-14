@@ -129,7 +129,7 @@ PDE.updateSliderFills = function updateSliderFills() {
     setSliderFill('q3',            'q3Fill',            1, 5);
     setSliderFill('q9',            'q9Fill',            1, 5);
     setSliderFill('autoLevel',     'autoLevelFill',     0, 100);
-    setSliderFill('cascadeMult',   'cascadeMultFill',   0, 150);
+    setSliderFill('opexAdjMult',   'opexAdjMultFill',   0, 30);
     setSliderFill('erosionRate',   'erosionRateFill',   0, 100);
     setSliderFill('discountRate',  'discountRateFill',  5, 20);
     setSliderFill('timeHorizon',   'timeHorizonFill',   3, 10);

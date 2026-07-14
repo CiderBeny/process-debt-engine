@@ -442,14 +442,14 @@
             <div class="tab-content" id="tab-advanced" style="display:none;">
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                     <div>
-                        <label class="label" for="cascadeMult" data-i18n="cascadeMultLabel">Cascade Multiplier</label>
-                        <span class="helper-text mt-1 block" data-i18n="cascadeMultHelper">Proportion of OPEX Waste applied as cascade (0.0–1.5). Default 0.5.</span>
+                        <label class="label" for="opexAdjMult" data-i18n="cascadeMultLabel">OPEX-adjusted Estimate</label>
+                        <span class="helper-text mt-1 block" data-i18n="cascadeMultHelper">Multiplier applied to OPEX Waste for adjusted estimate (0.0–0.3). Default 0.15.</span>
                         <div class="slider-wrapper">
                             <div class="slider-track-bg"></div>
-                            <div class="slider-track-fill" id="cascadeMultFill"></div>
-                            <input type="range" id="cascadeMult" min="0" max="150" value="50" class="slider">
+                            <div class="slider-track-fill" id="opexAdjMultFill"></div>
+                            <input type="range" id="opexAdjMult" min="0" max="30" value="15" class="slider">
                         </div>
-                        <p class="text-center text-xs mt-1"><span id="cascadeMultVal">0.5</span></p>
+                        <p class="text-center text-xs mt-1"><span id="opexAdjMultVal">0.15</span></p>
                     </div>
                     <div>
                         <label class="label" for="erosionRate" data-i18n="erosionRateLabel">Pipeline Erosion Rate</label>
@@ -743,8 +743,8 @@
                 </div>
                 <div class="card border-l-4 border-l-amber-700">
                     <div class="label-row">
-                        <p class="label" data-i18n="statCascadeLabel">Cascade Impact</p>
-                        <span class="formula-tip" tabindex="0" role="button" data-formula="OPEX Waste × 1.5 (pipeline cascade multiplier)" aria-label="Formula: OPEX Waste × 1.5 (pipeline cascade multiplier)" data-i18n-formula="formulaCascade">ⓘ</span>
+                        <p class="label" data-i18n="statCascadeLabel">OPEX-adjusted Estimate</p>
+                        <span class="formula-tip" tabindex="0" role="button" data-formula="OPEX Waste × 0.15 (adjusted estimate multiplier)" aria-label="Formula: OPEX Waste × 0.15 (adjusted estimate multiplier)" data-i18n-formula="formulaCascade">ⓘ</span>
                     </div>
                     <p class="text-3xl font-black mt-1 stat-value" id="statCascade">$0</p>
                 </div>
@@ -895,9 +895,9 @@
 
                 <!-- 4 -->
                 <div class="methodology-section" id="methodology-4">
-                    <h4 data-i18n="methodologyCascadeTitle">4. Cascade Impact</h4>
-                    <p><span class="methodology-label" data-i18n="methodologyFormulaLabel">Formula:</span> <code>OPEX Waste &times; 0.5</code></p>
-                    <p><strong>0.5 multiplier (tool estimate — reduced from 1.5):</strong> <span data-i18n="methodologyOppFactor2">Accounts for compounding pipeline effects — each delayed project pushes downstream work, multiplying total cost. Exepron ("The True Cost of Delay," 2026) demonstrates that a pipeline cascade multiplier can reach 6&times; where multiple projects share dependent resources. This tool applies 0.5&times; — reduced from the original 1.5&times; to avoid OPEX double-counting while retaining a conservative recognition of cascade effects.</span></p>
+                    <h4 data-i18n="methodologyCascadeTitle">4. OPEX-adjusted Estimate</h4>
+                    <p><span class="methodology-label" data-i18n="methodologyFormulaLabel">Formula:</span> <code>OPEX Waste &times; 0.15</code></p>
+                    <p><strong>0.15 multiplier (tool estimate):</strong> <span data-i18n="methodologyOppFactor2">A conservative multiplier (0.15) applied to OPEX Waste to account for hidden downstream costs — rework, context switching, and cascading delays that propagate through dependent workflows. This replaces the earlier "Cascade Impact" approach which double-counted OPEX at 0.5&times;.</span></p>
                     <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyOppSource">Exepron — "The True Cost of Delay" (2026). exepron.com.</span></p>
                 </div>
 
@@ -967,8 +967,8 @@
                 <!-- 9 -->
                 <div class="methodology-section" id="methodology-9">
                     <h4 data-i18n="methodologyTotalTitle">9. Total Debt Impact</h4>
-                    <p><span class="methodology-label" data-i18n="methodologyFormulaLabel">Formula:</span> <code data-i18n="methodologyTotalFormula">OPEX Waste + Risk Exposure + Pipeline Margin Erosion + Cascade Impact</code></p>
-                    <p><span class="methodology-label" data-i18n="methodologyAssumptionsLabel">Note:</span> <span data-i18n="methodologyTotalNote">Pipeline Margin Erosion (cOppDirect) is a one-time estimate reflecting margin lost in the first year of delay. All other components recur annually. Cascade Impact is proportional to OPEX Waste — reducing manual waste automatically reduces cascade costs.</span></p>
+                    <p><span class="methodology-label" data-i18n="methodologyFormulaLabel">Formula:</span> <code data-i18n="methodologyTotalFormula">OPEX Waste + Risk Exposure + Pipeline Margin Erosion + OPEX-adjusted Estimate</code></p>
+                    <p><span class="methodology-label" data-i18n="methodologyAssumptionsLabel">Note:</span> <span data-i18n="methodologyTotalNote">Pipeline Margin Erosion (cOppDirect) is a one-time estimate reflecting margin lost in the first year of delay. All other components recur annually. The OPEX-adjusted Estimate is proportional to OPEX Waste — reducing manual waste automatically reduces this component.</span></p>
                     <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyTotalSource">Economic model synthesised from BLS ATUS (2024), OECD Annual Hours (2024), Exepron "True Cost of Delay" (2026), COSO ERM (2017), and SHRM Retention Framework (2025).</span></p>
                 </div>
 
@@ -981,7 +981,7 @@
 
                 <div class="methodology-section" id="methodology-11">
                     <h4 data-i18n="methodologyAdvancedTitle">11. Configurable Advanced Parameters</h4>
-                    <p><span data-i18n="methodologyAdvancedBody">Six parameters in the "Advanced Parameters" panel let you override default coefficients in real time: Cascade Multiplier (0.0–1.5), Pipeline Erosion Rate (0.0–1.0), WACC / Discount Rate (5–20%), NPV Time Horizon (3–10 years), Automation Lever Recovery (10–60%), and Risk Lever Recovery (20–80%). Changing any slider immediately recalculates all dependent metrics. Defaults are restored on page reload.</span></p>
+                    <p><span data-i18n="methodologyAdvancedBody">Six parameters in the "Advanced Parameters" panel let you override default coefficients in real time: OPEX-adjusted Estimate (0.0–0.3), Pipeline Erosion Rate (0.0–1.0), WACC / Discount Rate (5–20%), NPV Time Horizon (3–10 years), Automation Lever Recovery (10–60%), and Risk Lever Recovery (20–80%). Changing any slider immediately recalculates all dependent metrics. Defaults are restored on page reload.</span></p>
                     <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyAdvancedSource">User-configurable — overrides the Economic Model defaults (Section 10) in real time.</span></p>
                 </div>
 

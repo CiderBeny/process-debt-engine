@@ -48,7 +48,7 @@ PDE.computeModel = function computeModel(params) {
     var capex          = params.capex          || 0;
     var autoLevel      = (params.autoLevel     || 0) / 100;
     var teamSize       = params.teamSize        || 0;
-    var cascadeMult    = params.cascadeMult   || PDE.COEFFICIENTS.CASCADE_MULTIPLIER_DEFAULT;
+    var opexAdjMult    = params.opexAdjMult   || PDE.COEFFICIENTS.OPEX_ADJ_MULTIPLIER_DEFAULT;
     var erosionRate    = params.erosionRate    || PDE.COEFFICIENTS.PIPELINE_EROSION_RATE_DEFAULT;
     var discountRate   = params.discountRate   || PDE.COEFFICIENTS.DISCOUNT_RATE_DEFAULT;
     var horizonYears   = params.horizonYears   || PDE.COEFFICIENTS.TIME_HORIZON_YEARS_DEFAULT;
@@ -106,7 +106,7 @@ PDE.computeModel = function computeModel(params) {
     var cWaste     = (manualAnnualHrs + chasingAnnualHrs) * rate * effectiveTeamSize;
     var cRisk      = (failures * mttr * downCost) * (riskLevel / PDE.COEFFICIENTS.RISK_SCALE_MAX);
     var cOppDirect = opportunityVal * erosionRate;
-    var cCascade   = cWaste * cascadeMult;
+    var cOpexAdj   = cWaste * opexAdjMult;
 
     var riskOperational = cRisk;
     var riskSecurity    = 0;
@@ -127,14 +127,14 @@ PDE.computeModel = function computeModel(params) {
     if (nonlinearEnabled) {
         var cWasteRatio = cWaste / 1e6;
         var sigmoidMult = 2 / (1 + Math.exp(-cWasteRatio * 2)) - 1;
-        cCascade = cWaste * cascadeMult * (0.5 + sigmoidMult * 0.5);
+        cOpexAdj = cWaste * opexAdjMult * (0.5 + sigmoidMult * 0.5);
         autoLevel = 1 - Math.pow(1 - autoLevel, 1.2);
     }
 
-    var totalImpact = cWaste + cRisk + cOppDirect + cCascade;
+    var totalImpact = cWaste + cRisk + cOppDirect + cOpexAdj;
     var netDebt      = totalImpact - capex;
 
-    var annualRecurring = cWaste + cRisk + cCascade;
+    var annualRecurring = cWaste + cRisk + cOpexAdj;
     var oneTimeCosts    = cOppDirect + capex;
     var dr = discountRate;
     var ny = horizonYears;
@@ -142,7 +142,7 @@ PDE.computeModel = function computeModel(params) {
     var npvRecurring = annualRecurring * pvifa;
     var npvTotalDebt = oneTimeCosts + npvRecurring;
 
-    var potentialSavings = (cWaste + cRisk + cCascade) * autoLevel;
+    var potentialSavings = (cWaste + cRisk + cOpexAdj) * autoLevel;
     var paybackMonths    = PDE.discountedPayback(potentialSavings, capex);
 
     var irrCashFlows = [-capex];
@@ -153,7 +153,7 @@ PDE.computeModel = function computeModel(params) {
 
     var leverRecoveryAuto = Math.round(cWaste * leverAuto);
     var leverRecoveryRisk = Math.round(cRisk * leverRisk);
-    var leverRecoveryInnovation = Math.round((cOppDirect + cCascade) * leverInnovation);
+    var leverRecoveryInnovation = Math.round((cOppDirect + cOpexAdj) * leverInnovation);
     var leverRecoveryMgmt = Math.round(cWaste * leverManagement);
     var leverRecoveryTurnover = Math.round(turnoverCost * leverTurnoverL);
 
@@ -161,7 +161,7 @@ PDE.computeModel = function computeModel(params) {
         cWaste:            cWaste,
         cRisk:             cRisk,
         cOppDirect:        cOppDirect,
-        cCascade:          cCascade,
+        cOpexAdj:          cOpexAdj,
         totalImpact:       totalImpact,
         netDebt:           netDebt,
         annualRecurring:   annualRecurring,
@@ -234,14 +234,14 @@ PDE.runMonteCarlo = function runMonteCarlo(baseParams, opts) {
         var r = PDE.computeModel(p);
         results.push({
             cWaste: r.cWaste, cRisk: r.cRisk, cOppDirect: r.cOppDirect,
-            cCascade: r.cCascade, totalImpact: r.totalImpact,
+            cOpexAdj: r.cOpexAdj, totalImpact: r.totalImpact,
             netDebt: r.netDebt, npvTotalDebt: r.npvTotalDebt,
             potentialSavings: r.potentialSavings, paybackMonths: r.paybackMonths,
             irr: r.irr,
         });
     }
 
-    var keys = ['cWaste','cRisk','cOppDirect','cCascade','totalImpact','netDebt','npvTotalDebt','potentialSavings','paybackMonths','irr'];
+    var keys = ['cWaste','cRisk','cOppDirect','cOpexAdj','totalImpact','netDebt','npvTotalDebt','potentialSavings','paybackMonths','irr'];
     var output = {};
     keys.forEach(function (key) {
         var sorted = results.map(function (r) { return r[key]; }).sort(function (a, b) { return a - b; });

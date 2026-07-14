@@ -20,7 +20,7 @@ PDE.calculate = function calculate() {
         teamSize:       PDE.clamp('teamSize'),
         turnover:       PDE.clamp('q10'),
         docStandard:    PDE.clamp('q3'),
-        cascadeMult:    PDE.readAdvanced('cascadeMult',   PDE.COEFFICIENTS.CASCADE_MULTIPLIER_DEFAULT, 100),
+        cascadeMult:    PDE.readAdvanced('opexAdjMult',   PDE.COEFFICIENTS.OPEX_ADJ_MULTIPLIER_DEFAULT, 100),
         erosionRate:    PDE.readAdvanced('erosionRate',   PDE.COEFFICIENTS.PIPELINE_EROSION_RATE_DEFAULT, 100),
         discountRate:   PDE.readAdvanced('discountRate',  PDE.COEFFICIENTS.DISCOUNT_RATE_DEFAULT, 100),
         horizonYears:   PDE.readAdvanced('timeHorizon',   PDE.COEFFICIENTS.TIME_HORIZON_YEARS_DEFAULT, 1),
@@ -50,7 +50,7 @@ PDE.calculate = function calculate() {
     };
 
     document.getElementById('autoLevelVal').textContent = Math.round(p.autoLevel);
-    document.getElementById('cascadeMultVal').textContent  = p.cascadeMult.toFixed(1);
+    document.getElementById('opexAdjMultVal').textContent  = p.cascadeMult.toFixed(2);
     document.getElementById('erosionRateVal').textContent  = p.erosionRate.toFixed(2);
     document.getElementById('discountRateVal').textContent = Math.round(p.discountRate * 100);
     document.getElementById('timeHorizonVal').textContent  = p.horizonYears;
@@ -88,7 +88,7 @@ PDE.calculate = function calculate() {
         });
         var keyMap = {
             statWaste: 'cWaste', statRisk: 'cRisk', statOpp: 'cOppDirect',
-            statCascade: 'cCascade', totalImpact: 'totalImpact',
+            statCascade: 'cOpexAdj', totalImpact: 'totalImpact',
             npvTotalDebt: 'npvTotalDebt', statNet: 'netDebt',
         };
         Object.keys(keyMap).forEach(function (id) {
@@ -116,7 +116,7 @@ PDE.calculate = function calculate() {
         document.getElementById('statWaste').textContent   = PDE.formatCurrency(r.cWaste);
         document.getElementById('statRisk').textContent    = PDE.formatCurrency(r.cRisk);
         document.getElementById('statOpp').textContent     = PDE.formatCurrency(r.cOppDirect);
-        document.getElementById('statCascade').textContent = PDE.formatCurrency(r.cCascade);
+        document.getElementById('statCascade').textContent = PDE.formatCurrency(r.cOpexAdj);
         document.getElementById('totalImpact').textContent = PDE.formatCurrency(r.totalImpact);
         document.getElementById('npvTotalDebt').textContent = PDE.formatCurrency(r.npvTotalDebt);
         document.getElementById('statIrr').textContent     = r.irr !== null ? (r.irr >= 0.999 ? '>99.9%' : (r.irr * 100).toFixed(1) + '%') : '\u2014';
@@ -129,9 +129,9 @@ PDE.calculate = function calculate() {
     PDE.updateSliderFills();
 
     PDE.updateCharts(r.totalAnnualHrs, r.manualAnnualHrs, r.chasingAnnualHrs, r.cWaste, p.capex, r.potentialSavings, p.riskLevel, p.manualPercent, p.autoLevel / 100);
-    PDE.updateRecs(r.cWaste, r.cRisk, r.cOppDirect, r.cCascade, r.paybackMonths, r.leverAuto, r.leverRisk);
+    PDE.updateRecs(r.cWaste, r.cRisk, r.cOppDirect, r.cOpexAdj, r.paybackMonths, r.leverAuto, r.leverRisk);
     PDE.updateDoraBenchmark();
-    PDE.updateScenarios(r.cWaste, r.cRisk, r.cCascade, p.capex, p.autoLevel / 100, r.totalImpact, p.discountRate, p.horizonYears, r.scenCAutoLevel, r.scenCCapexMult);
+    PDE.updateScenarios(r.cWaste, r.cRisk, r.cOpexAdj, p.capex, p.autoLevel / 100, r.totalImpact, p.discountRate, p.horizonYears, r.scenCAutoLevel, r.scenCCapexMult);
 };
 
 PDE.updateRecs = function updateRecs(cw, cr, co, cc, pb, leverAuto, leverRisk) {
@@ -277,7 +277,7 @@ PDE.updateRoadmap = function updateRoadmap(top3) {
     document.getElementById('roadmapGrid').innerHTML = html;
 };
 
-PDE.updateScenarios = function updateScenarios(cWaste, cRisk, cCascade, capex, autoLevel, totalImpact, dr, ny, scenCAutoLevel, scenCCapexMult) {
+PDE.updateScenarios = function updateScenarios(cWaste, cRisk, cOpexAdj, capex, autoLevel, totalImpact, dr, ny, scenCAutoLevel, scenCCapexMult) {
     const L = PDE.TRANSLATIONS[PDE.currentLang];
     const fmt = (n) => PDE.formatCurrency(Math.abs(n));
     if (dr === undefined) dr = PDE.readAdvanced('discountRate', PDE.COEFFICIENTS.DISCOUNT_RATE_DEFAULT, 100);
@@ -285,7 +285,7 @@ PDE.updateScenarios = function updateScenarios(cWaste, cRisk, cCascade, capex, a
     if (scenCAutoLevel === undefined) scenCAutoLevel = PDE.readAdvanced('scenCAutoLevel', PDE.COEFFICIENTS.SCEN_C_AUTO_LEVEL, 100);
     if (scenCCapexMult === undefined) scenCCapexMult = PDE.readAdvanced('scenCCapexMult', PDE.COEFFICIENTS.SCEN_C_CAPEX_MULTIPLIER, 10);
 
-    var annualRecurring = cWaste + cRisk + cCascade;
+    var annualRecurring = cWaste + cRisk + cOpexAdj;
 
     const scenA = PDE.scenCalc(0,    0,                            annualRecurring, dr, ny);
     const scenB = PDE.scenCalc(autoLevel, capex,                   annualRecurring, dr, ny);
