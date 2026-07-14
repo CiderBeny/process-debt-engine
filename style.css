@@ -286,6 +286,13 @@ section h2 {
   font-size: 0.65rem !important;
 }
 
+/* ── Source citations ── */
+.source-text {
+  color: var(--text-muted);
+  font-size: 0.6rem;
+  font-style: italic;
+}
+
 /* ── Inputs ── */
 .input-field {
   background: var(--bg-input) !important;
