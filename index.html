@@ -753,14 +753,14 @@
                 <div class="card bg-slate-900">
                     <div class="label-row">
                         <p class="label" data-i18n="statTotalLabel">Total Debt Impact</p>
-                        <span class="formula-tip" tabindex="0" role="button" data-formula="OPEX Waste + Risk Exposure + Pipeline Margin Erosion + Cascade Impact" aria-label="Formula: OPEX Waste + Risk Exposure + Pipeline Margin Erosion + Cascade Impact" data-i18n-formula="formulaTotal">ⓘ</span>
+                        <span class="formula-tip" tabindex="0" role="button" data-formula="OPEX Waste + Risk Exposure + Pipeline Margin Erosion + OPEX-adjusted Estimate" aria-label="Formula: OPEX Waste + Risk Exposure + Pipeline Margin Erosion + OPEX-adjusted Estimate" data-i18n-formula="formulaTotal">ⓘ</span>
                     </div>
                     <p class="text-3xl font-black mt-1 stat-value" id="totalImpact">$0</p>
                 </div>
                 <div class="card border-l-4 border-l-cyan-600">
                     <div class="label-row">
                         <p class="label" data-i18n="statNpvLabel">NPV Total Debt (5 yr)</p>
-                        <span class="formula-tip" tabindex="0" role="button" data-formula="(OPEX Waste + Risk + Cascade) × PVIFA(10%,5yr) + Pipeline Erosion + CAPEX" aria-label="Formula: (OPEX Waste + Risk + Cascade) × PVIFA(10%,5yr) + Pipeline Erosion + CAPEX">ⓘ</span>
+                        <span class="formula-tip" tabindex="0" role="button" data-formula="(OPEX Waste + Risk + OPEX-adjusted Estimate) × PVIFA(10%,5yr) + Pipeline Erosion + CAPEX" aria-label="Formula: (OPEX Waste + Risk + OPEX-adjusted Estimate) × PVIFA(10%,5yr) + Pipeline Erosion + CAPEX">ⓘ</span>
                     </div>
                     <p class="text-3xl font-black mt-1 stat-value" id="npvTotalDebt" data-i18n-formula="statNpvHelper">$0</p>
                 </div>
