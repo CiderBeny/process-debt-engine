@@ -79,28 +79,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    const toggleMap = {
-        correlationsToggle: ['correlationSliders'],
-        probabilisticToggle: ['mcSliders'],
-        advancedRiskToggle: ['riskWeightSliders'],
-    };
-    function apply(id) {
-        const checked = document.getElementById(id) ? document.getElementById(id).checked : false;
-        const targets = toggleMap[id];
-        if (targets) {
-            targets.forEach(function (tid) {
-                const el = document.getElementById(tid);
-                if (el) el.style.display = checked ? 'block' : 'none';
-            });
-        }
-    }
     ['correlationsToggle','nonlinearToggle','probabilisticToggle','advancedRiskToggle'].forEach(function (id) {
         const el = document.getElementById(id);
         if (el) {
-            el.addEventListener('change', function () { apply(id); PDE.calculate(); });
+            el.addEventListener('change', function () { PDE.applyToggleVisibility(id); PDE.saveToggleStates(); PDE.calculate(); });
         }
-        apply(id);
+        PDE.applyToggleVisibility(id);
     });
+    PDE.loadToggleStates();
 
     document.addEventListener('click', e => {
         if (!e.target.classList.contains('formula-tip')) {
