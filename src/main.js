@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const calcIds = ['q1','q2','q3','q4','q5','q11','q6','q7','q8','q9','q10','autoLevel','teamSize','capex','opexAdjMult','erosionRate','discountRate','timeHorizon','leverAutomation','leverRisk'];
     calcIds.forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.addEventListener('input', PDE.calculate);
+        if (el) el.addEventListener('input', function () { PDE.validateField(id); PDE.calculate(); });
     });
 
     const copyBtn = document.getElementById('copyLinkBtn');
@@ -107,6 +107,7 @@ window.onload = () => {
     PDE.nbpFetching = true;
     document.getElementById('nbpFooter').textContent = PDE.TRANSLATIONS[PDE.currentLang].nbpFetching;
     PDE.decodeState();
+    PDE.ALLOWED_HASH_KEYS.forEach(function (id) { PDE.validateField(id); });
     PDE.calculate();
     requestAnimationFrame(() => { PDE.calculate(); });
     PDE.fetchNbpRates();

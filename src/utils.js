@@ -97,6 +97,7 @@ PDE.toggleCurrency = function toggleCurrency(currency) {
     });
     PDE.currentCurrency = currency;
     document.getElementById('currencySelect').value = currency;
+    PDE.ALLOWED_HASH_KEYS.forEach(function (id) { PDE.validateField(id); });
     PDE.applyTranslations();
     PDE.calculate();
     const footerEl = document.getElementById('nbpFooter');
@@ -152,6 +153,34 @@ PDE.clamp = function clamp(id) {
     const minInCurrency = c.min * PDE.EXCHANGE_RATES[PDE.currentCurrency];
     const maxInCurrency = c.max * PDE.EXCHANGE_RATES[PDE.currentCurrency];
     return Math.round(Math.min(maxInCurrency, Math.max(minInCurrency, raw)) * 100) / 100;
+};
+
+PDE.validateField = function (id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    if (el.classList.contains('slider')) {
+        el.classList.remove('is-invalid');
+        return;
+    }
+    var c = PDE.HASH_CONSTRAINTS[id];
+    if (!c) {
+        el.classList.remove('is-invalid');
+        return;
+    }
+    var raw = parseFloat(el.value);
+    if (!isFinite(raw)) {
+        el.classList.add('is-invalid');
+        return;
+    }
+    var monetaryIds = ['q4', 'q6', 'q8', 'capex'];
+    var val = monetaryIds.indexOf(id) !== -1
+        ? raw / PDE.EXCHANGE_RATES[PDE.currentCurrency]
+        : raw;
+    if (val < c.min || val > c.max) {
+        el.classList.add('is-invalid');
+    } else {
+        el.classList.remove('is-invalid');
+    }
 };
 
 PDE.flashBtn = function flashBtn(btn, orig) {
