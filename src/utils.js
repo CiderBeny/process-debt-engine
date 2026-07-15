@@ -156,24 +156,24 @@ PDE.clamp = function clamp(id) {
 };
 
 PDE.validateField = function (id) {
-    var el = document.getElementById(id);
+    const el = document.getElementById(id);
     if (!el) return;
     if (el.classList.contains('slider')) {
         el.classList.remove('is-invalid');
         return;
     }
-    var c = PDE.HASH_CONSTRAINTS[id];
+    const c = PDE.HASH_CONSTRAINTS[id];
     if (!c) {
         el.classList.remove('is-invalid');
         return;
     }
-    var raw = parseFloat(el.value);
+    const raw = parseFloat(el.value);
     if (!isFinite(raw)) {
         el.classList.add('is-invalid');
         return;
     }
-    var monetaryIds = ['q4', 'q6', 'q8', 'capex'];
-    var val = monetaryIds.indexOf(id) !== -1
+    const monetaryIds = ['q4', 'q6', 'q8', 'capex'];
+    const val = monetaryIds.indexOf(id) !== -1
         ? raw / PDE.EXCHANGE_RATES[PDE.currentCurrency]
         : raw;
     if (val < c.min || val > c.max) {

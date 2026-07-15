@@ -77,11 +77,11 @@ PDE.TOGGLE_MAP = {
 };
 
 PDE.applyToggleVisibility = function (id) {
-    var checked = document.getElementById(id) ? document.getElementById(id).checked : false;
-    var targets = PDE.TOGGLE_MAP[id];
+    const checked = document.getElementById(id) ? document.getElementById(id).checked : false;
+    const targets = PDE.TOGGLE_MAP[id];
     if (targets) {
         targets.forEach(function (tid) {
-            var el = document.getElementById(tid);
+            const el = document.getElementById(tid);
             if (el) el.style.display = checked ? 'block' : 'none';
         });
     }
@@ -91,28 +91,28 @@ PDE.applyToggleVisibility = function (id) {
 PDE.TOGGLE_IDS = ['correlationsToggle','nonlinearToggle','probabilisticToggle','advancedRiskToggle'];
 
 PDE.saveToggleStates = function () {
-    var states = {};
+    const states = {};
     PDE.TOGGLE_IDS.forEach(function (id) {
-        var el = document.getElementById(id);
+        const el = document.getElementById(id);
         states[id] = el ? el.checked : false;
     });
     try {
         localStorage.setItem('PDE.toggleStates', JSON.stringify(states));
-    } catch (e) {}
+    } catch { /* localStorage unavailable */ }
 };
 
 PDE.loadToggleStates = function () {
-    var raw;
+    let raw;
     try {
         raw = localStorage.getItem('PDE.toggleStates');
-    } catch (e) { return; }
+    } catch { return; }
     if (!raw) return;
-    var states;
-    try { states = JSON.parse(raw); } catch (e) { return; }
+    let states;
+    try { states = JSON.parse(raw); } catch { return; }
     if (!states || typeof states !== 'object') return;
     PDE.TOGGLE_IDS.forEach(function (id) {
         if (typeof states[id] === 'boolean') {
-            var el = document.getElementById(id);
+            const el = document.getElementById(id);
             if (el) {
                 el.checked = states[id];
                 PDE.applyToggleVisibility(id);
