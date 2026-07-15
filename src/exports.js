@@ -263,18 +263,18 @@ PDE.exportPDF = async function exportPDF(mode) {
                     regResp.arrayBuffer(),
                     bldResp.arrayBuffer()
                 ]);
-                function bufToB64(buf) {
-                    const bytes = new Uint8Array(buf);
-                    const CHUNK = 8192;
-                    let binary = '';
-                    for (let i = 0; i < bytes.length; i += CHUNK) {
-                        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
-                    }
-                    return btoa(binary);
+                async function bufToB64(buf) {
+                    const blob = new Blob([buf]);
+                    return new Promise(function (resolve, reject) {
+                        const reader = new FileReader();
+                        reader.onload = function () { resolve(reader.result.split(',')[1]); };
+                        reader.onerror = function () { reject(new Error('FileReader failed')); };
+                        reader.readAsDataURL(blob);
+                    });
                 }
-                pdf.addFileToVFS('Inter-Regular.ttf', bufToB64(regBuf));
+                pdf.addFileToVFS('Inter-Regular.ttf', await bufToB64(regBuf));
                 pdf.addFont('Inter-Regular.ttf', 'Inter', 'normal');
-                pdf.addFileToVFS('Inter-Bold.ttf', bufToB64(bldBuf));
+                pdf.addFileToVFS('Inter-Bold.ttf', await bufToB64(bldBuf));
                 pdf.addFont('Inter-Bold.ttf', 'Inter', 'bold');
                 pdfFont = 'Inter';
             }
