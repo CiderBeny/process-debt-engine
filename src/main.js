@@ -112,21 +112,6 @@ window.onload = () => {
     requestAnimationFrame(() => { PDE.calculate(); });
     PDE.fetchNbpRates();
 
-    if (PDE.isMobileBrowser()) {
-        ['exportBtnSimple','exportBtnFull'].forEach(function (id) {
-            const btn = document.getElementById(id);
-            if (btn) {
-                btn.disabled = true;
-                btn.title = PDE.currentLang === 'pl'
-                    ? 'Eksport PDF niedost\u0119pny na urz\u0105dzeniach mobilnych — otwórz na komputerze'
-                    : 'PDF export unavailable on mobile — open on a desktop browser';
-                btn.style.opacity = '0.45';
-                btn.style.cursor  = 'not-allowed';
-                btn.textContent = '\uD83D\uDDA5 PDF (DESKTOP ONLY)';
-            }
-        });
-    }
-
     PDE.prefetchFontsToBase64();
 
     window.addEventListener('beforeunload', function () {

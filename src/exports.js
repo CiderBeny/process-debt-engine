@@ -230,13 +230,7 @@ PDE.resolveCSSVarsOnElement = function resolveCSSVarsOnElement(el) {
 };
 
 PDE.exportPDF = async function exportPDF(mode) {
-    if (PDE.isMobileBrowser()) {
-        const msg = PDE.currentLang === 'pl'
-            ? 'Eksport PDF nie jest obs\u0142ugiwany na urz\u0105dzeniach mobilnych (iOS Safari / Android WebView nie obs\u0142uguj\u0105 renderowania CSS). Otw\u00f3rz t\u0119 stron\u0119 na komputerze, aby wygenerowa\u0107 raport.'
-            : 'PDF export is not supported on mobile browsers (iOS Safari / Android WebView cannot reliably render CSS custom properties). Please open this page on a desktop browser to generate the report.';
-        alert(msg);
-        return;
-    }
+    const isMobile = PDE.isMobileBrowser();
 
     const btnId = mode === 'full' ? 'exportBtnFull' : 'exportBtnSimple';
     const generatingKey = mode === 'full' ? 'exportGeneratingFull' : 'exportGeneratingSimple';
@@ -489,130 +483,389 @@ PDE.exportPDF = async function exportPDF(mode) {
         }
         cy += pRowH + 8;
 
-        // Screenshot blocks
-        const mainIds = mode === 'simple'
-            ? ['pdf-block-3','scenario-compare']
-            : ['pdf-block-3','scenario-compare','pdf-block-4','pdf-block-5','pdf-block-6'];
+        if (isMobile) {
+            const p = PDE.getParams();
+            const r = PDE.computeModel(p);
 
-        async function captureBlock(id) {
-            const el = document.getElementById(id);
-            if (!el || !el.offsetHeight) return;
+            const leversRaw = [
+                { key: 'automation', label: L.leverAutomationTitle, recovery: r.leverRecoveryAuto,    effort: L.effortMedium, timeline: '2\u20134 ' + L.verdictPaybackUnit, color: [220,38,38] },
+                { key: 'risk',       label: L.leverRiskTitle,        recovery: r.leverRecoveryRisk,    effort: L.effortLow,    timeline: '1\u20132 ' + L.verdictPaybackUnit, color: [234,88,12] },
+                { key: 'innovation', label: L.leverInnovationTitle,  recovery: r.leverRecoveryInnovation, effort: L.effortHigh, timeline: '3\u20136 ' + L.verdictPaybackUnit, color: [124,58,237] },
+                { key: 'mgmt',      label: L.leverMgmtTitle,        recovery: r.leverRecoveryMgmt,    effort: L.effortLow,    timeline: '1 '   + L.verdictPaybackUnit, color: [8,145,178] },
+                { key: 'turnover',  label: L.leverTurnoverTitle,    recovery: r.leverRecoveryTurnover, effort: L.effortMedium,timeline: '3\u20135 ' + L.verdictPaybackUnit, color: [22,163,74] },
+            ];
 
-            const swaps = [];
-            el.querySelectorAll('input').forEach(input => {
-                const proxy = document.createElement('div');
-                proxy.style.cssText = window.getComputedStyle(input).cssText;
-                proxy.style.display = 'flex';
-                proxy.style.alignItems = 'center';
-                proxy.style.boxSizing = 'border-box';
-                proxy.style.color = '#1C1410';
-                proxy.style.fontWeight = '700';
-                proxy.style.fontSize = '0.875rem';
-                proxy.style.background = '#FAF7F2';
-                proxy.style.border = '1px solid #D6C9B8';
-                proxy.style.borderRadius = '6px';
-                proxy.style.padding = '0.5rem 0.75rem';
-                proxy.style.width = input.offsetWidth + 'px';
-                proxy.style.height = input.offsetHeight + 'px';
-                proxy.style.minHeight = '36px';
-                proxy.textContent = input.value;
-                input.parentNode.insertBefore(proxy, input);
-                input.style.display = 'none';
-                swaps.push({ input, proxy });
-            });
+            function renderSimpleResults() {
+                const cards = [
+                    { label: L.statWasteLabel,  val: PDE.formatCurrency(r.cWaste),     color: [220,38,38] },
+                    { label: L.statRiskLabel,   val: PDE.formatCurrency(r.cRisk),      color: [234,88,12] },
+                    { label: L.statOppLabel,    val: PDE.formatCurrency(r.cOppDirect), color: [124,58,237] },
+                    { label: L.statCascadeLabel, val: PDE.formatCurrency(r.cOpexAdj),  color: [180,83,9] },
+                    { label: L.statTotalLabel,  val: PDE.formatCurrency(r.totalImpact), color: [30,41,59] },
+                    { label: L.statNpvLabel,    val: PDE.formatCurrency(r.npvTotalDebt), color: [8,145,178] },
+                    { label: L.statIrrLabel,    val: r.irr !== null ? (r.irr >= 0.999 ? '>99.9%' : (r.irr * 100).toFixed(1) + '%') : '\u2014', color: [124,58,237] },
+                    { label: L.statNetLabel,    val: PDE.formatCurrency(r.netDebt),    color: [22,163,74] },
+                ];
+                const cols = 2, cw = (UW - 6) / cols, ch = 16;
+                needSpace(8);
+                drawRect(ML - 2, cy - 4, UW + 4, 10, [180,83,9]);
+                pdf.setFontSize(10); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(255,255,255);
+                pdf.text('FINANCIAL RESULTS', ML + 2, cy + 3);
+                cy += 14;
 
-            const savedPb = el.style.paddingBottom;
-            el.style.paddingBottom = '3px';
-
-            const nodeList = Array.from(el.querySelectorAll('*'));
-            const savedStyles = nodeList.map(n =>
-                n instanceof HTMLElement ? n.style.cssText : undefined
-            );
-            PDE.resolveCSSVarsOnElement(el);
-
-            const canvas = await html2canvas(el, {
-                scale: 2,
-                useCORS: true,
-                logging: false,
-                backgroundColor: '#F5F0E8',
-                windowWidth: 1400,
-                windowHeight: document.documentElement.scrollHeight,
-                onclone: async (clonedDoc) => {
-                    const cs = getComputedStyle(document.documentElement);
-                    const vars = [
-                        '--bg-base','--bg-surface','--bg-elevated','--bg-hover',
-                        '--bg-input','--border','--border-focus','--border-subtle',
-                        '--text-primary','--text-secondary','--text-muted','--text-label',
-                        '--accent','--accent-bright','--accent-glow','--accent-dim',
-                        '--red','--orange','--purple','--green','--yellow',
-                    ];
-                    const decls = vars
-                        .map(v => `${v}:${cs.getPropertyValue(v).trim() || 'inherit'}`)
-                        .join(';');
-
-                    const fontFaceCSS = PDE.buildFontFaceCSS();
-
-                    const style = clonedDoc.createElement('style');
-                    style.textContent = `:root{${decls}}\n${fontFaceCSS}`;
-                    clonedDoc.head.insertBefore(style, clonedDoc.head.firstChild);
-
-                    for (const sheet of clonedDoc.styleSheets) {
-                        try {
-                            for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
-                                const rule = sheet.cssRules[i];
-                                if (rule.type === CSSRule.IMPORT_RULE &&
-                                    rule.href?.includes('fonts.googleapis.com')) {
-                                    sheet.deleteRule(i);
-                                }
-                            }
-                        } catch { /* empty */ }
-                    }
-                }
-            });
-
-            nodeList.forEach((node, i) => {
-                if (node instanceof HTMLElement && savedStyles[i] !== undefined) {
-                    node.style.cssText = savedStyles[i];
-                }
-            });
-            swaps.forEach(({ input, proxy }) => {
-                input.style.display = '';
-                proxy.remove();
-            });
-            el.style.paddingBottom = savedPb;
-
-            const imgData = canvas.toDataURL('image/png');
-            const bH = (canvas.height * UW) / canvas.width;
-
-            if (bH > PH - MT - 10) {
-                if (cy > MT) newPage();
-                const sH = PH - MT - 10;
-                const sW = (canvas.width * sH) / canvas.height;
-                pdf.addImage(imgData, 'PNG', ML + (UW - sW) / 2, cy, sW, sH);
-                newPage();
-                cy = MT;
-            } else {
-                if (cy + bH > PH - 10) { newPage(); cy = MT; }
-                pdf.addImage(imgData, 'PNG', ML, cy, UW, bH);
-                cy += bH + 5;
+                cards.forEach((c, i) => {
+                    const col = i % cols;
+                    const x = ML + col * (cw + 6);
+                    if (col === 0 && i > 0) cy += ch + 3;
+                    needSpace(ch + 3);
+                    drawRect(x, cy, cw, ch, [255,255,255], [214,201,184]);
+                    drawRect(x, cy, 1.5, ch, c.color);
+                    pdf.setFontSize(6); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(124,79,34);
+                    pdf.text(String(c.label).toUpperCase(), x + 4, cy + 5);
+                    pdf.setFontSize(8); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(28,20,16);
+                    pdf.text(String(c.val), x + 4, cy + 13);
+                });
+                cy += ch + 10;
             }
+
+            function renderSimpleScenarios() {
+                const annualRecurring = r.cWaste + r.cRisk + r.cOpexAdj;
+                const dr = p.discountRate;
+                const ny = p.horizonYears;
+                const scenA = PDE.scenCalc(0, 0, annualRecurring, dr, ny);
+                const scenB = PDE.scenCalc(p.autoLevel / 100, p.capex, annualRecurring, dr, ny);
+                const scenC = PDE.scenCalc(r.scenCAutoLevel, p.capex * r.scenCCapexMult, annualRecurring, dr, ny);
+                const scens = [
+                    { title: L.scenarioATitle, desc: L.scenarioADesc, accent: [220,38,38], data: scenA, cx: 0 },
+                    { title: L.scenarioBTitle, desc: L.scenarioBDesc, accent: [180,83,9],  data: scenB, cx: p.capex },
+                    { title: L.scenarioCTitle, desc: L.scenarioCDesc, accent: [22,163,74], data: scenC, cx: p.capex * r.scenCCapexMult },
+                ];
+                needSpace(8);
+                drawRect(ML - 2, cy - 4, UW + 4, 10, [180,83,9]);
+                pdf.setFontSize(10); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(255,255,255);
+                pdf.text(L.scenarioTitle.toUpperCase(), ML + 2, cy + 3);
+                pdf.setFontSize(6); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(250,247,242);
+                pdf.text(L.scenarioSubtitle, ML + 2, cy + 9);
+                cy += 16;
+
+                const cw = (UW - 6) / 3;
+                scens.forEach((s, i) => {
+                    const x = ML + i * (cw + 3);
+                    needSpace(48);
+                    const h = 52;
+                    drawRect(x, cy, cw, h, [255,255,255], [214,201,184]);
+                    drawRect(x, cy, cw, 2, s.accent);
+                    pdf.setFontSize(7); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(s.accent);
+                    pdf.text(String(s.title).toUpperCase(), x + 4, cy + 8);
+                    pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140,123,110);
+                    const dLines = wrapText(s.desc, x + 4, cw - 8);
+                    dLines.slice(0, 2).forEach((l, li) => pdf.text(l, x + 4, cy + 13 + li * 3.5));
+
+                    const rows = [
+                        [L.scenLabelDebt,       PDE.formatCurrency(r.totalImpact), [220,38,38]],
+                        [L.scenLabelInvestment,  s.cx > 0 ? PDE.formatCurrency(s.cx) : L.scenNoInvestment, [180,83,9]],
+                        [L.scenLabelNet,         s.data.net >= 0 ? '+' + PDE.formatCurrency(s.data.net) : '-' + PDE.formatCurrency(Math.abs(s.data.net)), s.data.net >= 0 ? [22,163,74] : [220,38,38]],
+                        [L.scenLabelPayback,     !isFinite(s.data.pb) || s.data.pb <= 0 ? L.scenInfinity : s.data.pb.toFixed(1) + ' ' + L.scenMonths, [180,83,9]],
+                        ['IRR',                  s.data.irr !== null ? (s.data.irr * 100).toFixed(1) + '%' : '\u2014', [124,58,237]],
+                    ];
+                    rows.forEach((row, ri) => {
+                        const ry = cy + 22 + ri * 6;
+                        pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(140,123,110);
+                        pdf.text(String(row[0]), x + 4, ry);
+                        pdf.setFontSize(6); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(row[2]);
+                        const rv = String(row[1]);
+                        if (pdf.getTextWidth(rv) > cw - 8) {
+                            pdf.setFontSize(5); pdf.text(rv, x + cw - 4, ry, { align: 'right' });
+                        } else {
+                            pdf.text(rv, x + cw - 4, ry, { align: 'right' });
+                        }
+                    });
+                });
+                cy += 58;
+            }
+
+            function renderSimpleLevers() {
+                const sorted = leversRaw.slice().sort((a, b) => b.recovery - a.recovery);
+                const top3 = sorted.slice(0, 3);
+                const totalRecovery = top3.reduce((s, l) => s + l.recovery, 0);
+
+                needSpace(8);
+                drawRect(ML - 2, cy - 4, UW + 4, 10, [180,83,9]);
+                pdf.setFontSize(10); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(255,255,255);
+                pdf.text(L.block6Title.toUpperCase(), ML + 2, cy + 3);
+                cy += 14;
+
+                const cw = (UW - 6) / 3;
+                top3.forEach((l, i) => {
+                    const x = ML + i * (cw + 3);
+                    needSpace(42);
+                    const h = 44;
+                    drawRect(x, cy, cw, h, [255,255,255], [214,201,184]);
+                    drawRect(x, cy, cw, 2, l.color);
+                    pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(l.color);
+                    pdf.text((L.rankLabels[i] || '#' + (i+1)).toUpperCase(), x + 4, cy + 6);
+                    pdf.setFontSize(7); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(28,20,16);
+                    pdf.text(String(l.label), x + 4, cy + 11);
+                    pdf.setFontSize(9); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(l.color);
+                    pdf.text(PDE.formatCurrency(l.recovery), x + 4, cy + 20);
+                    pdf.setFontSize(5); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140,123,110);
+                    pdf.text(L.estRecovery, x + 4, cy + 25);
+                    pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(74,63,53);
+                    const effStr = L.effortLabel + ': ' + l.effort;
+                    const tmStr = '\u23f1 ' + l.timeline;
+                    pdf.text(effStr, x + 4, cy + 31);
+                    pdf.text(tmStr, x + 4, cy + 36);
+                });
+                cy += 50;
+
+                // Verdict bar
+                needSpace(18);
+                drawRect(ML, cy, UW, 16, [255,255,255], [214,201,184]);
+                pdf.setFontSize(6); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(180,83,9);
+                pdf.text(L.verdictRecoveryLabel.toUpperCase(), ML + 6, cy + 5);
+                pdf.setFontSize(11); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(28,20,16);
+                pdf.text(PDE.formatCurrency(totalRecovery), ML + 6, cy + 14);
+                pdf.setFontSize(6); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(180,83,9);
+                pdf.text(L.verdictPaybackLabel.toUpperCase(), ML + UW / 2, cy + 5);
+                pdf.setFontSize(11); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(28,20,16);
+                const pbStr = !isFinite(r.paybackMonths) || r.paybackMonths <= 0 ? L.scenInfinity : (r.paybackMonths < 1 ? '< 1' : r.paybackMonths.toFixed(1)) + ' ' + L.verdictPaybackUnit;
+                pdf.text(pbStr, ML + UW / 2, cy + 14);
+                pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'italic'); pdf.setTextColor(140,123,110);
+                const noteLines = wrapText(L.verdictNote, ML + 6, UW - 12);
+                pdf.text(noteLines[0] || '', ML + 6, cy + 12);
+                cy += 22;
+            }
+
+            function renderSimpleDora() {
+                const doraMetrics = [
+                    { metric: L.doraMetricLeadTime, value: L.doraLeadTimeDesc(PDE.clamp('q2')), bandDesc: L.doraLeadTimeBand, result: PDE.getDoraBand('leadTime', PDE.clamp('q2')) },
+                    { metric: L.doraMetricManual,   value: L.doraManualDesc(PDE.clamp('q1')),   bandDesc: L.doraManualBand,   result: PDE.getDoraBand('manual', PDE.clamp('q1')) },
+                    { metric: L.doraMetricErrors,   value: L.doraErrorsDesc(PDE.clamp('q5')),   bandDesc: L.doraErrorsBand,   result: PDE.getDoraBand('errors', PDE.clamp('q5')) },
+                ];
+                needSpace(8);
+                drawRect(ML - 2, cy - 4, UW + 4, 10, [180,83,9]);
+                pdf.setFontSize(10); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(255,255,255);
+                pdf.text(L.doraTitle.toUpperCase(), ML + 2, cy + 3);
+                cy += 14;
+
+                const colW = UW / 4;
+                drawRect(ML, cy, UW, 7, [74,63,53]);
+                pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(255,255,255);
+                pdf.text('Metric', ML + 2, cy + 5);
+                pdf.text('Your Value', ML + colW + 2, cy + 5);
+                pdf.text('DORA Band', ML + colW * 2 + 2, cy + 5);
+                pdf.text('Status', ML + colW * 3 + 2, cy + 5);
+                cy += 10;
+
+                doraMetrics.forEach((m, i) => {
+                    needSpace(8);
+                    drawRect(ML, cy, UW, 8, i % 2 === 0 ? [255,255,255] : [245,240,232]);
+                    pdf.setFontSize(6); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(28,20,16);
+                    pdf.text(String(m.metric), ML + 2, cy + 5.5);
+                    pdf.text(String(m.value), ML + colW + 2, cy + 5.5);
+                    pdf.setFontSize(5.5); pdf.setTextColor(140,123,110);
+                    pdf.text(String(m.bandDesc), ML + colW * 2 + 2, cy + 5.5);
+                    pdf.setFontSize(6); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(m.result.color === 'var(--green)' ? [22,163,74] : m.result.color === 'var(--orange)' ? [234,88,12] : m.result.color === 'var(--red)' ? [220,38,38] : [180,83,9]);
+                    pdf.text(String(m.result.band), ML + colW * 3 + 2, cy + 5.5);
+                    cy += 10;
+                });
+                cy += 4;
+            }
+
+            function renderSimpleRoadmap() {
+                const sorted = leversRaw.slice().sort((a, b) => b.recovery - a.recovery).slice(0, 3);
+                const ROADMAP_TASKS = PDE.getRoadmapTasks();
+                const phases = ['phase1', 'phase2', 'phase3'];
+                const merged = { phase1: [], phase2: [], phase3: [] };
+                const MAX_PER_PHASE = 4;
+                sorted.forEach(l => {
+                    if (!l.key || !ROADMAP_TASKS[l.key]) return;
+                    phases.forEach(ph => {
+                        (ROADMAP_TASKS[l.key][ph] || []).forEach(t => {
+                            if (merged[ph].length < MAX_PER_PHASE) merged[ph].push(t);
+                        });
+                    });
+                });
+
+                needSpace(8);
+                drawRect(ML - 2, cy - 4, UW + 4, 10, [180,83,9]);
+                pdf.setFontSize(10); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(255,255,255);
+                pdf.text(L.roadmapTitle.toUpperCase(), ML + 2, cy + 3);
+                cy += 14;
+
+                const phaseMeta = [
+                    { title: L.roadmapPhase1, sub: L.roadmapPhase1Sub },
+                    { title: L.roadmapPhase2, sub: L.roadmapPhase2Sub },
+                    { title: L.roadmapPhase3, sub: L.roadmapPhase3Sub },
+                ];
+                const cw = (UW - 6) / 3;
+                let maxH = 0;
+                phaseMeta.forEach((pm, i) => {
+                    const x = ML + i * (cw + 3);
+                    const tasks = merged[phases[i]] || [];
+                    const h = 14 + tasks.length * 6;
+                    if (h > maxH) maxH = h;
+                    needSpace(h);
+                    drawRect(x, cy, cw, h, [255,255,255], [214,201,184]);
+                    drawRect(x, cy, cw, 2, [180,83,9]);
+                    pdf.setFontSize(6); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(180,83,9);
+                    pdf.text(String(pm.title).toUpperCase(), x + 4, cy + 6);
+                    pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140,123,110);
+                    pdf.text(String(pm.sub), x + 4, cy + 10);
+                    tasks.forEach((t, ti) => {
+                        pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(74,63,53);
+                        const tLines = wrapText('\u2610 ' + String(t), x + 4, cw - 8);
+                        tLines.slice(0, 1).forEach((tl, tli) => pdf.text(tl, x + 4, cy + 16 + ti * 6 + tli * 5));
+                    });
+                });
+                cy += maxH + 8;
+            }
+
+            // Render results
+            renderSimpleResults();
+            renderSimpleScenarios();
+            renderSimpleLevers();
+
+            if (mode === 'full') {
+                renderSimpleDora();
+                renderSimpleRoadmap();
+            }
+
+            // Methodology note
+            needSpace(14);
+            pdf.setFontSize(7); pdf.setFont(pdfFont, 'italic'); pdf.setTextColor(140,123,110);
+            const methNote = L.methodologyDesktopNote;
+            const methLines = wrapText(methNote, ML, UW);
+            methLines.forEach((l, li) => pdf.text(l, ML, cy + li * 4));
+            cy += methLines.length * 4 + 6;
+
+            pdf.save(filename);
+        } else {
+            // Desktop path — html2canvas screenshots
+            const mainIds = mode === 'simple'
+                ? ['pdf-block-3','scenario-compare']
+                : ['pdf-block-3','scenario-compare','pdf-block-4','pdf-block-5','pdf-block-6'];
+
+            async function captureBlock(id) {
+                const el = document.getElementById(id);
+                if (!el || !el.offsetHeight) return;
+
+                const swaps = [];
+                el.querySelectorAll('input').forEach(input => {
+                    const proxy = document.createElement('div');
+                    proxy.style.cssText = window.getComputedStyle(input).cssText;
+                    proxy.style.display = 'flex';
+                    proxy.style.alignItems = 'center';
+                    proxy.style.boxSizing = 'border-box';
+                    proxy.style.color = '#1C1410';
+                    proxy.style.fontWeight = '700';
+                    proxy.style.fontSize = '0.875rem';
+                    proxy.style.background = '#FAF7F2';
+                    proxy.style.border = '1px solid #D6C9B8';
+                    proxy.style.borderRadius = '6px';
+                    proxy.style.padding = '0.5rem 0.75rem';
+                    proxy.style.width = input.offsetWidth + 'px';
+                    proxy.style.height = input.offsetHeight + 'px';
+                    proxy.style.minHeight = '36px';
+                    proxy.textContent = input.value;
+                    input.parentNode.insertBefore(proxy, input);
+                    input.style.display = 'none';
+                    swaps.push({ input, proxy });
+                });
+
+                const savedPb = el.style.paddingBottom;
+                el.style.paddingBottom = '3px';
+
+                const nodeList = Array.from(el.querySelectorAll('*'));
+                const savedStyles = nodeList.map(n =>
+                    n instanceof HTMLElement ? n.style.cssText : undefined
+                );
+                PDE.resolveCSSVarsOnElement(el);
+
+                const canvas = await html2canvas(el, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#F5F0E8',
+                    windowWidth: 1400,
+                    windowHeight: document.documentElement.scrollHeight,
+                    onclone: async (clonedDoc) => {
+                        const cs = getComputedStyle(document.documentElement);
+                        const vars = [
+                            '--bg-base','--bg-surface','--bg-elevated','--bg-hover',
+                            '--bg-input','--border','--border-focus','--border-subtle',
+                            '--text-primary','--text-secondary','--text-muted','--text-label',
+                            '--accent','--accent-bright','--accent-glow','--accent-dim',
+                            '--red','--orange','--purple','--green','--yellow',
+                        ];
+                        const decls = vars
+                            .map(v => `${v}:${cs.getPropertyValue(v).trim() || 'inherit'}`)
+                            .join(';');
+
+                        const fontFaceCSS = PDE.buildFontFaceCSS();
+
+                        const style = clonedDoc.createElement('style');
+                        style.textContent = `:root{${decls}}\n${fontFaceCSS}`;
+                        clonedDoc.head.insertBefore(style, clonedDoc.head.firstChild);
+
+                        for (const sheet of clonedDoc.styleSheets) {
+                            try {
+                                for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
+                                    const rule = sheet.cssRules[i];
+                                    if (rule.type === CSSRule.IMPORT_RULE &&
+                                        rule.href?.includes('fonts.googleapis.com')) {
+                                        sheet.deleteRule(i);
+                                    }
+                                }
+                            } catch { /* empty */ }
+                        }
+                    }
+                });
+
+                nodeList.forEach((node, i) => {
+                    if (node instanceof HTMLElement && savedStyles[i] !== undefined) {
+                        node.style.cssText = savedStyles[i];
+                    }
+                });
+                swaps.forEach(({ input, proxy }) => {
+                    input.style.display = '';
+                    proxy.remove();
+                });
+                el.style.paddingBottom = savedPb;
+
+                const imgData = canvas.toDataURL('image/png');
+                const bH = (canvas.height * UW) / canvas.width;
+
+                if (bH > PH - MT - 10) {
+                    if (cy > MT) newPage();
+                    const sH = PH - MT - 10;
+                    const sW = (canvas.width * sH) / canvas.height;
+                    pdf.addImage(imgData, 'PNG', ML + (UW - sW) / 2, cy, sW, sH);
+                    newPage();
+                    cy = MT;
+                } else {
+                    if (cy + bH > PH - 10) { newPage(); cy = MT; }
+                    pdf.addImage(imgData, 'PNG', ML, cy, UW, bH);
+                    cy += bH + 5;
+                }
+            }
+
+            for (const id of mainIds) await captureBlock(id);
+
+            // Methodology page (full only)
+            if (mode === 'full') {
+                newPage();
+                const methodologySection = document.getElementById('methodologySection');
+                const wasOpen = methodologySection ? methodologySection.open : false;
+                if (methodologySection) methodologySection.open = true;
+                await new Promise(r => requestAnimationFrame(r));
+                const methodologyIds = ['methodology-header','methodology-1','methodology-2','methodology-3','methodology-4','methodology-5','methodology-6','methodology-7','methodology-8','methodology-9','methodology-10','methodology-11','methodology-12','methodology-13','methodology-14','methodology-15','methodology-footer'];
+                for (const id of methodologyIds) await captureBlock(id);
+                if (methodologySection) methodologySection.open = wasOpen;
+            }
+
+            pdf.save(filename);
         }
-
-        for (const id of mainIds) await captureBlock(id);
-
-        // Methodology page (full only)
-        if (mode === 'full') {
-            newPage();
-            const methodologySection = document.getElementById('methodologySection');
-            const wasOpen = methodologySection ? methodologySection.open : false;
-            if (methodologySection) methodologySection.open = true;
-            await new Promise(r => requestAnimationFrame(r));
-            const methodologyIds = ['methodology-header','methodology-1','methodology-2','methodology-3','methodology-4','methodology-5','methodology-6','methodology-7','methodology-8','methodology-9','methodology-10','methodology-11','methodology-12','methodology-13','methodology-14','methodology-15','methodology-footer'];
-            for (const id of methodologyIds) await captureBlock(id);
-            if (methodologySection) methodologySection.open = wasOpen;
-        }
-
-        pdf.save(filename);
     } catch (err) {
         console.error('PDF export error:', err);
         const msg = PDE.currentLang === 'pl'
