@@ -264,9 +264,12 @@ PDE.exportPDF = async function exportPDF(mode) {
                     bldResp.arrayBuffer()
                 ]);
                 function bufToB64(buf) {
-                    let binary = '';
                     const bytes = new Uint8Array(buf);
-                    for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+                    const CHUNK = 8192;
+                    let binary = '';
+                    for (let i = 0; i < bytes.length; i += CHUNK) {
+                        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
+                    }
                     return btoa(binary);
                 }
                 pdf.addFileToVFS('Inter-Regular.ttf', bufToB64(regBuf));
@@ -918,8 +921,6 @@ PDE.validateFontFace = function validateFontFace(f) {
 })();
 
 PDE.prefetchFontsToBase64 = async function prefetchFontsToBase64() {
-    if (PDE.isMobileBrowser()) return;
-
     await document.fonts.ready;
 
     const urlsByRule = [];

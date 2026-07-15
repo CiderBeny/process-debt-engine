@@ -141,8 +141,8 @@ PDE.readAdvanced = function readAdvanced(id, defaultVal, divisor) {
 
 PDE.isMobileBrowser = function isMobileBrowser() {
     const ua = navigator.userAgent || '';
-    return /iPhone|iPad|iPod|Android|webOS|BlackBerry|Windows Phone|IEMobile|Opera Mini/i.test(ua)
-        || (navigator.maxTouchPoints > 1 && /Macintosh/i.test(ua));
+    return /iPhone|iPod|Android|webOS|BlackBerry|Windows Phone|IEMobile|Opera Mini/i.test(ua)
+        || /iPad/i.test(ua);
 };
 
 PDE.clamp = function clamp(id) {
