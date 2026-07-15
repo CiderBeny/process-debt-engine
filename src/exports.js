@@ -271,6 +271,7 @@ PDE.exportPDF = async function exportPDF(mode) {
 
         // register Inter font (Polish character support) — desktop only
         let pdfFont = 'helvetica';
+        const fontItalic = isMobile ? 'normal' : 'italic';
         if (!PDE.isMobileBrowser()) {
             try {
                 const [regResp, bldResp] = await Promise.all([
@@ -656,7 +657,7 @@ PDE.exportPDF = async function exportPDF(mode) {
                 pdf.setFontSize(11); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(28,20,16);
                 const pbStr = !isFinite(r.paybackMonths) || r.paybackMonths <= 0 ? L.scenInfinity : (r.paybackMonths < 1 ? '< 1' : r.paybackMonths.toFixed(1)) + ' ' + L.verdictPaybackUnit;
                 pdf.text(pbStr, ML + UW / 2, cy + 14);
-                pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'italic'); pdf.setTextColor(140,123,110);
+                pdf.setFontSize(5.5); pdf.setFont(pdfFont, fontItalic); pdf.setTextColor(140,123,110);
                 const noteLines = wrapText(L.verdictNote, ML + 6, UW - 12);
                 pdf.text(noteLines[0] || '', ML + 6, cy + 12);
                 cy += 22;
@@ -767,7 +768,7 @@ PDE.exportPDF = async function exportPDF(mode) {
 
             // Methodology note
             needSpace(14);
-            pdf.setFontSize(7); pdf.setFont(pdfFont, 'italic'); pdf.setTextColor(140,123,110);
+            pdf.setFontSize(7); pdf.setFont(pdfFont, fontItalic); pdf.setTextColor(140,123,110);
             const methNote = L.methodologyDesktopNote;
             const methLines = wrapText(methNote, ML, UW);
             methLines.forEach((l, li) => pdf.text(l, ML, cy + li * 4));
