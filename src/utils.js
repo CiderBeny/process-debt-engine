@@ -141,8 +141,12 @@ PDE.readAdvanced = function readAdvanced(id, defaultVal, divisor) {
 
 PDE.isMobileBrowser = function isMobileBrowser() {
     const ua = navigator.userAgent || '';
-    return /iPhone|iPod|Android|webOS|BlackBerry|Windows Phone|IEMobile|Opera Mini/i.test(ua)
-        || /iPad/i.test(ua);
+    if (/iPhone|iPod|Android|webOS|BlackBerry|Windows Phone|IEMobile|Opera Mini/i.test(ua)
+        || /iPad/i.test(ua)) return true;
+    if (typeof screen !== 'undefined' && 'ontouchstart' in window) {
+        if (screen.width <= 1024) return true;
+    }
+    return false;
 };
 
 PDE.clamp = function clamp(id) {

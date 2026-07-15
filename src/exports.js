@@ -251,6 +251,24 @@ PDE.exportPDF = async function exportPDF(mode) {
         let   cy     = MT;
         const L      = PDE.TRANSLATIONS[PDE.currentLang];
 
+        // ── Debug wrappers for NaN detection ──
+        (function wrapPdfMethods() {
+            const METHODS = ['text','rect','setFontSize','setFillColor','setDrawColor','addImage'];
+            METHODS.forEach(function (m) {
+                const orig = pdf[m].bind(pdf);
+                pdf[m] = function () {
+                    const args = Array.prototype.slice.call(arguments);
+                    for (let i = 0; i < args.length; i++) {
+                        const a = args[i];
+                        if (typeof a === 'number' && !Number.isFinite(a)) {
+                            console.error('[PDF NaN] pdf.' + m + '(' + i + '=' + a + ')', args);
+                        }
+                    }
+                    return orig.apply(null, args);
+                };
+            });
+        })();
+
         // register Inter font (Polish character support) — desktop only
         let pdfFont = 'helvetica';
         if (!PDE.isMobileBrowser()) {
@@ -491,6 +509,9 @@ PDE.exportPDF = async function exportPDF(mode) {
         if (isMobile) {
             const p = PDE.getParams();
             const r = PDE.computeModel(p);
+            console.debug('[PDF] Model params:', JSON.parse(JSON.stringify(p)));
+            console.debug('[PDF] Model results:', JSON.parse(JSON.stringify(r)));
+            console.debug('[PDF] cy start =', cy);
 
             const leversRaw = [
                 { key: 'automation', label: L.leverAutomationTitle, recovery: r.leverRecoveryAuto,    effort: L.effortMedium, timeline: '2\u20134 ' + L.verdictPaybackUnit, color: [220,38,38] },
@@ -727,13 +748,21 @@ PDE.exportPDF = async function exportPDF(mode) {
             }
 
             // Render results
-            renderSimpleResults();
-            renderSimpleScenarios();
-            renderSimpleLevers();
+            console.debug('[PDF] Section: Results | cy =', cy);
+            try { renderSimpleResults(); } catch (e) { console.error('[PDF Sec: Results]', e); throw e; }
+
+            console.debug('[PDF] Section: Scenarios | cy =', cy);
+            try { renderSimpleScenarios(); } catch (e) { console.error('[PDF Sec: Scenarios]', e); throw e; }
+
+            console.debug('[PDF] Section: Levers | cy =', cy);
+            try { renderSimpleLevers(); } catch (e) { console.error('[PDF Sec: Levers]', e); throw e; }
 
             if (mode === 'full') {
-                renderSimpleDora();
-                renderSimpleRoadmap();
+                console.debug('[PDF] Section: DORA | cy =', cy);
+                try { renderSimpleDora(); } catch (e) { console.error('[PDF Sec: DORA]', e); throw e; }
+
+                console.debug('[PDF] Section: Roadmap | cy =', cy);
+                try { renderSimpleRoadmap(); } catch (e) { console.error('[PDF Sec: Roadmap]', e); throw e; }
             }
 
             // Methodology note
