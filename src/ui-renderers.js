@@ -129,6 +129,8 @@ PDE.calculate = function calculate() {
     PDE.updateRecs(r.cWaste, r.cRisk, r.cOppDirect, r.cOpexAdj, r.paybackMonths, r.leverAuto, r.leverRisk);
     PDE.updateDoraBenchmark();
     PDE.updateScenarios(r.cWaste, r.cRisk, r.cOpexAdj, p.capex, p.autoLevel / 100, r.totalImpact, p.discountRate, p.horizonYears, r.scenCAutoLevel, r.scenCCapexMult);
+    const sensResult = PDE.runSensitivity(p);
+    PDE.renderTornado(sensResult);
 };
 
 PDE.updateRecs = function updateRecs(cw, cr, co, cc, pb, leverAuto, leverRisk) {

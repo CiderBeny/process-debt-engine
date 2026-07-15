@@ -38,6 +38,7 @@
     <script defer src="src/state.js"></script>
     <script defer src="src/model.js"></script>
     <script defer src="src/charts.js"></script>
+    <script defer src="src/sensitivity.js"></script>
     <script defer src="src/ui-renderers.js"></script>
     <script defer src="src/exports.js"></script>
     <script defer src="src/main.js"></script>
@@ -844,6 +845,18 @@
                     </div>
                     <div id="recEngine" class="text-sm space-y-3"></div>
                 </div>
+            </div>
+
+            <!-- BLOCK SA: SENSITIVITY ANALYSIS (TORNADO CHART) -->
+            <div id="pdf-block-sa" class="card">
+                <div class="flex items-center gap-3 mb-5">
+                    <span style="background:var(--accent);color:#0a0f1e;border-radius:8px;padding:0.4rem 0.7rem;font-family:'Space Grotesk',sans-serif;font-size:0.65rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;">⚡</span>
+                    <div>
+                        <h2 style="font-family:'Space Grotesk',sans-serif;font-size:0.95rem;font-weight:800;text-transform:uppercase;letter-spacing:-0.02em;color:var(--text-primary);margin:0;" data-i18n="sensTitle">Sensitivity Analysis</h2>
+                        <p style="font-size:0.62rem;color:var(--text-muted);margin:2px 0 0;" data-i18n="sensSubtitle">Which inputs drive NPV Total Debt the most? Each bar shows the swing from a ±20% input change.</p>
+                    </div>
+                </div>
+                <div class="h-[500px]"><canvas id="tornadoChart"></canvas></div>
             </div>
 
             <!-- BLOCK 6: TOP 3 FINANCIAL LEVERS -->
