@@ -251,35 +251,37 @@ PDE.exportPDF = async function exportPDF(mode) {
         let   cy     = MT;
         const L      = PDE.TRANSLATIONS[PDE.currentLang];
 
-        // register Inter font (Polish character support)
+        // register Inter font (Polish character support) — desktop only
         let pdfFont = 'helvetica';
-        try {
-            const [regResp, bldResp] = await Promise.all([
-                fetch('fonts/Inter-Regular.ttf'),
-                fetch('fonts/Inter-Bold.ttf')
-            ]);
-            if (regResp.ok && bldResp.ok) {
-                const [regBuf, bldBuf] = await Promise.all([
-                    regResp.arrayBuffer(),
-                    bldResp.arrayBuffer()
+        if (!PDE.isMobileBrowser()) {
+            try {
+                const [regResp, bldResp] = await Promise.all([
+                    fetch('fonts/Inter-Regular.ttf'),
+                    fetch('fonts/Inter-Bold.ttf')
                 ]);
-                async function bufToB64(buf) {
-                    const blob = new Blob([buf]);
-                    return new Promise(function (resolve, reject) {
-                        const reader = new FileReader();
-                        reader.onload = function () { resolve(reader.result.split(',')[1]); };
-                        reader.onerror = function () { reject(new Error('FileReader failed')); };
-                        reader.readAsDataURL(blob);
-                    });
+                if (regResp.ok && bldResp.ok) {
+                    const [regBuf, bldBuf] = await Promise.all([
+                        regResp.arrayBuffer(),
+                        bldResp.arrayBuffer()
+                    ]);
+                    async function bufToB64(buf) {
+                        const blob = new Blob([buf]);
+                        return new Promise(function (resolve, reject) {
+                            const reader = new FileReader();
+                            reader.onload = function () { resolve(reader.result.split(',')[1]); };
+                            reader.onerror = function () { reject(new Error('FileReader failed')); };
+                            reader.readAsDataURL(blob);
+                        });
+                    }
+                    pdf.addFileToVFS('Inter-Regular.ttf', await bufToB64(regBuf));
+                    pdf.addFont('Inter-Regular.ttf', 'Inter', 'normal');
+                    pdf.addFileToVFS('Inter-Bold.ttf', await bufToB64(bldBuf));
+                    pdf.addFont('Inter-Bold.ttf', 'Inter', 'bold');
+                    pdfFont = 'Inter';
                 }
-                pdf.addFileToVFS('Inter-Regular.ttf', await bufToB64(regBuf));
-                pdf.addFont('Inter-Regular.ttf', 'Inter', 'normal');
-                pdf.addFileToVFS('Inter-Bold.ttf', await bufToB64(bldBuf));
-                pdf.addFont('Inter-Bold.ttf', 'Inter', 'bold');
-                pdfFont = 'Inter';
+            } catch (e) {
+                console.warn('Could not load Inter font for PDF:', e.message);
             }
-        } catch (e) {
-            console.warn('Could not load Inter font for PDF:', e.message);
         }
 
         // helpers
