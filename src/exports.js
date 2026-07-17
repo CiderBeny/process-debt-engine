@@ -238,6 +238,28 @@ PDE.exportPDF = async function exportPDF(mode) {
     const filename = mode === 'full' ? 'Strategic_Detailed_Report.pdf' : 'Strategic_Summary_Report.pdf';
 
     const { jsPDF } = window.jspdf;
+
+    // ── Pre-construction patch: override internal f2/f3 to never throw on NaN ──
+    try {
+        var proto = jsPDF.prototype;
+        while (proto) {
+            if (proto.__private__ && typeof proto.__private__.f3 === 'function') {
+                ['f2','f3'].forEach(function (fn) {
+                    var orig = proto.__private__[fn].bind(proto.__private__);
+                    proto.__private__[fn] = function (num) {
+                        if (typeof num !== 'number' || !Number.isFinite(num)) {
+                            console.warn('[PDF ' + fn + '-safe] NaN intercepted:', num, '— using 0');
+                            return orig(0);
+                        }
+                        return orig(num);
+                    };
+                });
+                break;
+            }
+            proto = Object.getPrototypeOf(proto);
+        }
+    } catch (_pf3e) { /* prototype patch not available */ }
+
     const btn = document.getElementById(btnId);
     btn.disabled = true;
     btn.textContent = PDE.t(generatingKey);
@@ -253,39 +275,30 @@ PDE.exportPDF = async function exportPDF(mode) {
 
         // ── Debug wrappers for NaN detection ──
         (function wrapPdfMethods() {
-            const METHODS = ['text','rect','setFontSize','setFillColor','setDrawColor','setTextColor','setLineWidth','addImage'];
+            function sanitizeArgs(args) {
+                for (var i = 0; i < args.length; i++) {
+                    var a = args[i];
+                    if (a === null || a === undefined) {
+                        console.warn('[PDF NaN] null/undefined arg[' + i + '] — replaced with 0');
+                        args[i] = 0;
+                    } else if (typeof a === 'number' && !Number.isFinite(a)) {
+                        console.error('[PDF NaN] pdf.(' + i + '=' + a + ')', args);
+                        args[i] = 0;
+                    } else if (Array.isArray(a)) {
+                        sanitizeArgs(a);
+                    }
+                }
+                return args;
+            }
+            const METHODS = ['text','rect','setFontSize','setFillColor','setDrawColor','setTextColor','setLineWidth','addImage','setFont','addPage'];
             METHODS.forEach(function (m) {
                 const orig = pdf[m].bind(pdf);
                 pdf[m] = function () {
-                    var args = Array.prototype.slice.call(arguments);
-                    for (var i = 0; i < args.length; i++) {
-                        if (typeof args[i] === 'number' && !Number.isFinite(args[i])) {
-                            console.error('[PDF NaN] pdf.' + m + '(' + i + '=' + args[i] + ')', args);
-                            args[i] = 0;
-                        }
-                    }
+                    var args = sanitizeArgs(Array.prototype.slice.call(arguments));
                     return orig.apply(null, args);
                 };
             });
         })();
-
-        // ── Safe override for jsPDF internal f3 (rounding) to catch NaN ──
-        try {
-            var f3Candidates = [];
-            if (pdf.internal && typeof pdf.internal.f3 === 'function') f3Candidates.push(pdf.internal);
-            if (pdf.__private__ && typeof pdf.__private__.f3 === 'function') f3Candidates.push(pdf.__private__);
-            if (typeof pdf.f3 === 'function') f3Candidates.push(pdf);
-            f3Candidates.forEach(function (ctx) {
-                const origF3 = ctx.f3.bind(ctx);
-                ctx.f3 = function (num) {
-                    if (typeof num !== 'number' || !Number.isFinite(num)) {
-                        console.warn('[PDF f3-safe] NaN intercepted:', num, '— using 0');
-                        return origF3(0);
-                    }
-                    return origF3(num);
-                };
-            });
-        } catch (_f3e) { /* f3 override not available */ }
 
         // register Inter font (Polish character support) — desktop only
         let pdfFont = 'helvetica';
@@ -776,20 +789,20 @@ PDE.exportPDF = async function exportPDF(mode) {
 
             // Render results
             console.debug('[PDF] Section: Results | cy =', cy);
-            try { renderSimpleResults(); } catch (e) { console.error('[PDF Sec: Results]', e); throw e; }
+            try { renderSimpleResults(); } catch (e) { console.error('[PDF Sec: Results]', e); }
 
             console.debug('[PDF] Section: Scenarios | cy =', cy);
-            try { renderSimpleScenarios(); } catch (e) { console.error('[PDF Sec: Scenarios]', e); throw e; }
+            try { renderSimpleScenarios(); } catch (e) { console.error('[PDF Sec: Scenarios]', e); }
 
             console.debug('[PDF] Section: Levers | cy =', cy);
-            try { renderSimpleLevers(); } catch (e) { console.error('[PDF Sec: Levers]', e); throw e; }
+            try { renderSimpleLevers(); } catch (e) { console.error('[PDF Sec: Levers]', e); }
 
             if (mode === 'full') {
                 console.debug('[PDF] Section: DORA | cy =', cy);
-                try { renderSimpleDora(); } catch (e) { console.error('[PDF Sec: DORA]', e); throw e; }
+                try { renderSimpleDora(); } catch (e) { console.error('[PDF Sec: DORA]', e); }
 
                 console.debug('[PDF] Section: Roadmap | cy =', cy);
-                try { renderSimpleRoadmap(); } catch (e) { console.error('[PDF Sec: Roadmap]', e); throw e; }
+                try { renderSimpleRoadmap(); } catch (e) { console.error('[PDF Sec: Roadmap]', e); }
             }
 
             // Methodology note
