@@ -253,21 +253,39 @@ PDE.exportPDF = async function exportPDF(mode) {
 
         // ── Debug wrappers for NaN detection ──
         (function wrapPdfMethods() {
-            const METHODS = ['text','rect','setFontSize','setFillColor','setDrawColor','addImage'];
+            const METHODS = ['text','rect','setFontSize','setFillColor','setDrawColor','setTextColor','setLineWidth','addImage'];
             METHODS.forEach(function (m) {
                 const orig = pdf[m].bind(pdf);
                 pdf[m] = function () {
-                    const args = Array.prototype.slice.call(arguments);
-                    for (let i = 0; i < args.length; i++) {
-                        const a = args[i];
-                        if (typeof a === 'number' && !Number.isFinite(a)) {
-                            console.error('[PDF NaN] pdf.' + m + '(' + i + '=' + a + ')', args);
+                    var args = Array.prototype.slice.call(arguments);
+                    for (var i = 0; i < args.length; i++) {
+                        if (typeof args[i] === 'number' && !Number.isFinite(args[i])) {
+                            console.error('[PDF NaN] pdf.' + m + '(' + i + '=' + args[i] + ')', args);
+                            args[i] = 0;
                         }
                     }
                     return orig.apply(null, args);
                 };
             });
         })();
+
+        // ── Safe override for jsPDF internal f3 (rounding) to catch NaN ──
+        try {
+            var f3Candidates = [];
+            if (pdf.internal && typeof pdf.internal.f3 === 'function') f3Candidates.push(pdf.internal);
+            if (pdf.__private__ && typeof pdf.__private__.f3 === 'function') f3Candidates.push(pdf.__private__);
+            if (typeof pdf.f3 === 'function') f3Candidates.push(pdf);
+            f3Candidates.forEach(function (ctx) {
+                const origF3 = ctx.f3.bind(ctx);
+                ctx.f3 = function (num) {
+                    if (typeof num !== 'number' || !Number.isFinite(num)) {
+                        console.warn('[PDF f3-safe] NaN intercepted:', num, '— using 0');
+                        return origF3(0);
+                    }
+                    return origF3(num);
+                };
+            });
+        } catch (_f3e) { /* f3 override not available */ }
 
         // register Inter font (Polish character support) — desktop only
         let pdfFont = 'helvetica';
@@ -358,50 +376,54 @@ PDE.exportPDF = async function exportPDF(mode) {
         const cols  = [ML, ML + UW / 2 + 3];
         const rowH  = 38;
 
-        for (let i = 0; i < qKeys.length; i++) {
-            const q   = qKeys[i];
-            const col = i % 2;
-            const x   = cols[col];
+        try {
+            for (let i = 0; i < qKeys.length; i++) {
+                const q   = qKeys[i];
+                const col = i % 2;
+                const x   = cols[col];
 
-            if (col === 0 && i > 0) { cy += rowH + 3; }
-            if (col === 0) { needSpace(rowH + 3); }
+                if (col === 0 && i > 0) { cy += rowH + 3; }
+                if (col === 0) { needSpace(rowH + 3); }
 
-            const val = document.getElementById(q.id).value;
-            const monetaryIds = ['q4', 'q6', 'q8'];
-            const displayVal = q.type === 'slider'
-                ? document.getElementById(q.valId).textContent
-                : monetaryIds.includes(q.id)
-                    ? new Intl.NumberFormat(PDE.currentLang === 'pl' ? 'pl-PL' : 'en-US', {
-                        style: 'currency',
-                        currency: PDE.currentCurrency,
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                      }).format(parseFloat(val) || 0)
-                    : val;
+                const val = document.getElementById(q.id).value;
+                const monetaryIds = ['q4', 'q6', 'q8'];
+                const displayVal = q.type === 'slider'
+                    ? document.getElementById(q.valId).textContent
+                    : monetaryIds.includes(q.id)
+                        ? new Intl.NumberFormat(PDE.currentLang === 'pl' ? 'pl-PL' : 'en-US', {
+                            style: 'currency',
+                            currency: PDE.currentCurrency,
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                          }).format(parseFloat(val) || 0)
+                        : val;
 
-            drawRect(x, cy, colW, rowH, [255, 255, 255], [214, 201, 184]);
-            drawRect(x, cy, 2, rowH, [180, 83, 9]);
+                drawRect(x, cy, colW, rowH, [255, 255, 255], [214, 201, 184]);
+                drawRect(x, cy, 2, rowH, [180, 83, 9]);
 
-            pdf.setFontSize(7); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(124, 79, 34);
-            pdf.text(q.label.toUpperCase(), x + 5, cy + 6);
+                pdf.setFontSize(7); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(124, 79, 34);
+                pdf.text(q.label.toUpperCase(), x + 5, cy + 6);
 
-            pdf.setFontSize(6.2); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140, 123, 110);
-            const descLines = wrapText(q.desc, x + 5, colW - 10, 6.2 * 0.3528);
-            const maxDescLines = 3;
-            descLines.slice(0, maxDescLines).forEach((line, li) => {
-                pdf.text(line, x + 5, cy + 12 + li * 4);
-            });
+                pdf.setFontSize(6.2); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140, 123, 110);
+                const descLines = wrapText(q.desc, x + 5, colW - 10, 6.2 * 0.3528);
+                const maxDescLines = 3;
+                descLines.slice(0, maxDescLines).forEach((line, li) => {
+                    pdf.text(line, x + 5, cy + 12 + li * 4);
+                });
 
-            const vBoxY = cy + rowH - 11;
-            drawRect(x + 5, vBoxY, colW - 10, 8, [250, 247, 242], [214, 201, 184]);
-            pdf.setFontSize(8); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(28, 20, 16);
-            pdf.text(String(displayVal), x + 8, vBoxY + 5.5);
+                const vBoxY = cy + rowH - 11;
+                drawRect(x + 5, vBoxY, colW - 10, 8, [250, 247, 242], [214, 201, 184]);
+                pdf.setFontSize(8); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(28, 20, 16);
+                pdf.text(String(displayVal), x + 8, vBoxY + 5.5);
 
-            if (q.type === 'slider' && q.min) {
-                pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140, 123, 110);
-                pdf.text(q.min, x + 5, vBoxY + 5.5);
-                pdf.text(q.max, x + colW - 5, vBoxY + 5.5, { align: 'right' });
+                if (q.type === 'slider' && q.min) {
+                    pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140, 123, 110);
+                    pdf.text(q.min, x + 5, vBoxY + 5.5);
+                    pdf.text(q.max, x + colW - 5, vBoxY + 5.5, { align: 'right' });
+                }
             }
+        } catch (e) {
+            console.error('[PDF] Phase 1 rendering error:', e);
         }
 
         cy += rowH + 8;
@@ -457,53 +479,57 @@ PDE.exportPDF = async function exportPDF(mode) {
         const pColW = UW / pCols - 3;
         const pRowH = 38;
 
-        for (let i = 0; i < paramKeys.length; i++) {
-            const q   = paramKeys[i];
-            const col = i % pCols;
-            const x   = ML + col * (pColW + 3);
+        try {
+            for (let i = 0; i < paramKeys.length; i++) {
+                const q   = paramKeys[i];
+                const col = i % pCols;
+                const x   = ML + col * (pColW + 3);
 
-            if (col === 0 && i > 0) { cy += pRowH + 3; }
-            if (col === 0) { needSpace(pRowH + 3); }
+                if (col === 0 && i > 0) { cy += pRowH + 3; }
+                if (col === 0) { needSpace(pRowH + 3); }
 
-            let val;
-            if (q.isSlider) {
-                val = document.getElementById(q.valId).textContent;
-            } else if (q.unit === 'money') {
-                val = new Intl.NumberFormat(PDE.currentLang === 'pl' ? 'pl-PL' : 'en-US', {
-                    style: 'currency',
-                    currency: PDE.currentCurrency,
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                }).format(parseFloat(document.getElementById(q.id).value) || 0);
-            } else {
-                val = document.getElementById(q.id).value;
+                let val;
+                if (q.isSlider) {
+                    val = document.getElementById(q.valId).textContent;
+                } else if (q.unit === 'money') {
+                    val = new Intl.NumberFormat(PDE.currentLang === 'pl' ? 'pl-PL' : 'en-US', {
+                        style: 'currency',
+                        currency: PDE.currentCurrency,
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }).format(parseFloat(document.getElementById(q.id).value) || 0);
+                } else {
+                    val = document.getElementById(q.id).value;
+                }
+                if (q.unit && q.unit !== 'money') val += q.unit;
+
+                drawRect(x, cy, pColW, pRowH, [255, 255, 255], [214, 201, 184]);
+                drawRect(x, cy, 2, pRowH, [180, 83, 9]);
+
+                pdf.setFontSize(7); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(124, 79, 34);
+                pdf.text(q.label.toUpperCase(), x + 5, cy + 6);
+
+                if (q.desc) {
+                    pdf.setFontSize(6); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140, 123, 110);
+                    const descLines = wrapText(q.desc, x + 5, pColW - 10, 6 * 0.3528);
+                    descLines.slice(0, 2).forEach((line, li) => {
+                        pdf.text(line, x + 5, cy + 12 + li * 4);
+                    });
+                }
+
+                const vBoxY = cy + pRowH - 11;
+                drawRect(x + 5, vBoxY, pColW - 10, 8, [250, 247, 242], [214, 201, 184]);
+                pdf.setFontSize(8); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(28, 20, 16);
+                pdf.text(String(val), x + 8, vBoxY + 5.5);
+
+                if (q.isSlider && q.min) {
+                    pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140, 123, 110);
+                    pdf.text(q.min, x + 5, vBoxY + 5.5);
+                    pdf.text(q.max, x + pColW - 5, vBoxY + 5.5, { align: 'right' });
+                }
             }
-            if (q.unit && q.unit !== 'money') val += q.unit;
-
-            drawRect(x, cy, pColW, pRowH, [255, 255, 255], [214, 201, 184]);
-            drawRect(x, cy, 2, pRowH, [180, 83, 9]);
-
-            pdf.setFontSize(7); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(124, 79, 34);
-            pdf.text(q.label.toUpperCase(), x + 5, cy + 6);
-
-            if (q.desc) {
-                pdf.setFontSize(6); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140, 123, 110);
-                const descLines = wrapText(q.desc, x + 5, pColW - 10, 6 * 0.3528);
-                descLines.slice(0, 2).forEach((line, li) => {
-                    pdf.text(line, x + 5, cy + 12 + li * 4);
-                });
-            }
-
-            const vBoxY = cy + pRowH - 11;
-            drawRect(x + 5, vBoxY, pColW - 10, 8, [250, 247, 242], [214, 201, 184]);
-            pdf.setFontSize(8); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(28, 20, 16);
-            pdf.text(String(val), x + 8, vBoxY + 5.5);
-
-            if (q.isSlider && q.min) {
-                pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140, 123, 110);
-                pdf.text(q.min, x + 5, vBoxY + 5.5);
-                pdf.text(q.max, x + pColW - 5, vBoxY + 5.5, { align: 'right' });
-            }
+        } catch (e) {
+            console.error('[PDF] Phase 2 rendering error:', e);
         }
         cy += pRowH + 8;
 
@@ -692,7 +718,7 @@ PDE.exportPDF = async function exportPDF(mode) {
                     pdf.text(String(m.value), ML + colW + 2, cy + 5.5);
                     pdf.setFontSize(5.5); pdf.setTextColor(140,123,110);
                     pdf.text(String(m.bandDesc), ML + colW * 2 + 2, cy + 5.5);
-                    pdf.setFontSize(6); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(m.result.color === 'var(--green)' ? [22,163,74] : m.result.color === 'var(--orange)' ? [234,88,12] : m.result.color === 'var(--red)' ? [220,38,38] : [180,83,9]);
+                    pdf.setFontSize(6); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor.apply(pdf, m.result.color === 'var(--green)' ? [22,163,74] : m.result.color === 'var(--orange)' ? [234,88,12] : m.result.color === 'var(--red)' ? [220,38,38] : [180,83,9]);
                     pdf.text(String(m.result.band), ML + colW * 3 + 2, cy + 5.5);
                     cy += 10;
                 });
