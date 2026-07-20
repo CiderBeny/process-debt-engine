@@ -626,7 +626,7 @@ PDE.exportPDF = async function exportPDF(mode) {
                         const h = 52;
                         drawRect(x, cy, cw, h, [255,255,255], [214,201,184]);
                         drawRect(x, cy, cw, 2, s.accent);
-                        pdf.setFontSize(7); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(s.accent);
+                        pdf.setFontSize(7); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(...s.accent);
                         pdf.text(String(s.title).toUpperCase(), x + 4, cy + 8);
                         pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140,123,110);
                         const dLines = wrapText(s.desc, x + 4, cw - 8);
@@ -643,7 +643,7 @@ PDE.exportPDF = async function exportPDF(mode) {
                             const ry = cy + 22 + ri * 6;
                             pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(140,123,110);
                             pdf.text(String(row[0]), x + 4, ry);
-                            pdf.setFontSize(6); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(row[2]);
+                            pdf.setFontSize(6); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(...row[2]);
                             const rv = String(row[1]);
                             if (pdf.getTextWidth(rv) > cw - 8) {
                                 pdf.setFontSize(5); pdf.text(rv, x + cw - 4, ry, { align: 'right' });
@@ -677,11 +677,11 @@ PDE.exportPDF = async function exportPDF(mode) {
                         const h = 44;
                         drawRect(x, cy, cw, h, [255,255,255], [214,201,184]);
                         drawRect(x, cy, cw, 2, l.color);
-                        pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(l.color);
+                        pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(...l.color);
                         pdf.text((L.rankLabels[i] || '#' + (i+1)).toUpperCase(), x + 4, cy + 6);
                         pdf.setFontSize(7); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(28,20,16);
                         pdf.text(String(l.label), x + 4, cy + 11);
-                        pdf.setFontSize(9); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(l.color);
+                        pdf.setFontSize(9); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(...l.color);
                         pdf.text(PDE.formatCurrency(l.recovery), x + 4, cy + 20);
                         pdf.setFontSize(5); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140,123,110);
                         pdf.text(L.estRecovery, x + 4, cy + 25);
