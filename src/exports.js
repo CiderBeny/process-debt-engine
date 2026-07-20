@@ -580,16 +580,20 @@ PDE.exportPDF = async function exportPDF(mode) {
                 cy += 14;
 
                 cards.forEach((c, i) => {
-                    const col = i % cols;
-                    const x = ML + col * (cw + 6);
-                    if (col === 0 && i > 0) cy += ch + 3;
-                    needSpace(ch + 3);
-                    drawRect(x, cy, cw, ch, [255,255,255], [214,201,184]);
-                    drawRect(x, cy, 1.5, ch, c.color);
-                    pdf.setFontSize(6); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(124,79,34);
-                    pdf.text(String(c.label).toUpperCase(), x + 4, cy + 5);
-                    pdf.setFontSize(8); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(28,20,16);
-                    pdf.text(String(c.val), x + 4, cy + 13);
+                    try {
+                        const col = i % cols;
+                        const x = ML + col * (cw + 6);
+                        if (col === 0 && i > 0) cy += ch + 3;
+                        needSpace(ch + 3);
+                        drawRect(x, cy, cw, ch, [255,255,255], [214,201,184]);
+                        drawRect(x, cy, 1.5, ch, c.color);
+                        pdf.setFontSize(6); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(124,79,34);
+                        pdf.text(String(c.label).toUpperCase(), x + 4, cy + 5);
+                        pdf.setFontSize(8); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(28,20,16);
+                        pdf.text(String(c.val), x + 4, cy + 13);
+                    } catch (e) {
+                        console.error('[PDF Card ' + i + ']', e, 'label:', c.label, 'val:', c.val, 'cy:', cy);
+                    }
                 });
                 cy += ch + 10;
             }
@@ -616,36 +620,40 @@ PDE.exportPDF = async function exportPDF(mode) {
 
                 const cw = (UW - 6) / 3;
                 scens.forEach((s, i) => {
-                    const x = ML + i * (cw + 3);
-                    needSpace(48);
-                    const h = 52;
-                    drawRect(x, cy, cw, h, [255,255,255], [214,201,184]);
-                    drawRect(x, cy, cw, 2, s.accent);
-                    pdf.setFontSize(7); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(s.accent);
-                    pdf.text(String(s.title).toUpperCase(), x + 4, cy + 8);
-                    pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140,123,110);
-                    const dLines = wrapText(s.desc, x + 4, cw - 8);
-                    dLines.slice(0, 2).forEach((l, li) => pdf.text(l, x + 4, cy + 13 + li * 3.5));
+                    try {
+                        const x = ML + i * (cw + 3);
+                        needSpace(48);
+                        const h = 52;
+                        drawRect(x, cy, cw, h, [255,255,255], [214,201,184]);
+                        drawRect(x, cy, cw, 2, s.accent);
+                        pdf.setFontSize(7); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(s.accent);
+                        pdf.text(String(s.title).toUpperCase(), x + 4, cy + 8);
+                        pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140,123,110);
+                        const dLines = wrapText(s.desc, x + 4, cw - 8);
+                        dLines.slice(0, 2).forEach((l, li) => pdf.text(l, x + 4, cy + 13 + li * 3.5));
 
-                    const rows = [
-                        [L.scenLabelDebt,       PDE.formatCurrency(r.totalImpact), [220,38,38]],
-                        [L.scenLabelInvestment,  s.cx > 0 ? PDE.formatCurrency(s.cx) : L.scenNoInvestment, [180,83,9]],
-                        [L.scenLabelNet,         s.data.net >= 0 ? '+' + PDE.formatCurrency(s.data.net) : '-' + PDE.formatCurrency(Math.abs(s.data.net)), s.data.net >= 0 ? [22,163,74] : [220,38,38]],
-                        [L.scenLabelPayback,     !isFinite(s.data.pb) || s.data.pb <= 0 ? L.scenInfinity : s.data.pb.toFixed(1) + ' ' + L.scenMonths, [180,83,9]],
-                        ['IRR',                  s.data.irr !== null ? (s.data.irr * 100).toFixed(1) + '%' : '\u2014', [124,58,237]],
-                    ];
-                    rows.forEach((row, ri) => {
-                        const ry = cy + 22 + ri * 6;
-                        pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(140,123,110);
-                        pdf.text(String(row[0]), x + 4, ry);
-                        pdf.setFontSize(6); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(row[2]);
-                        const rv = String(row[1]);
-                        if (pdf.getTextWidth(rv) > cw - 8) {
-                            pdf.setFontSize(5); pdf.text(rv, x + cw - 4, ry, { align: 'right' });
-                        } else {
-                            pdf.text(rv, x + cw - 4, ry, { align: 'right' });
-                        }
-                    });
+                        const rows = [
+                            [L.scenLabelDebt,       PDE.formatCurrency(r.totalImpact), [220,38,38]],
+                            [L.scenLabelInvestment,  s.cx > 0 ? PDE.formatCurrency(s.cx) : L.scenNoInvestment, [180,83,9]],
+                            [L.scenLabelNet,         s.data.net >= 0 ? '+' + PDE.formatCurrency(s.data.net) : '-' + PDE.formatCurrency(Math.abs(s.data.net)), s.data.net >= 0 ? [22,163,74] : [220,38,38]],
+                            [L.scenLabelPayback,     !isFinite(s.data.pb) || s.data.pb <= 0 ? L.scenInfinity : s.data.pb.toFixed(1) + ' ' + L.scenMonths, [180,83,9]],
+                            ['IRR',                  s.data.irr !== null ? (s.data.irr * 100).toFixed(1) + '%' : '\u2014', [124,58,237]],
+                        ];
+                        rows.forEach((row, ri) => {
+                            const ry = cy + 22 + ri * 6;
+                            pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(140,123,110);
+                            pdf.text(String(row[0]), x + 4, ry);
+                            pdf.setFontSize(6); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(row[2]);
+                            const rv = String(row[1]);
+                            if (pdf.getTextWidth(rv) > cw - 8) {
+                                pdf.setFontSize(5); pdf.text(rv, x + cw - 4, ry, { align: 'right' });
+                            } else {
+                                pdf.text(rv, x + cw - 4, ry, { align: 'right' });
+                            }
+                        });
+                    } catch (e) {
+                        console.error('[PDF Scenario ' + i + ']', e, 'title:', s.title, 'cy:', cy);
+                    }
                 });
                 cy += 58;
             }
@@ -663,24 +671,28 @@ PDE.exportPDF = async function exportPDF(mode) {
 
                 const cw = (UW - 6) / 3;
                 top3.forEach((l, i) => {
-                    const x = ML + i * (cw + 3);
-                    needSpace(42);
-                    const h = 44;
-                    drawRect(x, cy, cw, h, [255,255,255], [214,201,184]);
-                    drawRect(x, cy, cw, 2, l.color);
-                    pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(l.color);
-                    pdf.text((L.rankLabels[i] || '#' + (i+1)).toUpperCase(), x + 4, cy + 6);
-                    pdf.setFontSize(7); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(28,20,16);
-                    pdf.text(String(l.label), x + 4, cy + 11);
-                    pdf.setFontSize(9); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(l.color);
-                    pdf.text(PDE.formatCurrency(l.recovery), x + 4, cy + 20);
-                    pdf.setFontSize(5); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140,123,110);
-                    pdf.text(L.estRecovery, x + 4, cy + 25);
-                    pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(74,63,53);
-                    const effStr = L.effortLabel + ': ' + l.effort;
-                    const tmStr = '\u23f1 ' + l.timeline;
-                    pdf.text(effStr, x + 4, cy + 31);
-                    pdf.text(tmStr, x + 4, cy + 36);
+                    try {
+                        const x = ML + i * (cw + 3);
+                        needSpace(42);
+                        const h = 44;
+                        drawRect(x, cy, cw, h, [255,255,255], [214,201,184]);
+                        drawRect(x, cy, cw, 2, l.color);
+                        pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(l.color);
+                        pdf.text((L.rankLabels[i] || '#' + (i+1)).toUpperCase(), x + 4, cy + 6);
+                        pdf.setFontSize(7); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(28,20,16);
+                        pdf.text(String(l.label), x + 4, cy + 11);
+                        pdf.setFontSize(9); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(l.color);
+                        pdf.text(PDE.formatCurrency(l.recovery), x + 4, cy + 20);
+                        pdf.setFontSize(5); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(140,123,110);
+                        pdf.text(L.estRecovery, x + 4, cy + 25);
+                        pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'normal'); pdf.setTextColor(74,63,53);
+                        const effStr = L.effortLabel + ': ' + l.effort;
+                        const tmStr = '\u23f1 ' + l.timeline;
+                        pdf.text(effStr, x + 4, cy + 31);
+                        pdf.text(tmStr, x + 4, cy + 36);
+                    } catch (e) {
+                        console.error('[PDF Lever ' + i + ']', e, 'label:', l.label, 'cy:', cy);
+                    }
                 });
                 cy += 50;
 
