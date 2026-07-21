@@ -830,7 +830,7 @@ PDE.exportPDF = async function exportPDF(mode) {
             // Desktop path — html2canvas screenshots
             const mainIds = mode === 'simple'
                 ? ['pdf-block-3','scenario-compare']
-                : ['pdf-block-3','scenario-compare','pdf-block-4','pdf-block-5','pdf-block-6'];
+                : ['pdf-block-3','scenario-compare','pdf-block-sa','pdf-block-4','pdf-block-5','pdf-block-6'];
 
             async function captureBlock(id) {
                 const el = document.getElementById(id);

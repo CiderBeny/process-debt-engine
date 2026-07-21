@@ -57,6 +57,22 @@ PDE.runSensitivity = function runSensitivity(params) {
     return { baseNpv: baseNpv, items: items };
 };
 
+PDE.createDiagPattern = function createDiagPattern(color, bgColor) {
+    const c = document.createElement('canvas');
+    c.width = 8;
+    c.height = 8;
+    const cx = c.getContext('2d');
+    cx.fillStyle = bgColor || 'rgba(0,0,0,0)';
+    cx.fillRect(0, 0, 8, 8);
+    cx.strokeStyle = color;
+    cx.lineWidth = 1.5;
+    cx.beginPath();
+    cx.moveTo(0, 8);
+    cx.lineTo(8, 0);
+    cx.stroke();
+    return cx.createPattern(c, 'repeat');
+};
+
 PDE.renderTornado = function renderTornado(result) {
     const canvas = document.getElementById('tornadoChart');
     if (!canvas) return;
@@ -97,15 +113,37 @@ PDE.renderTornado = function renderTornado(result) {
         );
     }
 
+    const referenceLinePlugin = {
+        id: 'referenceLine',
+        beforeDraw: function(chart) {
+            const ctx = chart.ctx;
+            const chartArea = chart.chartArea;
+            const xScale = chart.scales.x;
+            const zeroPixel = xScale.getPixelForValue(0);
+            if (zeroPixel >= chartArea.left && zeroPixel <= chartArea.right) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.setLineDash([5, 5]);
+                ctx.strokeStyle = '#4A3F35';
+                ctx.lineWidth = 1.5;
+                ctx.moveTo(zeroPixel, chartArea.top);
+                ctx.lineTo(zeroPixel, chartArea.bottom);
+                ctx.stroke();
+                ctx.restore();
+            }
+        },
+    };
+
     PDE.tornadoChart = new Chart(ctx, {
         type: 'bar',
+        plugins: [referenceLinePlugin],
         data: {
             labels: labels,
             datasets: [
                 {
                     label: L.sensDownside || 'Downside',
                     data: downData,
-                    backgroundColor: PDE.DARK.red,
+                    backgroundColor: PDE.createDiagPattern(PDE.DARK.red, '#FEF2F2'),
                     borderRadius: 4,
                     borderSkipped: false,
                 },
@@ -131,10 +169,10 @@ PDE.renderTornado = function renderTornado(result) {
                     callbacks: {
                         label: function (context) {
                             const idx = context.dataIndex;
-                            if (context.datasetIndex === 0) {
-                                return tooltipLabels[idx];
-                            }
-                            return tooltipLabels[idx];
+                            const prefix = context.datasetIndex === 0
+                                ? '\u2193 ' + (L.sensDownside || 'Downside')
+                                : '\u2191 ' + (L.sensUpside || 'Upside');
+                            return prefix + '\n' + tooltipLabels[idx];
                         },
                     },
                 },

@@ -853,10 +853,12 @@
                     <span style="background:var(--accent);color:#0a0f1e;border-radius:8px;padding:0.4rem 0.7rem;font-family:'Space Grotesk',sans-serif;font-size:0.65rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;">⚡</span>
                     <div>
                         <h2 style="font-family:'Space Grotesk',sans-serif;font-size:0.95rem;font-weight:800;text-transform:uppercase;letter-spacing:-0.02em;color:var(--text-primary);margin:0;" data-i18n="sensTitle">Sensitivity Analysis</h2>
-                        <p style="font-size:0.62rem;color:var(--text-muted);margin:2px 0 0;" data-i18n="sensSubtitle">Which inputs drive NPV Total Debt the most? Each bar shows the swing from a ±20% input change.</p>
+                        <p style="font-size:0.75rem;color:var(--text-muted);margin:2px 0 0;" data-i18n="sensSubtitle">Which inputs drive NPV Total Debt the most? Each bar shows the swing from a ±20% input change.</p>
+                        <p style="font-size:0.65rem;color:var(--text-muted);margin:1px 0 0;" data-i18n="sensSortInfo">Sorted by impact (largest on top)</p>
                     </div>
+                    <span class="formula-tip" tabindex="0" role="button" data-formula="Each input is varied ±20% while holding others constant. Bars show the resulting swing in NPV Total Debt from the base value." aria-label="Sensitivity methodology: ±20% variation" data-i18n-formula="sensFormula">ⓘ</span>
                 </div>
-                <div class="h-[500px]"><canvas id="tornadoChart"></canvas></div>
+                <div class="h-[400px] md:h-[500px] lg:h-[600px]"><canvas id="tornadoChart"></canvas></div>
             </div>
 
             <!-- BLOCK 6: TOP 3 FINANCIAL LEVERS -->
