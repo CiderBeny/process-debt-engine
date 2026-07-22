@@ -209,6 +209,30 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+        #exportCsvBtn {
+            background: transparent;
+            border: 1px solid var(--yellow, #CA8A04);
+            color: var(--yellow, #CA8A04);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            padding: 0.35rem 0.85rem;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: border-color 0.2s, color 0.2s, box-shadow 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        #exportCsvBtn:hover {
+            background: rgba(202, 138, 4, 0.08);
+            box-shadow: 0 0 12px rgba(202, 138, 4, 0.20);
+        }
+        #exportCsvBtn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
         #exportBtnSimple,
         #exportBtnFull {
             background: transparent;
@@ -269,6 +293,9 @@
                 </button>
                 <button id="exportExcelBtn" data-i18n="exportExcelBtn">
                     ⬇ EXPORT TO EXCEL
+                </button>
+                <button id="exportCsvBtn" data-i18n="exportCsvBtn">
+                    ⬇ EXPORT TO CSV
                 </button>
                 <button id="exportBtnSimple" data-i18n="exportBtnSimple">
                     📄 EXPORT SUMMARY REPORT (PDF)

@@ -186,6 +186,8 @@ recInnovation: (val) => `<strong style="color:var(--purple)">Innovation Lever:</
                 copyLinkBtn:         '⧉ COPY LINK',
                 exportExcelBtn:      '⬇ EXPORT TO EXCEL',
                 exportExcelGenerating: '⏳ GENERATING...',
+                exportCsvBtn:      '⬇ EXPORT TO CSV',
+                exportCsvGenerating: '⏳ GENERATING...',
                 // Excel sheet titles & headers
                 xlsInputsTitle:      'Process Debt Engine — Diagnostic Inputs',
                 xlsGenerated:        'Generated',
@@ -562,6 +564,8 @@ recInnovation: (val) => `<strong style="color:var(--purple)">Innovation Lever:</
                 copyLinkBtn:         '⧉ KOPIUJ LINK',
                 exportExcelBtn:      '⬇ EKSPORTUJ DO EXCEL',
                 exportExcelGenerating: '⏳ GENEROWANIE...',
+                exportCsvBtn:      '⬇ EKSPORTUJ DO CSV',
+                exportCsvGenerating: '⏳ GENEROWANIE...',
                 xlsInputsTitle:      'Process Debt Engine — Dane Wejściowe Diagnostyki',
                 xlsGenerated:        'Wygenerowano',
                 xlsInputsHeaders:    ['#', 'Pytanie', 'Wartość', 'Jednostka'],

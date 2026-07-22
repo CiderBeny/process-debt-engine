@@ -60,6 +60,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const excelBtn = document.getElementById('exportExcelBtn');
     if (excelBtn) excelBtn.addEventListener('click', PDE.exportExcel);
 
+    const csvBtn = document.getElementById('exportCsvBtn');
+    if (csvBtn) csvBtn.addEventListener('click', PDE.exportCsv);
+
     const pdfBtnSimple = document.getElementById('exportBtnSimple');
     if (pdfBtnSimple) pdfBtnSimple.addEventListener('click', function () { PDE.exportPDF('simple'); });
     const pdfBtnFull = document.getElementById('exportBtnFull');

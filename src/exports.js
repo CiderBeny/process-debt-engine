@@ -180,6 +180,153 @@ PDE.exportExcel = function exportExcel() {
     }, 80);
 };
 
+PDE.exportCsv = function exportCsv() {
+    const btn = document.getElementById('exportCsvBtn');
+    btn.disabled = true;
+    btn.textContent = PDE.t('exportCsvGenerating');
+
+    setTimeout(() => {
+        try {
+            const L = PDE.TRANSLATIONS[PDE.currentLang];
+            const p = PDE.getParams();
+            const r = PDE.computeModel(p);
+
+            const leversRaw = [
+                { title: L.leverAutomationTitle, recovery: r.leverRecoveryAuto,    effort: L.effortMedium, timeline: '2-4 mo' },
+                { title: L.leverRiskTitle,        recovery: r.leverRecoveryRisk,    effort: L.effortLow,    timeline: '1-2 mo' },
+                { title: L.leverInnovationTitle,  recovery: r.leverRecoveryInnovation, effort: L.effortHigh, timeline: '3-6 mo' },
+                { title: L.leverMgmtTitle,        recovery: r.leverRecoveryMgmt,    effort: L.effortLow,    timeline: '1 mo'   },
+                { title: L.leverTurnoverTitle,    recovery: r.leverRecoveryTurnover, effort: L.effortMedium, timeline: '3-5 mo' },
+            ];
+            leversRaw.sort((a, b) => b.recovery - a.recovery);
+            const top3 = leversRaw.slice(0, 3);
+            const totalRecovery = top3.reduce((s, l) => s + l.recovery, 0);
+
+            const annualRecurring = r.cWaste + r.cRisk + r.cOpexAdj;
+            const dr = p.discountRate;
+            const ny = p.horizonYears;
+            const scenA = PDE.scenCalc(0, 0, annualRecurring, dr, ny);
+            const scenB = PDE.scenCalc(p.autoLevel / 100, p.capex, annualRecurring, dr, ny);
+            const scenC = PDE.scenCalc(r.scenCAutoLevel, p.capex * r.scenCCapexMult, annualRecurring, dr, ny);
+
+            const q1Raw = PDE.clamp('q1'), q2Raw = PDE.clamp('q2'), q3Raw = PDE.clamp('q3'),
+                q4Raw = PDE.currencyToUsd(PDE.clamp('q4')), q5Raw = PDE.clamp('q5'), q11Raw = PDE.clamp('q11'),
+                q6Raw = PDE.currencyToUsd(PDE.clamp('q6')), q7Raw = PDE.clamp('q7'), q8Raw = PDE.currencyToUsd(PDE.clamp('q8')),
+                q9Raw = PDE.clamp('q9'), q10Raw = PDE.clamp('q10');
+            const autoLvlRaw = PDE.clamp('autoLevel'), teamSizeRaw = PDE.clamp('teamSize'), capexRaw = PDE.currencyToUsd(PDE.clamp('capex'));
+
+            const csvEscape = function (v) {
+                var s = String(v != null ? v : '');
+                if (/[",\n\r]/.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
+                return s;
+            };
+            var rows = [];
+
+            rows.push(L.xlsInputsTitle);
+            rows.push(L.xlsGenerated + ',' + csvEscape(new Date().toLocaleString()));
+            rows.push('');
+            rows.push(L.xlsInputsHeaders.map(function (h) { return csvEscape(h); }).join(','));
+            L.xlsInputsRows.forEach(function (row, i) {
+                var vals = [csvEscape(row[0]), csvEscape(row[1]), csvEscape(row[2] != null ? row[2] : [q1Raw, q2Raw, q3Raw, q4Raw, q5Raw, q11Raw, q6Raw, q7Raw, q8Raw, q9Raw, q10Raw][i]), csvEscape(row[3])];
+                rows.push(vals.join(','));
+            });
+            rows.push('');
+            rows.push(L.xlsSimParamsTitle);
+            rows.push('autoLevel,' + csvEscape(autoLvlRaw) + ',%');
+            rows.push('teamSize,' + csvEscape(teamSizeRaw) + ',' + csvEscape(L.xlsTeamSizeUnit));
+            rows.push('capex,' + csvEscape(capexRaw) + ',' + csvEscape(PDE.currentCurrency));
+
+            var advancedPairs = [
+                [L.cascadeMultLabel, p.opexAdjMult.toFixed(2)],
+                [L.erosionRateLabel, p.erosionRate.toFixed(2)],
+                [L.discountRateLabel, Math.round(p.discountRate * 100) + '%'],
+                [L.timeHorizonLabel, p.horizonYears + ' yr'],
+                [L.leverAutomationLabel, Math.round(p.leverAuto * 100) + '%'],
+                [L.leverRiskLabel, Math.round(p.leverRisk * 100) + '%'],
+                [L.scenCAutoLevelLabel, Math.round(p.scenCAutoLevel * 100) + '%'],
+                [L.scenCCapexMultLabel, p.scenCCapexMult.toFixed(1)],
+                [L.annualHoursLabel, p.annualHours],
+                [L.leverInnovationLabel, Math.round(p.leverInnovation * 100) + '%'],
+                [L.leverManagementLabel, Math.round(p.leverManagement * 100) + '%'],
+                [L.leverTurnoverLabel, Math.round(p.leverTurnover * 100) + '%'],
+            ];
+            advancedPairs.forEach(function (pair) {
+                rows.push(csvEscape(pair[0]) + ',' + csvEscape(pair[1]));
+            });
+            rows.push('');
+
+            rows.push(L.xlsResultsTitle);
+            var resultLabels = ['cWaste','cRisk','cOppDirect','cOpexAdj','totalImpact','capex','netDebt','potentialSavings','paybackMonths','IRR'];
+            var resultValues = [
+                Math.round(r.cWaste), Math.round(r.cRisk), Math.round(r.cOppDirect), Math.round(r.cOpexAdj),
+                Math.round(r.totalImpact), Math.round(p.capex), Math.round(r.netDebt),
+                Math.round(r.potentialSavings), isFinite(r.paybackMonths) ? Math.round(r.paybackMonths * 10) / 10 : L.scenInfinity,
+                r.irr !== null ? (r.irr * 100).toFixed(1) + '%' : '-',
+            ];
+            resultLabels.forEach(function (label, i) {
+                rows.push(csvEscape(label) + ',' + csvEscape(resultValues[i]));
+            });
+            rows.push('');
+
+            rows.push(L.xlsLeversTitle);
+            rows.push(L.xlsLeversHeaders.map(function (h) { return csvEscape(h); }).join(','));
+            top3.forEach(function (l, i) {
+                rows.push(csvEscape(L.rankLabels[i]) + ',' + csvEscape(l.title) + ',' + csvEscape(Math.round(l.recovery)) + ',' + csvEscape(l.effort) + ',' + csvEscape(l.timeline));
+            });
+            rows.push('');
+            rows.push(csvEscape(L.xlsLeversTotalLabel) + ',,' + csvEscape(Math.round(totalRecovery)));
+            rows.push(csvEscape(L.xlsLeversPayback) + ',,' + csvEscape(isFinite(r.paybackMonths) ? Math.round(r.paybackMonths * 10) / 10 : L.scenInfinity) + ',,' + csvEscape(L.xlsResultsMonths));
+            rows.push('');
+
+            rows.push(L.xlsScenariosTitle);
+            rows.push(L.xlsScenariosHeaders.map(function (h) { return csvEscape(h); }).join(','));
+            var scenC_cap = p.capex * PDE.COEFFICIENTS.SCEN_C_CAPEX_MULTIPLIER;
+            var scenValues = [
+                [Math.round(scenA.net), Math.round(r.totalImpact), Math.round(r.totalImpact)],
+                [0, Math.round(p.capex), Math.round(scenC_cap)],
+                [0, Math.round(scenB.net), Math.round(scenC.net)],
+                ['---', isFinite(scenB.pb) ? Math.round(scenB.pb * 10) / 10 : '---', isFinite(scenC.pb) ? Math.round(scenC.pb * 10) / 10 : '---'],
+                [scenA.irr !== null ? (scenA.irr * 100).toFixed(1) + '%' : '-', scenB.irr !== null ? (scenB.irr * 100).toFixed(1) + '%' : '-', scenC.irr !== null ? (scenC.irr * 100).toFixed(1) + '%' : '-'],
+            ];
+            L.xlsScenariosRows.forEach(function (row, i) {
+                rows.push(csvEscape(row[0]) + ',' + csvEscape(scenValues[i][0]) + ',' + csvEscape(scenValues[i][1]) + ',' + csvEscape(scenValues[i][2]));
+            });
+            rows.push('');
+
+            rows.push(L.xlsDoraTitle);
+            rows.push(L.xlsDoraHeaders.map(function (h) { return csvEscape(h); }).join(','));
+            var doraValues = [q2Raw, p.manualPercent, p.failures];
+            var doraMetrics = ['leadTime', 'manual', 'errors'];
+            L.xlsDoraRows.forEach(function (row, i) {
+                var band = PDE.getDoraBand(doraMetrics[i], doraValues[i]).band;
+                rows.push(csvEscape(row[0]) + ',' + csvEscape(doraValues[i]) + ',' + csvEscape(row[2]) + ',' + csvEscape(band));
+            });
+
+            var now = new Date();
+            var pad = function (n) { return String(n).padStart(2, '0'); };
+            var ts = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) + '_' + pad(now.getHours()) + pad(now.getMinutes()) + pad(now.getSeconds());
+            var filename = 'Process-Debt-Engine_' + ts + '.csv';
+
+            var csvContent = rows.join('\r\n');
+            var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error('CSV export error:', err);
+            alert('CSV export failed: ' + err.message);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = PDE.t('exportCsvBtn');
+        }
+    }, 80);
+};
+
 PDE.resolveCSSVarsOnElement = function resolveCSSVarsOnElement(el) {
     const cs = getComputedStyle(document.documentElement);
     const varMap = {
