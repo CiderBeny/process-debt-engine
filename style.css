@@ -962,5 +962,4 @@ details.methodology-card[open] summary {
 .calib-yellow { color: var(--amber);  border-color: var(--amber);  background: rgba(217,119,6,0.08); }
 .calib-red    { color: var(--red);    border-color: var(--red);    background: rgba(220,38,38,0.08); }
 
-#calibrationSection summary::-webkit-details-marker { display: none; }
-#calibrationSection summary { list-style: none; }
+#calibrationHeader:hover { opacity: 0.8; }

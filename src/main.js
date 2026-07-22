@@ -108,6 +108,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const calibResetBtn = document.getElementById('calibResetBtn');
     if (calibResetBtn) calibResetBtn.addEventListener('click', PDE.resetCalibration);
 
+    // ── Calibration panel: toggle body visibility on header click ──
+    const calHeader = document.getElementById('calibrationHeader');
+    const calBody = document.getElementById('calibrationBody');
+    const calToggleIcon = document.getElementById('calibToggleIcon');
+    if (calHeader && calBody) {
+        calHeader.addEventListener('click', function () {
+            const isHidden = calBody.style.display === 'none' || calBody.style.display === '';
+            calBody.style.display = isHidden ? 'block' : 'none';
+            if (calToggleIcon) {
+                calToggleIcon.textContent = isHidden ? '\u25BC' : '\u25B6';
+            }
+        });
+    }
+
     document.addEventListener('click', e => {
         if (!e.target.classList.contains('formula-tip')) {
             document.querySelectorAll('.formula-tip').forEach(t => t.classList.remove('tip-open'));

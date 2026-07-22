@@ -834,15 +834,16 @@
             </div>
 
             <!-- CALIBRATION PANEL -->
-            <details id="calibrationSection" class="card mb-6" style="cursor:pointer;">
-                <summary style="display:flex;align-items:center;gap:12px;padding:0.5rem 0;cursor:pointer;">
+            <div id="calibrationSection" class="card mb-6">
+                <div id="calibrationHeader" style="display:flex;align-items:center;gap:12px;padding:0.5rem 0;cursor:pointer;user-select:none;">
                     <span style="background:var(--accent);color:#0a0f1e;border-radius:8px;padding:0.4rem 0.7rem;font-family:'Space Grotesk',sans-serif;font-size:0.65rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;">⚖</span>
-                    <div>
+                    <div style="flex:1;">
                         <h2 style="font-family:'Space Grotesk',sans-serif;font-size:0.95rem;font-weight:800;text-transform:uppercase;letter-spacing:-0.02em;color:var(--text-primary);margin:0;" data-i18n="calibTitle">Model Calibration</h2>
                         <p style="font-size:0.62rem;color:var(--text-muted);margin:2px 0 0;" data-i18n="calibDesc">Compare model predictions against actual results from a previous quarter.</p>
                     </div>
-                </summary>
-                <div id="calibrationBody" style="margin-top:1rem;">
+                    <span id="calibToggleIcon" style="font-size:0.75rem;color:var(--text-muted);transition:transform 0.2s;">&#9654;</span>
+                </div>
+                <div id="calibrationBody" style="display:none;margin-top:1rem;">
                     <div id="calibrationGrid" style="display:grid;grid-template-columns:1fr;gap:0.5rem;"></div>
                     <div id="calibrationFooter" style="display:flex;justify-content:space-between;align-items:center;margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--border-subtle);">
                         <div id="calibrationScore" style="font-size:0.8rem;font-weight:700;color:var(--text-primary);"></div>
@@ -850,7 +851,7 @@
                     </div>
                     <p style="font-size:0.55rem;color:var(--text-muted);margin-top:0.5rem;font-style:italic;" data-i18n="calibSaved">Actual values saved locally</p>
                 </div>
-            </details>
+            </div>
 
             <!-- BLOCK 4: CHARTS ROW 1 -->
             <div id="pdf-block-4" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
