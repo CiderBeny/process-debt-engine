@@ -473,7 +473,7 @@ PDE.saveCalibrationActuals = function saveCalibrationActuals() {
     try { localStorage.setItem(cal.STORAGE_KEY, JSON.stringify(data)); } catch (e) { void e; }
 };
 
-PDE.calibrationHandleInput = function calibrationHandleInput() {
+PDE.calibrationHandleBlur = function calibrationHandleBlur() {
     PDE.saveCalibrationActuals();
     const r = PDE._lastResult;
     if (r) PDE.updateCalibration(r);

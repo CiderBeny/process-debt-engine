@@ -91,12 +91,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     PDE.loadToggleStates();
 
-    // ── Calibration panel: delegate input events on dynamically created fields ──
+    // ── Calibration panel: delegate events on dynamically created fields ──
     const calGrid = document.getElementById('calibrationGrid');
     if (calGrid) {
         calGrid.addEventListener('input', function (e) {
             if (e.target && e.target.classList.contains('calib-input')) {
-                PDE.calibrationHandleInput();
+                PDE.saveCalibrationActuals();
+            }
+        });
+        calGrid.addEventListener('focusout', function (e) {
+            if (e.target && e.target.classList.contains('calib-input')) {
+                PDE.calibrationHandleBlur();
             }
         });
     }
