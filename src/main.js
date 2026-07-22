@@ -91,6 +91,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     PDE.loadToggleStates();
 
+    // ── Calibration panel: delegate input events on dynamically created fields ──
+    const calGrid = document.getElementById('calibrationGrid');
+    if (calGrid) {
+        calGrid.addEventListener('input', function (e) {
+            if (e.target && e.target.classList.contains('calib-input')) {
+                PDE.calibrationHandleInput();
+            }
+        });
+    }
+    const calibResetBtn = document.getElementById('calibResetBtn');
+    if (calibResetBtn) calibResetBtn.addEventListener('click', PDE.resetCalibration);
+
     document.addEventListener('click', e => {
         if (!e.target.classList.contains('formula-tip')) {
             document.querySelectorAll('.formula-tip').forEach(t => t.classList.remove('tip-open'));

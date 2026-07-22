@@ -83,6 +83,21 @@ PDE.RISK_WEIGHT_DEFAULTS = {
     regulatoryWeight: 0.25,
 };
 
+// ── Calibration panel defaults ──
+PDE.CALIBRATION = {
+    STORAGE_KEY: 'PDE.calibrationActuals',
+    THRESHOLD_GREEN: 0.15,
+    THRESHOLD_YELLOW: 0.30,
+    METRICS: [
+        { key: 'cWaste',         format: 'currency' },
+        { key: 'cRisk',          format: 'currency' },
+        { key: 'cOppDirect',     format: 'currency' },
+        { key: 'totalImpact',    format: 'currency' },
+        { key: 'netDebt',        format: 'currency' },
+        { key: 'manualAnnualHrs',format: 'hours'    },
+    ],
+};
+
 // ── Chart colour palette (warm theme) ──
 PDE.DARK = {
     text:   '#4A3F35',

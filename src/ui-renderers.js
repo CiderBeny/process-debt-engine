@@ -33,6 +33,7 @@ PDE.calculate = function calculate() {
     document.getElementById('mcMttrUncertaintyPctVal').textContent = Math.round(p.mcMttrUnc * 100);
 
     const r = PDE.computeModel(p);
+    PDE._lastResult = r;
 
     let mcResults = null;
 
@@ -131,6 +132,7 @@ PDE.calculate = function calculate() {
     PDE.updateScenarios(r.cWaste, r.cRisk, r.cOpexAdj, p.capex, p.autoLevel / 100, r.totalImpact, p.discountRate, p.horizonYears, r.scenCAutoLevel, r.scenCCapexMult);
     const sensResult = PDE.runSensitivity(p);
     PDE.renderTornado(sensResult);
+    PDE.updateCalibration(r);
 };
 
 PDE.updateRecs = function updateRecs(cw, cr, co, cc, pb, leverAuto, leverRisk) {
@@ -366,6 +368,126 @@ PDE.updateScenarios = function updateScenarios(cWaste, cRisk, cOpexAdj, capex, a
         scenCard({ title: L.scenarioCTitle, desc: L.scenarioCDesc, accentColor: 'var(--green)', capexAmt: capex * 1.5, calcResult: scenC, showBadge: isRecommendedC, badgeText: L.scenRecommended });
 
     PDE.encodeState();
+};
+
+PDE.updateCalibration = function updateCalibration(r) {
+    if (!r) return;
+    const L = PDE.TRANSLATIONS[PDE.currentLang];
+    const cal = PDE.CALIBRATION;
+
+    let saved;
+    try { saved = JSON.parse(localStorage.getItem(cal.STORAGE_KEY)); } catch (e) { saved = {}; void e; }
+
+    const grid = document.getElementById('calibrationGrid');
+    if (!grid) return;
+    let rows = '';
+    let withinTol = 0;
+    const total = cal.METRICS.length;
+
+    cal.METRICS.forEach(function (m) {
+        let annualVal = r[m.key];
+        if (typeof annualVal !== 'number' || !isFinite(annualVal)) annualVal = 0;
+        const predicted = annualVal / 4;
+
+        const inputId = 'calibActual_' + m.key;
+        let actualVal = saved[m.key];
+        if (actualVal === undefined || actualVal === null) actualVal = '';
+        const actualNum = parseFloat(actualVal);
+        const isFilled = isFinite(actualNum);
+
+        const variance = isFilled ? actualNum - predicted : 0;
+        const varPct = (isFilled && predicted !== 0) ? (variance / predicted) : 0;
+        const absVarPct = Math.abs(varPct);
+
+        let statusClass, statusLabel;
+        if (!isFilled) {
+            statusClass = '';
+            statusLabel = '\u2014';
+        } else if (absVarPct <= cal.THRESHOLD_GREEN) {
+            statusClass = 'calib-green';
+            statusLabel = L.calibAccurate;
+            withinTol++;
+        } else if (absVarPct <= cal.THRESHOLD_YELLOW) {
+            statusClass = 'calib-yellow';
+            statusLabel = L.calibOff;
+        } else {
+            statusClass = 'calib-red';
+            statusLabel = L.calibPoor;
+        }
+
+        let predictedStr, varianceStr, varPctStr;
+        if (m.format === 'hours') {
+            predictedStr = Math.round(predicted);
+            varianceStr = isFilled ? (variance >= 0 ? '+' : '') + Math.round(variance) : '\u2014';
+            varPctStr = isFilled ? (varPct >= 0 ? '+' : '') + (varPct * 100).toFixed(0) + '%' : '\u2014';
+        } else {
+            predictedStr = PDE.formatCurrency(predicted);
+            varianceStr = isFilled ? (variance >= 0 ? '+' : '') + PDE.formatCurrency(Math.abs(variance)) : '\u2014';
+            varPctStr = isFilled ? (varPct >= 0 ? '+' : '') + (varPct * 100).toFixed(0) + '%' : '\u2014';
+        }
+
+        let labelKey = '';
+        if (m.key === 'cWaste') labelKey = 'calibWaste';
+        else if (m.key === 'cRisk') labelKey = 'calibRisk';
+        else if (m.key === 'cOppDirect') labelKey = 'calibOpp';
+        else if (m.key === 'totalImpact') labelKey = 'calibTotal';
+        else if (m.key === 'netDebt') labelKey = 'calibNet';
+        else if (m.key === 'manualAnnualHrs') labelKey = 'calibManualHrs';
+        const label = L[labelKey] || m.key;
+
+        const badgeHtml = isFilled
+            ? '<span class="calib-badge ' + statusClass + '">' + PDE.esc(statusLabel) + '</span>'
+            : '';
+
+        rows += '<div class="calib-row">' +
+            '<span class="calib-label">' + PDE.esc(label) + '</span>' +
+            '<span class="calib-predicted">' + predictedStr + '</span>' +
+            '<input class="calib-input" id="' + inputId + '" type="text" inputmode="decimal" placeholder="\u2014" value="' + PDE.esc(String(actualVal)) + '">' +
+            '<span class="calib-variance">' + varianceStr + '</span>' +
+            '<span class="calib-varpct">' + varPctStr + '</span>' +
+            '<span class="calib-status">' + badgeHtml + '</span>' +
+            '</div>';
+    });
+
+    grid.innerHTML = rows;
+
+    const scoreEl = document.getElementById('calibrationScore');
+    if (scoreEl) {
+        const scorePct = total > 0 ? Math.round(withinTol / total * 100) : 0;
+        const scoreColor = scorePct >= 80 ? 'var(--green)' : (scorePct >= 50 ? 'var(--amber)' : 'var(--red)');
+        scoreEl.innerHTML = '<span style="color:' + scoreColor + ';">' + scorePct + '%</span> ' +
+            PDE.esc(L.calibScore) + ' \u2014 ' + withinTol + ' ' + PDE.esc(L.calibMetricsOn) + ' ' + total + ' ' + PDE.esc(L.calibWithinTol);
+    }
+};
+
+PDE.saveCalibrationActuals = function saveCalibrationActuals() {
+    const cal = PDE.CALIBRATION;
+    const data = {};
+    cal.METRICS.forEach(function (m) {
+        const el = document.getElementById('calibActual_' + m.key);
+        if (el) {
+            const v = el.value.trim();
+            if (v !== '') data[m.key] = v;
+        }
+    });
+    try { localStorage.setItem(cal.STORAGE_KEY, JSON.stringify(data)); } catch (e) { void e; }
+};
+
+PDE.calibrationHandleInput = function calibrationHandleInput() {
+    PDE.saveCalibrationActuals();
+    const r = PDE._lastResult;
+    if (r) PDE.updateCalibration(r);
+};
+
+PDE.resetCalibration = function resetCalibration() {
+    const cal = PDE.CALIBRATION;
+    try { localStorage.removeItem(cal.STORAGE_KEY); } catch (e) { void e; }
+    cal.METRICS.forEach(function (m) {
+        const el = document.getElementById('calibActual_' + m.key);
+        if (el) el.value = '';
+    });
+    const r = PDE._lastResult;
+    if (r) PDE.updateCalibration(r);
 };
 
 PDE.updateDoraBenchmark = function updateDoraBenchmark() {
