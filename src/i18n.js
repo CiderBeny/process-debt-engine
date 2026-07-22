@@ -2,10 +2,7 @@
 // i18n — full translation dictionary (EN + PL)
 // ═══════════════════════════════════════════════════════════════
 window.PDE = window.PDE || {};
-        // ═══════════════════════════════════════════════════════════════
-        // i18n — full translation dictionary
-        // ═══════════════════════════════════════════════════════════════
-        const TRANSLATIONS = {
+const TRANSLATIONS = {
             en: {
                 navSubtitle:      'IT Process Inefficiency Visualisation Tool',
                 disclaimer:       'This tool provides directional estimates only. Always validate with your organisation\u0027s actual financial data before making investment decisions.',

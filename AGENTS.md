@@ -79,6 +79,7 @@ npm test
 - Helper functions use classic `function` keyword, not arrow
 - CSS custom properties (e.g., `--bg-base`, `--text-primary`, `--accent`) define the theme
 - Currency formatting uses `Intl.NumberFormat` with locale `pl-PL` / `en-US`
+- **Language standard:** Code and test comments must be in English. UI strings are defined in `i18n.js` in both EN (default) and PL. All `data-i18n` attribute keys use English.
 
 ## PDF Export
 - **Page 1** — hand-rendered with jsPDF text API (uses Inter font loaded from `fonts/` via `fetch`)
