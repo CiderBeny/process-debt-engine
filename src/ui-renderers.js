@@ -376,7 +376,7 @@ PDE.updateCalibration = function updateCalibration(r) {
     const cal = PDE.CALIBRATION;
 
     let saved;
-    try { saved = JSON.parse(localStorage.getItem(cal.STORAGE_KEY)); } catch (e) { saved = {}; void e; }
+    try { saved = JSON.parse(localStorage.getItem(cal.STORAGE_KEY)) || {}; } catch (e) { saved = {}; void e; }
 
     const grid = document.getElementById('calibrationGrid');
     if (!grid) return;
