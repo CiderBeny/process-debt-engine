@@ -408,8 +408,7 @@ PDE.exportPDF = async function exportPDF(mode) {
     } catch (_pf3e) { /* prototype patch not available */ }
 
     const btn = document.getElementById(btnId);
-    btn.disabled = true;
-    btn.textContent = PDE.t(generatingKey);
+    if (btn) { btn.disabled = true; btn.textContent = PDE.t(generatingKey); }
     await new Promise(r => setTimeout(r, 120));
 
     try {
@@ -1106,8 +1105,7 @@ PDE.exportPDF = async function exportPDF(mode) {
             : 'PDF export failed: ' + err.message;
         alert(msg);
     } finally {
-        btn.disabled = false;
-        btn.textContent = PDE.t(finishedKey);
+        if (btn) { btn.disabled = false; btn.textContent = PDE.t(finishedKey); }
     }
 };
 

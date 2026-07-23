@@ -116,8 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ctaSuccess.style.display = 'block';
             setTimeout(function () {
                 closeCtaModal();
-                var btn = document.getElementById('exportBtnFull');
-                if (btn) btn.click();
+                PDE.exportPDF('full');
             }, 800);
         });
     }
