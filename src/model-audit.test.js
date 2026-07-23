@@ -8,7 +8,7 @@ const COEFFICIENTS = {
     SPRINTS_PER_YEAR:          26,
     MONTHS_PER_YEAR:           12,
     QUARTERS_PER_YEAR:         4,
-    PIPELINE_EROSION_RATE_DEFAULT: 0.1,
+    PIPELINE_EROSION_RATE_DEFAULT: 0.25,
     OPEX_ADJ_MULTIPLIER_DEFAULT:    0.15,
     SCEN_C_AUTO_LEVEL:         0.8,
     SCEN_C_CAPEX_MULTIPLIER:   1.5,
@@ -142,8 +142,8 @@ describe('Known Issue #2 — OPEX Waste appears 2.15× in Total Debt Impact', ()
 
 // ── Known Issue #3: Arbitrary coefficients ─────────────────────
 describe('Known Issue #3 — Hardcoded coefficients without direct empirical basis', () => {
-    it('Pipeline erosion rate default = 0.1 (10%) — user-defined estimate, no industry standard', () => {
-        assert.strictEqual(COEFFICIENTS.PIPELINE_EROSION_RATE_DEFAULT, 0.1);
+    it('Pipeline erosion rate default = 0.25 (25%) — Cost of Delay heuristic (Reinertsen 2009)', () => {
+        assert.strictEqual(COEFFICIENTS.PIPELINE_EROSION_RATE_DEFAULT, 0.25);
     });
 
     it('OPEX-adjusted estimate multiplier default = 0.15 (reduced from 0.5 to avoid OPEX double-counting)', () => {

@@ -20,7 +20,7 @@ PDE.COEFFICIENTS = {
     QUARTERS_PER_YEAR:         4,
 
     // Opportunity & Cascade
-    PIPELINE_EROSION_RATE_DEFAULT: 0.1,   // overridden by #erosionRate               · configurable
+    PIPELINE_EROSION_RATE_DEFAULT: 0.25,  // Cost of Delay heuristic — delayed projects lose ~25% value/yr (Reinertsen 2009 · Product Development Flow) · configurable
     OPEX_ADJ_MULTIPLIER_DEFAULT:    0.15,    // overridden by #opexAdjMult                  · configurable
 
     // Scenario C thresholds

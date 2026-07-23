@@ -507,13 +507,13 @@
                     </div>
                     <div>
                         <label class="label" for="erosionRate" data-i18n="erosionRateLabel">Pipeline Erosion Rate</label>
-                        <span class="helper-text mt-1 block" data-i18n="erosionRateHelper">Your estimate — no industry standard exists (0.0–1.0). Default 0.1.</span>
+                        <span class="helper-text mt-1 block" data-i18n="erosionRateHelper">Cost of Delay — delayed projects lose ~25% value/yr (0.0–1.0). Default 0.25.</span>
                         <div class="slider-wrapper">
                             <div class="slider-track-bg"></div>
                             <div class="slider-track-fill" id="erosionRateFill"></div>
-                            <input type="range" id="erosionRate" min="0" max="100" value="10" class="slider">
+                            <input type="range" id="erosionRate" min="0" max="100" value="25" class="slider">
                         </div>
-                        <p class="text-center text-xs mt-1"><span id="erosionRateVal">0.10</span></p>
+                        <p class="text-center text-xs mt-1"><span id="erosionRateVal">0.25</span></p>
                     </div>
                     <div>
                         <label class="label" for="discountRate" data-i18n="discountRateLabel">WACC (Discount Rate)</label>
