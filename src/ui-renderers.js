@@ -111,14 +111,14 @@ PDE.calculate = function calculate() {
         const wr2 = document.getElementById('mcWarning');
         if (wr2) wr2.style.display = 'none';
 
-        document.getElementById('statWaste').textContent   = PDE.formatCurrency(r.cWaste);
-        document.getElementById('statRisk').textContent    = PDE.formatCurrency(r.cRisk);
-        document.getElementById('statOpp').textContent     = PDE.formatCurrency(r.cOppDirect);
-        document.getElementById('statCascade').textContent = PDE.formatCurrency(r.cOpexAdj);
-        document.getElementById('totalImpact').textContent = PDE.formatCurrency(r.totalImpact);
-        document.getElementById('npvTotalDebt').textContent = PDE.formatCurrency(r.npvTotalDebt);
+        document.getElementById('statWaste').textContent   = PDE.formatCompactCurrency(r.cWaste);
+        document.getElementById('statRisk').textContent    = PDE.formatCompactCurrency(r.cRisk);
+        document.getElementById('statOpp').textContent     = PDE.formatCompactCurrency(r.cOppDirect);
+        document.getElementById('statCascade').textContent = PDE.formatCompactCurrency(r.cOpexAdj);
+        document.getElementById('totalImpact').textContent = PDE.formatCompactCurrency(r.totalImpact);
+        document.getElementById('npvTotalDebt').textContent = PDE.formatCompactCurrency(r.npvTotalDebt);
         document.getElementById('statIrr').textContent     = r.irr !== null ? (r.irr >= 0.999 ? '>99.9%' : (r.irr * 100).toFixed(1) + '%') : '\u2014';
-        document.getElementById('statNet').textContent     = PDE.formatCurrency(r.netDebt);
+        document.getElementById('statNet').textContent     = PDE.formatCompactCurrency(r.netDebt);
     }
 
     document.getElementById('q9Val').textContent       = document.getElementById('q9').value;
@@ -193,7 +193,7 @@ PDE.updateRecs = function updateRecs(cw, cr, co, cc, pb, leverAuto, leverRisk) {
                 <span style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:${l.color};">${PDE.esc(rankLabels[i])}</span>
             </div>
             <p style="font-family:'Space Grotesk',sans-serif;font-size:0.85rem;font-weight:700;color:var(--text-primary);margin:0;">${PDE.esc(l.title)}</p>
-            <p style="font-size:1.6rem;font-weight:900;color:${l.color};margin:0;line-height:1;">${PDE.formatCurrency(l.recovery)}</p>
+            <p style="font-size:1.6rem;font-weight:900;color:${l.color};margin:0;line-height:1;">${PDE.formatCompactCurrency(l.recovery)}</p>
             <p style="font-size:0.6rem;color:var(--text-muted);margin:0;">${PDE.esc(L.estRecovery)}</p>
             <p style="font-size:0.7rem;color:var(--text-secondary);line-height:1.4;margin:0;">${PDE.esc(l.detail)}</p>
             <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:6px;">
@@ -208,7 +208,7 @@ PDE.updateRecs = function updateRecs(cw, cr, co, cc, pb, leverAuto, leverRisk) {
         <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem;">
             <div>
                 <p style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin:0 0 4px;">${PDE.esc(L.verdictRecoveryLabel)}</p>
-                <p style="font-size:1.5rem;font-weight:900;color:var(--text-primary);margin:0;">${PDE.formatCurrency(totalRecovery)}</p>
+                <p style="font-size:1.5rem;font-weight:900;color:var(--text-primary);margin:0;">${PDE.formatCompactCurrency(totalRecovery)}</p>
             </div>
             <div style="text-align:right;">
                 <p style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin:0 0 4px;">${PDE.esc(L.verdictPaybackLabel)}</p>
@@ -280,7 +280,7 @@ PDE.updateRoadmap = function updateRoadmap(top3) {
 
 PDE.updateScenarios = function updateScenarios(cWaste, cRisk, cOpexAdj, capex, autoLevel, totalImpact, dr, ny, scenCAutoLevel, scenCCapexMult) {
     const L = PDE.TRANSLATIONS[PDE.currentLang];
-    const fmt = (n) => PDE.formatCurrency(Math.abs(n));
+    const fmt = (n) => PDE.formatCompactCurrency(Math.abs(n));
     if (dr === undefined) dr = PDE.readAdvanced('discountRate', PDE.COEFFICIENTS.DISCOUNT_RATE_DEFAULT, 100);
     if (ny === undefined) ny = PDE.readAdvanced('timeHorizon', PDE.COEFFICIENTS.TIME_HORIZON_YEARS_DEFAULT, 1);
     if (scenCAutoLevel === undefined) scenCAutoLevel = PDE.readAdvanced('scenCAutoLevel', PDE.COEFFICIENTS.SCEN_C_AUTO_LEVEL, 100);

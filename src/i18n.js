@@ -103,9 +103,9 @@ const TRANSLATIONS = {
                 chartEffortAxis:      'Effort Leakage %',
                 chartRiskAxis:        'Risk Level',
                 // rec engine
-recAutomation: (val) => `<strong style="color:var(--red)">Automation Lever:</strong> High manual overhead. A Self-Service Portal could recover <strong>${PDE.formatCurrency(val)}</strong> in labor costs.`,
+recAutomation: (val) => `<strong style="color:var(--red)">Automation Lever:</strong> High manual overhead. A Self-Service Portal could recover <strong>${PDE.formatCompactCurrency(val)}</strong> in labor costs.`,
 recRisk:        () => `<strong style="color:var(--orange)">Risk Lever:</strong> Critical risk exposure. Auto-Discovery (CMDB) reduces MTTR and safeguards revenue.`,
-recInnovation: (val) => `<strong style="color:var(--purple)">Innovation Lever:</strong> Debt backlog is blocking roadmap. Resolving it unlocks <strong>${PDE.formatCurrency(val)}</strong> in project margin.`,
+recInnovation: (val) => `<strong style="color:var(--purple)">Innovation Lever:</strong> Debt backlog is blocking roadmap. Resolving it unlocks <strong>${PDE.formatCompactCurrency(val)}</strong> in project margin.`,
                 recVerdict:    (pb)  => `Financial Verdict: Payback period — ${pb} months.`,
                 // lever titles & details
                 leverAutomationTitle:  'Process Automation',
@@ -515,9 +515,9 @@ recInnovation: (val) => `<strong style="color:var(--purple)">Innovation Lever:</
                 chartTargetState:     'Stan Docelowy',
                 chartEffortAxis:      'Wyciek Wysiłku %',
                 chartRiskAxis:        'Poziom Ryzyka',
-                recAutomation: (val) => `<strong style="color:var(--red)">Dźwignia Automatyzacji:</strong> Wysoki narzut manualny. Portal samoobsługowy może odzyskać <strong>${PDE.formatCurrency(val)}</strong> kosztów pracy.`,
+                recAutomation: (val) => `<strong style="color:var(--red)">Dźwignia Automatyzacji:</strong> Wysoki narzut manualny. Portal samoobsługowy może odzyskać <strong>${PDE.formatCompactCurrency(val)}</strong> kosztów pracy.`,
                 recRisk:        () => `<strong style="color:var(--orange)">Dźwignia Ryzyka:</strong> Krytyczna ekspozycja na ryzyko. Auto-Discovery (CMDB) skraca MTTR i chroni przychody.`,
-                recInnovation: (val) => `<strong style="color:var(--purple)">Dźwignia Innowacji:</strong> Zaległości blokują roadmapę. Ich usunięcie odblokowuje <strong>${PDE.formatCurrency(val)}</strong> marży projektowej.`,
+                recInnovation: (val) => `<strong style="color:var(--purple)">Dźwignia Innowacji:</strong> Zaległości blokują roadmapę. Ich usunięcie odblokowuje <strong>${PDE.formatCompactCurrency(val)}</strong> marży projektowej.`,
                 recVerdict:    (pb)  => `Werdykt Finansowy: Zwrot z inwestycji w ciągu — ${pb} miesięcy.`,
                 leverAutomationTitle:  'Automatyzacja Procesów',
                 leverAutomationDetail: (pct) => `Automatyzacja ${pct}% manualnej pracy w sprincie za pomocą pipeline'ów CI/CD i portali samoobsługowych eliminuje powtarzalne zadania i przyspiesza dostarczanie.`,

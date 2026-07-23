@@ -72,6 +72,19 @@ PDE.formatCurrency = function formatCurrency(amountUSD) {
     }).format(converted);
 };
 
+PDE.formatCompactCurrency = function formatCompactCurrency(amountUSD) {
+    const sym = PDE.CURRENCY_SYMBOLS[PDE.currentCurrency] || '$';
+    const converted = amountUSD * PDE.EXCHANGE_RATES[PDE.currentCurrency];
+    const abs = Math.abs(converted);
+    if (abs >= 1000000) {
+        return '\u007E' + sym + (converted / 1000000).toFixed(1) + 'M';
+    }
+    if (abs >= 1000) {
+        return '\u007E' + sym + (converted / 1000).toFixed(1) + 'K';
+    }
+    return sym + Math.round(converted);
+};
+
 PDE.usdToCurrency = function usdToCurrency(amountUSD) {
     return amountUSD * PDE.EXCHANGE_RATES[PDE.currentCurrency];
 };
