@@ -42,6 +42,40 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // ── Advanced Questions toggle ──
+    const toggleAdvQ = document.getElementById('toggleAdvancedQuestions');
+    const advQContainer = document.getElementById('advancedQuestions');
+    if (toggleAdvQ && advQContainer) {
+        toggleAdvQ.addEventListener('click', function () {
+            const isHidden = advQContainer.style.display === 'none' || advQContainer.style.display === '';
+            advQContainer.style.display = isHidden ? 'block' : 'none';
+            const span = toggleAdvQ.querySelector('[data-i18n]');
+            if (span) {
+                const key = isHidden ? 'hideAdvanced' : 'showAdvanced';
+                span.textContent = PDE.TRANSLATIONS[PDE.currentLang][key] || key;
+                span.setAttribute('data-i18n', key);
+            }
+        });
+    }
+
+    // ── Preset buttons ──
+    const PRESETS = {
+        low:    { q1:70, q2:168, q4:50000, q5:10, q6:150, q10:25, teamSize:15, autoLevel:20, capex:20000 },
+        medium: { q1:40, q2:72,  q4:10000, q5:3,  q6:150, q10:15, teamSize:10, autoLevel:40, capex:50000 },
+        high:   { q1:15, q2:24,  q4:5000,  q5:1,  q6:150, q10:8,  teamSize:8,  autoLevel:65, capex:80000 },
+    };
+    document.querySelectorAll('.preset-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const preset = PRESETS[this.getAttribute('data-preset')];
+            if (!preset) return;
+            Object.keys(preset).forEach(function (id) {
+                const el = document.getElementById(id);
+                if (el) { el.value = preset[id]; PDE.validateField(id); }
+            });
+            PDE.calculate();
+        });
+    });
+
     const calcIds = ['q1','q2','q3','q4','q5','q11','q6','q7','q8','q9','q10','autoLevel','teamSize','capex','opexAdjMult','erosionRate','discountRate','timeHorizon','leverAutomation','leverRisk'];
     calcIds.forEach(id => {
         const el = document.getElementById(id);

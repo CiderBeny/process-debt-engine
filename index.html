@@ -317,6 +317,16 @@
                 <span class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-black text-sm">?</span>
                 <h2 class="text-xl font-black uppercase tracking-tight" data-i18n="phase1Title">Phase 1: Strategic Diagnostic Questionnaire</h2>
             </div>
+
+            <div class="mb-6 pb-4 border-b border-border">
+                <p class="text-xs font-bold uppercase tracking-wider mb-3" data-i18n="quickStartTitle">Quick Start — Select a profile</p>
+                <div class="flex flex-wrap gap-2">
+                    <button class="preset-btn" data-preset="low" data-i18n="presetLow">🔴 Low Automation</button>
+                    <button class="preset-btn" data-preset="medium" data-i18n="presetMedium">🟡 Medium Maturity</button>
+                    <button class="preset-btn" data-preset="high" data-i18n="presetHigh">🟢 High Maturity</button>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                 <div class="q-card">
@@ -332,21 +342,6 @@
                 </div>
 
                 <div class="q-card">
-                    <label class="label" for="q3" data-i18n="q3label">3. Documentation Standard (1–5)</label>
-                    <p class="text-[10px] mb-2 leading-tight" data-i18n="q3desc">Does the organization maintain a unified process documentation standard, or is critical knowledge fragmented across tribal silos?</p>
-                    <div class="slider-wrapper">
-                        <div class="slider-track-bg"></div>
-                        <div class="slider-track-fill" id="q3Fill"></div>
-                        <input type="range" id="q3" min="1" max="5" value="2" class="slider">
-                    </div>
-                    <div class="flex justify-between mt-1 px-0.5">
-                        <span class="text-[10px]" style="color:var(--text-muted)" data-i18n="q3min">1 — Fragmented</span>
-                        <span id="q3Val" class="text-xs font-bold">2</span>
-                        <span class="text-[10px]" style="color:var(--text-muted)" data-i18n="q3max">5 — Unified</span>
-                    </div>
-                </div>
-
-                <div class="q-card">
                     <label class="label" for="q4" data-i18n="q4label">4. Downtime Cost ($/h)</label>
                     <p class="text-[10px] mb-2 leading-tight" data-i18n="q4desc">What is the estimated hourly revenue loss or operational penalty during a critical business system outage?</p>
                     <input type="number" id="q4" value="10000" class="input-field">
@@ -359,41 +354,9 @@
                 </div>
 
                 <div class="q-card">
-                    <label class="label" for="q11" data-i18n="q11label">11. MTTR (Hours)</label>
-                    <p class="text-[10px] mb-2 leading-tight" data-i18n="q11desc">What is the average time (in hours) to restore a critical service after a production incident (Mean Time To Repair)?</p>
-                    <input type="number" id="q11" value="4" class="input-field">
-                </div>
-
-                <div class="q-card">
                     <label class="label" for="q6" data-i18n="q6label">6. Blended Rate ($/h)</label>
                     <p class="text-[10px] mb-2 leading-tight" data-i18n="q6desc">What is the average hourly cost (Blended Rate) of an engineer, including gross salary, benefits, hardware, and overhead?</p>
                     <input type="number" id="q6" value="150" class="input-field">
-                </div>
-
-                <div class="q-card">
-                    <label class="label" for="q7" data-i18n="q7label">7. Management Overhead (h/m)</label>
-                    <p class="text-[10px] mb-2 leading-tight" data-i18n="q7desc">How many hours per month do managers spend coordinating communication and "chasing people" due to siloed processes?</p>
-                    <input type="number" id="q7" value="30" class="input-field">
-                </div>
-
-                <div class="q-card">
-                    <label class="label" for="q8" data-i18n="q8label">8. Opportunity Margin ($)</label>
-                    <p class="text-[10px] mb-2 leading-tight" data-i18n="q8desc">What is the projected gross margin from new projects or features that are currently delayed due to technical or process debt?</p>
-                    <input type="number" id="q8" value="200000" class="input-field">
-                </div>
-
-                <div class="q-card">
-                    <label class="label" for="q9" data-i18n="q9label">9. Scalability Bottleneck (1–5)</label>
-                    <p class="text-[10px] mb-2 leading-tight italic" data-i18n="q9desc">Impact on ability to scale growth?</p>
-                    <div class="slider-wrapper">
-                        <div class="slider-track-bg"></div>
-                        <div class="slider-track-fill" id="q9Fill"></div>
-                        <input type="range" id="q9" min="1" max="5" value="4" class="slider">
-                    </div>
-                    <div class="text-center mt-2">
-                        <span id="q9Val" class="text-xs font-bold">4</span>
-                        <span class="text-[10px]" style="color:var(--text-muted)">/ 5</span>
-                    </div>
                 </div>
 
                 <div class="q-card">
@@ -402,6 +365,72 @@
                     <input type="number" id="q10" value="15" class="input-field">
                 </div>
 
+            </div>
+
+            <div class="mt-4">
+                <div class="q-card">
+                    <label class="label" for="teamSize" data-i18n="advancedTeamSizeLabel">Team Size (engineers)</label>
+                    <p class="text-[10px] mb-2 leading-tight" data-i18n="advancedTeamSizeDesc">Total number of engineers affected by process debt.</p>
+                    <input type="number" id="teamSize" value="10" class="input-field">
+                </div>
+            </div>
+
+            <div class="mt-5 pt-4 border-t border-border">
+                <button id="toggleAdvancedQuestions" class="text-xs font-bold uppercase tracking-widest" style="color:var(--accent);background:none;border:1px solid var(--border);border-radius:6px;padding:0.5rem 1rem;cursor:pointer;width:100%;text-align:center;">
+                    ⚙ <span data-i18n="showAdvanced">Show Advanced Questions (5)</span>
+                </button>
+                <div id="advancedQuestions" style="display:none;" class="mt-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                        <div class="q-card">
+                            <label class="label" for="q3" data-i18n="q3label">3. Documentation Standard (1–5)</label>
+                            <p class="text-[10px] mb-2 leading-tight" data-i18n="q3desc">Does the organization maintain a unified process documentation standard, or is critical knowledge fragmented across tribal silos?</p>
+                            <div class="slider-wrapper">
+                                <div class="slider-track-bg"></div>
+                                <div class="slider-track-fill" id="q3Fill"></div>
+                                <input type="range" id="q3" min="1" max="5" value="2" class="slider">
+                            </div>
+                            <div class="flex justify-between mt-1 px-0.5">
+                                <span class="text-[10px]" style="color:var(--text-muted)" data-i18n="q3min">1 — Fragmented</span>
+                                <span id="q3Val" class="text-xs font-bold">2</span>
+                                <span class="text-[10px]" style="color:var(--text-muted)" data-i18n="q3max">5 — Unified</span>
+                            </div>
+                        </div>
+
+                        <div class="q-card">
+                            <label class="label" for="q7" data-i18n="q7label">7. Management Overhead (h/m)</label>
+                            <p class="text-[10px] mb-2 leading-tight" data-i18n="q7desc">How many hours per month do managers spend coordinating communication and "chasing people" due to siloed processes?</p>
+                            <input type="number" id="q7" value="30" class="input-field">
+                        </div>
+
+                        <div class="q-card">
+                            <label class="label" for="q8" data-i18n="q8label">8. Opportunity Margin ($)</label>
+                            <p class="text-[10px] mb-2 leading-tight" data-i18n="q8desc">What is the projected gross margin from new projects or features that are currently delayed due to technical or process debt?</p>
+                            <input type="number" id="q8" value="200000" class="input-field">
+                        </div>
+
+                        <div class="q-card">
+                            <label class="label" for="q9" data-i18n="q9label">9. Scalability Bottleneck (1–5)</label>
+                            <p class="text-[10px] mb-2 leading-tight italic" data-i18n="q9desc">Impact on ability to scale growth?</p>
+                            <div class="slider-wrapper">
+                                <div class="slider-track-bg"></div>
+                                <div class="slider-track-fill" id="q9Fill"></div>
+                                <input type="range" id="q9" min="1" max="5" value="4" class="slider">
+                            </div>
+                            <div class="text-center mt-2">
+                                <span id="q9Val" class="text-xs font-bold">4</span>
+                                <span class="text-[10px]" style="color:var(--text-muted)">/ 5</span>
+                            </div>
+                        </div>
+
+                        <div class="q-card">
+                            <label class="label" for="q11" data-i18n="q11label">11. MTTR (Hours)</label>
+                            <p class="text-[10px] mb-2 leading-tight" data-i18n="q11desc">What is the average time (in hours) to restore a critical service after a production incident (Mean Time To Repair)?</p>
+                            <input type="number" id="q11" value="4" class="input-field">
+                        </div>
+
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -454,11 +483,6 @@
                             <input type="range" id="autoLevel" min="0" max="100" value="40" class="slider">
                         </div>
                         <p class="text-center font-bold text-sm"><span id="autoLevelVal">40</span>% <span data-i18n="efficiencyGain">Efficiency Gain</span></p>
-                    </div>
-                    <div>
-                        <label class="label" for="teamSize" data-i18n="teamSizeLabel">Team Size (engineers)</label>
-                        <input type="number" id="teamSize" value="10" class="input-field">
-                        <span class="helper-text mt-1 block" data-i18n="teamSizeHelper">Total number of engineers affected by process debt.</span>
                     </div>
                     <div>
                         <label class="label" for="capex" data-i18n="capexLabel">One-Time CAPEX Investment ($)</label>

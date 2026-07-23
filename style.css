@@ -193,6 +193,27 @@ nav p {
   letter-spacing: 0.12em;
 }
 
+/* ── Preset buttons (quick-start profiles) ── */
+.preset-btn {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px;
+  padding: 0.4rem 1rem;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary) !important;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.1s;
+}
+.preset-btn:hover {
+  background: var(--bg-hover) !important;
+  border-color: var(--accent) !important;
+  color: var(--text-primary) !important;
+  transform: translateY(-1px);
+}
+
 /* ── Export button ── */
 #exportBtn {
   background: var(--accent) !important;
