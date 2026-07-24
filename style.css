@@ -200,31 +200,7 @@ nav p {
   transform: translateY(-1px);
 }
 
-/* ── CTA Modal ── */
-#ctaModal {
-  display: none;
-}
-#ctaModal.active {
-  display: flex !important;
-}
-#ctaModal input:focus {
-  border-color: var(--accent) !important;
-  box-shadow: 0 0 0 3px var(--accent-dim) !important;
-}
-#ctaModal input.invalid {
-  border-color: var(--red) !important;
-}
-#ctaModal input.valid {
-  border-color: var(--green) !important;
-}
-#ctaSubmitBtn:hover {
-  background: var(--accent-bright) !important;
-  box-shadow: 0 0 18px var(--accent-glow);
-  transform: translateY(-1px);
-}
-#ctaModalClose:hover {
-  color: var(--text-primary) !important;
-}
+
 
 /* ── Preset buttons (quick-start profiles) ── */
 .preset-btn {

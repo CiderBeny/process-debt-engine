@@ -379,9 +379,9 @@ PDE.resolveCSSVarsOnElement = function resolveCSSVarsOnElement(el) {
 PDE.exportPDF = async function exportPDF(mode) {
     const isMobile = PDE.isMobileBrowser();
 
-    const btnId = mode === 'full' ? 'exportBtnFull' : 'exportBtnSimple';
+    const btnId = mode === 'full' ? 'ctaBtn' : 'exportBtnSimple';
     const generatingKey = mode === 'full' ? 'exportGeneratingFull' : 'exportGeneratingSimple';
-    const finishedKey = mode === 'full' ? 'exportBtnFull' : 'exportBtnSimple';
+    const finishedKey = mode === 'full' ? 'ctaBtn' : 'exportBtnSimple';
     const filename = mode === 'full' ? 'Strategic_Detailed_Report.pdf' : 'Strategic_Summary_Report.pdf';
 
     const { jsPDF } = window.jspdf;

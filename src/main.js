@@ -58,68 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ── CTA Modal ──
-    const ctaBtn = document.getElementById('ctaBtn');
-    const ctaModal = document.getElementById('ctaModal');
-    const ctaClose = document.getElementById('ctaModalClose');
-    const ctaForm = document.getElementById('ctaForm');
-    const ctaEmail = document.getElementById('ctaEmail');
-    const ctaError = document.getElementById('ctaError');
-    const ctaSuccess = document.getElementById('ctaSuccess');
-    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    function openCtaModal() {
-        ctaModal.classList.add('active');
-        ctaError.style.display = 'none';
-        ctaSuccess.style.display = 'none';
-        ctaEmail.classList.remove('invalid', 'valid');
-        ctaEmail.value = '';
-        document.getElementById('ctaName').value = '';
-        document.getElementById('ctaName').classList.remove('invalid', 'valid');
-        ctaEmail.focus();
-    }
-    function closeCtaModal() {
-        ctaModal.classList.remove('active');
-        ctaError.style.display = 'none';
-        ctaSuccess.style.display = 'none';
-    }
-    if (ctaBtn && ctaModal) {
-        ctaBtn.addEventListener('click', openCtaModal);
-        if (ctaClose) ctaClose.addEventListener('click', closeCtaModal);
-        ctaModal.addEventListener('click', function (e) {
-            if (e.target === ctaModal) closeCtaModal();
-        });
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' && ctaModal.classList.contains('active')) closeCtaModal();
-        });
-    }
-    if (ctaForm) {
-        ctaForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const email = ctaEmail.value.trim();
-            if (!EMAIL_RE.test(email)) {
-                ctaEmail.classList.add('invalid');
-                ctaError.textContent = PDE.t('ctaEmailInvalid');
-                ctaError.style.display = 'block';
-                ctaSuccess.style.display = 'none';
-                return;
-            }
-            ctaEmail.classList.remove('invalid');
-            ctaEmail.classList.add('valid');
-            ctaError.style.display = 'none';
-            const name = document.getElementById('ctaName').value.trim();
-            try {
-                const leads = JSON.parse(localStorage.getItem('PDE.leads') || '[]');
-                leads.push({ email: email, name: name, timestamp: new Date().toISOString() });
-                localStorage.setItem('PDE.leads', JSON.stringify(leads));
-            } catch (e) { void e; }
-            ctaSuccess.style.display = 'block';
-            setTimeout(function () {
-                closeCtaModal();
-                PDE.exportPDF('full');
-            }, 800);
-        });
-    }
     // ── Preset buttons ──
     const PRESETS = {
         low:    { q1:70, q2:168, q4:50000, q5:10, q6:150, q10:25, teamSize:15, autoLevel:20, capex:20000 },
@@ -163,6 +101,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (pdfBtnSimple) pdfBtnSimple.addEventListener('click', function () { PDE.exportPDF('simple'); });
     const pdfBtnFull = document.getElementById('exportBtnFull');
     if (pdfBtnFull) pdfBtnFull.addEventListener('click', function () { PDE.exportPDF('full'); });
+    const ctaBtn = document.getElementById('ctaBtn');
+    if (ctaBtn) ctaBtn.addEventListener('click', function () { PDE.exportPDF('full'); });
 
     const sliderIds = [
         'scenCAutoLevel','scenCCapexMult','annualHours',

@@ -307,25 +307,6 @@
         </div>
     </nav>
 
-    <!-- ── CTA Modal ── -->
-    <div id="ctaModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;">
-        <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:16px;padding:2rem;max-width:420px;width:90%;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
-            <button id="ctaModalClose" style="position:absolute;top:12px;right:14px;background:none;border:none;color:var(--text-muted);font-size:1.2rem;cursor:pointer;line-height:1;">&times;</button>
-            <p style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:800;color:var(--text-primary);margin:0 0 0.5rem;" data-i18n="ctaTitle">Get Your Full Report</p>
-            <p style="font-size:0.75rem;color:var(--text-muted);margin:0 0 1.5rem;line-height:1.5;" data-i18n="ctaSubtitle">Enter your details and we'll generate a complete PDF report of your Process Debt analysis.</p>
-            <form id="ctaForm">
-                <label style="display:block;font-size:0.7rem;font-weight:700;color:var(--text-label);margin-bottom:4px;" for="ctaEmail" data-i18n="ctaEmailLabel">Email address *</label>
-                <input id="ctaEmail" type="email" required style="width:100%;padding:0.6rem 0.8rem;border:1px solid var(--border);border-radius:8px;background:var(--bg-input);color:var(--text-primary);font-size:0.85rem;box-sizing:border-box;outline:none;">
-                <p style="font-size:0.65rem;color:var(--text-muted);margin:0.25rem 0 1.5rem;line-height:1.4;" data-i18n="ctaPrivacyNote"></p>
-                <label style="display:block;font-size:0.7rem;font-weight:700;color:var(--text-label);margin-bottom:4px;" for="ctaName" data-i18n="ctaNameLabel">Name (optional)</label>
-                <input id="ctaName" type="text" style="width:100%;padding:0.6rem 0.8rem;border:1px solid var(--border);border-radius:8px;background:var(--bg-input);color:var(--text-primary);font-size:0.85rem;box-sizing:border-box;margin-bottom:1.5rem;outline:none;">
-                <button type="submit" id="ctaSubmitBtn" style="width:100%;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:0.7rem;font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:0.85rem;letter-spacing:0.04em;cursor:pointer;transition:background 0.2s;" data-i18n="ctaSubmit">Send Report →</button>
-            </form>
-            <p id="ctaError" style="display:none;font-size:0.7rem;color:var(--red);margin:0.5rem 0 0;text-align:center;"></p>
-            <p id="ctaSuccess" style="display:none;font-size:0.75rem;color:var(--green);margin:0.5rem 0 0;text-align:center;font-weight:600;" data-i18n="ctaThanks">Thank you! Generating your report...</p>
-        </div>
-    </div>
-
     <div class="disclaimer-bar" data-i18n="disclaimer">This tool provides directional estimates only. Always validate with your organisation's actual financial data before making investment decisions.</div>
 
     <main class="container mx-auto px-4 py-8 max-w-7xl">
