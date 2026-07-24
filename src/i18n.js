@@ -4,7 +4,7 @@
 window.PDE = window.PDE || {};
 const TRANSLATIONS = {
             en: {
-                navSubtitle:      'IT Process Inefficiency Visualisation Tool',
+                navSubtitle:      'Build Your Automation Business Case',
                 disclaimer:       'This tool provides directional estimates only. Always validate with your organisation\u0027s actual financial data before making investment decisions.',
                 exportBtn:        'EXPORT STRATEGIC REPORT (PDF)',
                 exportGenerating: 'Generating PDF…',
@@ -427,7 +427,7 @@ recInnovation: (val) => `<strong style="color:var(--purple)">Innovation Lever:</
                 sensDisc:       'Discount Rate',
             },
             pl: {
-                navSubtitle:      'Narz\u0119dzie Wizualizacji Nieefektywno\u015Bci Proces\u00F3w IT',
+                navSubtitle:      'Biznesowe Uzasadnienie Automatyzacji',
                 disclaimer:       'To narz\u0119dzie dostarcza jedynie szacunkowe wskazania. Zawsze weryfikuj z rzeczywistymi danymi finansowymi swojej organizacji przed podj\u0119ciem decyzji inwestycyjnych.',
                 exportBtn:        'EKSPORTUJ RAPORT STRATEGICZNY (PDF)',
                 exportGenerating: 'Generowanie PDF…',

@@ -1,7 +1,7 @@
 {
   "name": "process-debt-engine",
   "version": "1.0.0",
-  "description": "IT Process Inefficiency Visualisation Tool — quantify process debt and simulate ROI of automation investments.",
+  "description": "Build Your Automation Business Case — quantify process debt and simulate ROI of automation investments.",
   "main": "index.js",
   "scripts": {
     "lint": "eslint src/",
