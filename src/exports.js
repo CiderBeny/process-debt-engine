@@ -1091,7 +1091,7 @@ PDE.exportPDF = async function exportPDF(mode) {
                 const wasOpen = methodologySection ? methodologySection.open : false;
                 if (methodologySection) methodologySection.open = true;
                 await new Promise(r => requestAnimationFrame(r));
-                const methodologyIds = ['methodology-header','methodology-1','methodology-2','methodology-3','methodology-4','methodology-5','methodology-6','methodology-7','methodology-8','methodology-9','methodology-10','methodology-11','methodology-12','methodology-13','methodology-14','methodology-15','methodology-footer'];
+                const methodologyIds = ['methodology-header','methodology-about','methodology-1','methodology-2','methodology-3','methodology-4','methodology-5','methodology-6','methodology-7','methodology-8','methodology-9','methodology-10','methodology-11','methodology-12','methodology-13','methodology-14','methodology-15','methodology-16','methodology-footer'];
                 for (const id of methodologyIds) await captureBlock(id);
                 if (methodologySection) methodologySection.open = wasOpen;
             }
