@@ -316,6 +316,26 @@ PDE.syncInputMaxes = function syncInputMaxes() {
     });
 };
 
+PDE.resetScenario = function resetScenario() {
+    Object.keys(PDE.SCENARIO_DEFAULTS).forEach(function (id) {
+        const el = document.getElementById(id);
+        const value = PDE.SCENARIO_DEFAULTS[id];
+        if (el) el.value = ['q4', 'q6', 'q8', 'capex'].includes(id) ? PDE.usdToCurrency(value).toFixed(2) : value;
+    });
+    PDE.TOGGLE_IDS.forEach(function (id) {
+        const el = document.getElementById(id);
+        if (el) el.checked = false;
+        PDE.applyToggleVisibility(id);
+    });
+    PDE.saveToggleStates();
+    PDE._mcSeed = undefined;
+    const region = document.getElementById('regionSelect');
+    if (region) region.value = 'US';
+    PDE.ALLOWED_HASH_KEYS.forEach(function (id) { PDE.validateField(id); });
+    PDE.calculate();
+    PDE.encodeState();
+};
+
 PDE.flashBtn = function flashBtn(btn, orig) {
     btn.textContent = '✓ COPIED';
     setTimeout(() => btn.textContent = orig, 2000);

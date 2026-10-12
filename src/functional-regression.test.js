@@ -57,3 +57,36 @@ test('legacy calibration is preserved until explicit currency migration', functi
     assert.ok(Number.isNaN(PDE.parseCalibrationNumber('')));
     assert.ok(Number.isNaN(PDE.parseCalibrationNumber('12oops')));
 });
+
+test('reset covers every shareable field, toggles and seed, preserving preferences and actuals', function () {
+    assert.deepEqual(Object.keys(PDE.SCENARIO_DEFAULTS).sort(), [...PDE.ALLOWED_HASH_KEYS].sort());
+    const original = { calculate: PDE.calculate, validateField: PDE.validateField, encodeState: PDE.encodeState };
+    PDE.calculate = function () {};
+    PDE.validateField = function () {};
+    PDE.encodeState = function () {};
+    PDE.TOGGLE_IDS = ['correlationsToggle', 'nonlinearToggle', 'probabilisticToggle', 'advancedRiskToggle'];
+    PDE.applyToggleVisibility = function () {};
+    PDE.saveToggleStates = function () {};
+    const saved = stored;
+    try {
+        for (const currency of Object.keys(PDE.EXCHANGE_RATES)) {
+            PDE.currentCurrency = currency;
+            PDE.currentLang = 'pl';
+            PDE.currentMode = 'full';
+            for (const id of PDE.ALLOWED_HASH_KEYS) elements[id] = { value: '0' };
+            PDE.TOGGLE_IDS.forEach(function (id) { elements[id] = { checked: true }; });
+            PDE._mcSeed = 123;
+            PDE.resetScenario();
+            for (const [id, value] of Object.entries(PDE.SCENARIO_DEFAULTS)) {
+                const rate = ['q4', 'q6', 'q8', 'capex'].includes(id) ? PDE.EXCHANGE_RATES[currency] : 1;
+                assert.equal(Number(elements[id].value), value * rate, currency + ': ' + id);
+            }
+            assert.ok(PDE.TOGGLE_IDS.every(function (id) { return !elements[id].checked; }));
+            assert.equal(PDE._mcSeed, undefined);
+            assert.equal(PDE.currentLang, 'pl');
+            assert.equal(PDE.currentMode, 'full');
+            assert.equal(PDE.currentCurrency, currency);
+            assert.equal(stored, saved);
+        }
+    } finally { Object.assign(PDE, original); }
+});

@@ -97,20 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ── Reset scenario defaults ──
     const resetBtn = document.getElementById('resetBtn');
     if (resetBtn) {
-        const RESET_DEFAULTS = {
-            q1: 40, q2: 72, q3: 2, q4: 10000, q5: 3, q6: 150,
-            q7: 30, q8: 200000, q9: 4, q10: 15, autoLevel: 40,
-            capex: 50000, teamSize: 10
-        };
-        resetBtn.addEventListener('click', function () {
-            Object.keys(RESET_DEFAULTS).forEach(function (id) {
-                const el = document.getElementById(id);
-                if (el) el.value = RESET_DEFAULTS[id];
-            });
-            history.replaceState(null, '', window.location.pathname + window.location.search + '#mode=' + (PDE.currentMode || 'quick'));
-            PDE.ALLOWED_HASH_KEYS.forEach(function (id) { PDE.validateField(id); });
-            PDE.calculate();
-        });
+        resetBtn.addEventListener('click', PDE.resetScenario);
     }
 
     // ── Advanced Questions toggle ──

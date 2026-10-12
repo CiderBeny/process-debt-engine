@@ -9,6 +9,18 @@ window.PDE = window.PDE || {};
 PDE.EXCHANGE_RATES = { USD: 1, EUR: 0.87, PLN: 3.67, GBP: 0.75 };
 PDE.CURRENCY_SYMBOLS = { USD: '$', EUR: '€', PLN: 'zł', GBP: '£' };
 
+// Scenario baseline. Monetary defaults are USD; all other fields keep their units.
+PDE.SCENARIO_DEFAULTS = {
+    q1: 25, q2: 48, q3: 3, q4: 5000, q5: 2, q11: 4, q6: 120,
+    q7: 20, q8: 150000, q9: 3, q10: 12, autoLevel: 40, capex: 50000, teamSize: 10,
+    erosionRate: 25, discountRate: 9.3, timeHorizon: 5, leverAutomation: 30, leverRisk: 60,
+    contextPremium: 15, taxRate: 0, scenCAutoLevel: 80, scenCCapexMult: 15, annualHours: 1800,
+    leverInnovation: 50, leverManagement: 15, leverTurnover: 30,
+    mcIterations: 1000, mcConfidence: 90, mcUncertaintyPct: 15, mcMttrUncertaintyPct: 25,
+    correlationStrength: 30, corrQ3Q1: 15, corrQ1Q5: 3, corrQ1Q7: 20, corrQ3Q7: 10,
+    riskSecurityWeight: 40, riskRegulatoryWeight: 25
+};
+
 // ── Financial coefficients ──
 PDE.COEFFICIENTS = {
     // ── Annualised conversions ──
