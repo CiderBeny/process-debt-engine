@@ -476,7 +476,8 @@ PDE.readCalibration = function readCalibration() {
     try {
         const saved = JSON.parse(localStorage.getItem(PDE.CALIBRATION.STORAGE_KEY));
         if (!saved || typeof saved !== 'object' || Array.isArray(saved)) return { version: 2, actuals: {} };
-        if (saved.version === 2 && saved.currency === 'USD' && saved.actuals && typeof saved.actuals === 'object') return saved;
+        if (Object.keys(saved).length === 0) return { version: 2, actuals: {} };
+        if (saved.version === 2 && saved.currency === 'USD' && saved.actuals && typeof saved.actuals === 'object' && !Array.isArray(saved.actuals)) return saved;
         return { legacy: true, actuals: saved };
     } catch (e) { void e; return { version: 2, actuals: {} }; }
 };
