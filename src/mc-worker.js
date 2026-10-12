@@ -265,10 +265,16 @@ self.onmessage = function (e) {
         const opts = e.data.opts || {};
         const seed = e.data.seed || Date.now();
 
-        const iters = opts.iterations || 1000;
-        const cl = opts.confidenceLevel || 0.9;
-        const uncPct = opts.uncertaintyPct || 0.15;
-        const mttrUnc = opts.mttrUncertaintyPct || 0.25;
+        const iters = opts.iterations ?? 1000;
+        const cl = opts.confidenceLevel ?? 0.9;
+        const uncPct = opts.uncertaintyPct ?? 0.15;
+        const mttrUnc = opts.mttrUncertaintyPct ?? 0.25;
+        if (!Number.isInteger(iters) || iters < 1 || iters > 10000 ||
+            !Number.isFinite(cl) || cl <= 0 || cl >= 1 ||
+            !Number.isFinite(uncPct) || uncPct < 0 || uncPct > 1 ||
+            !Number.isFinite(mttrUnc) || mttrUnc < 0 || mttrUnc > 1) {
+            throw new Error('Invalid simulation options');
+        }
         const rng = seededRandom(seed);
 
         const reportEvery = Math.max(1, Math.floor(iters / 20));

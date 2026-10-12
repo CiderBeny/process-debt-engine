@@ -18,7 +18,7 @@ function serveAllowedPath(rawUrlPath) {
     const slash = decoded.replace(/\\/g, '/');
     if (slash === '/' || slash === '') return 'index.html';
 
-    const segs = slash.split('/');
+    const segs = (slash.startsWith('/') ? slash.slice(1) : slash).split('/');
     if (segs.some(function (s) { return s === '' || s === '.'; })) {
         // allow a single leading '' produced by a leading '/' but nothing else
         if (!(segs.length === 2 && segs[0] === '' && segs[1] !== '')) return null;
@@ -32,10 +32,15 @@ function serveAllowedPath(rawUrlPath) {
     // any hidden file. PROJECT security: never expose tooling/metadata.
     if (rel.split('/').some(function (s) { return s.charAt(0) === '.'; })) return null;
 
-    if (BLOCKED_EXACT.has(rel)) return null;
+    const lower = rel.toLowerCase();
+    if (Array.from(BLOCKED_EXACT).some(function (name) { return name.toLowerCase() === lower; })) return null;
+    // Windows aliases (ADS, trailing dots/spaces) must not bypass blocking.
+    if (/[\x00-\x1f\x7f:?#]/.test(rel) || rel.split('/').some(function (s) { return /[. ]$/.test(s); })) return null;
+    if (/\.(?:test\.js|map|md|json|toml|ya?ml|log|bak)$/i.test(rel)) return null;
+    if (lower.startsWith('scripts/') || lower === 'src/gen-og-image.js') return null;
 
-    const base = rel.split('/')[0];
-    if (base === 'node_modules' || base.startsWith('_')) return null;
+    const base = lower.split('/')[0];
+    if (base === 'node_modules' || base === 'reports' || base.startsWith('_')) return null;
 
     return rel;
 }
@@ -48,27 +53,43 @@ const SECURITY_HEADERS = {
     'Permissions-Policy': 'geolocation=(), camera=(), microphone=(), payment=(), usb=(), magnetometer=(), accelerometer=(), gyroscope=(), midi=(), sync-xhr=(), interest-cohort=()',
     'X-Content-Type-Options': 'nosniff',
     'Cache-Control': 'no-store',
+    'Referrer-Policy': 'no-referrer',
 };
 
-if (require.main === module) {
-    h.createServer((r, s) => {
-        const rel = serveAllowedPath(r.url === '/' ? '/' : r.url.slice(1));
-        if (rel === null) { s.writeHead(404); s.end('not found'); return; }
+function createServer(root = p.resolve(__dirname, '..')) {
+    const realRoot = fs.realpathSync(root);
+    return h.createServer((r, s) => {
+        function reject(status, message) {
+            s.writeHead(status, SECURITY_HEADERS); s.end(message);
+        }
+        // Restrict Host to loopback to resist DNS rebinding against the dev server.
+        if (!/^(?:127\.0\.0\.1|localhost)(?::\d+)?$/i.test(r.headers.host || '')) {
+            reject(403, 'forbidden'); return;
+        }
+        if (r.method !== 'GET' && r.method !== 'HEAD') { reject(405, 'method not allowed'); return; }
+        const rel = serveAllowedPath((r.url || '').split('?')[0]);
+        if (rel === null) { reject(404, 'not found'); return; }
         const ext = p.extname(rel);
-        const full = p.join('.', rel);
         try {
+            const full = fs.realpathSync(p.join(realRoot, rel));
+            const relative = p.relative(realRoot, full);
+            if (relative.startsWith('..') || p.isAbsolute(relative) || !fs.statSync(full).isFile()) {
+                reject(404, 'not found'); return;
+            }
             const c = fs.readFileSync(full);
             s.writeHead(200, Object.assign(
-                { 'Content-Type': mime[ext] || 'text/plain',
-                  'Access-Control-Allow-Origin': '*' },
+                { 'Content-Type': mime[ext] || 'text/plain' },
                 SECURITY_HEADERS
             ));
-            s.end(c);
+            s.end(r.method === 'HEAD' ? undefined : c);
         } catch {
-            s.writeHead(404);
-            s.end('not found');
+            reject(404, 'not found');
         }
-    }).listen(parseInt(process.argv[2] || '8080'), '127.0.0.1',
+    });
+}
+
+if (require.main === module) {
+    createServer().listen(parseInt(process.argv[2] || '8080'), '127.0.0.1',
         () => console.log('OK http://127.0.0.1:' + (process.argv[2] || '8080')));
 }
 
@@ -77,6 +98,7 @@ if (require.main !== module) {
     module.exports = {
         serveAllowedPath: serveAllowedPath,
         BLOCKED_EXACT: BLOCKED_EXACT,
-        SECURITY_HEADERS: SECURITY_HEADERS
+        SECURITY_HEADERS: SECURITY_HEADERS,
+        createServer: createServer
     };
 }

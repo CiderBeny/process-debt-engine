@@ -390,6 +390,7 @@ PDE.getParams = function getParams() {
 PDE.fetchNbpRates = async function fetchNbpRates() {
     try {
         const res = await fetch('https://api.nbp.pl/api/exchangerates/tables/A/last?format=json');
+        if (!res.ok) throw new Error('NBP HTTP error');
         const data = await res.json();
         const rates = data[0].rates;
         const getMid = (code) => rates.find(r => r.code === code).mid;
@@ -397,6 +398,13 @@ PDE.fetchNbpRates = async function fetchNbpRates() {
         const plnPerUsd = getMid('USD');
         const plnPerEur = getMid('EUR');
         const plnPerGbp = getMid('GBP');
+
+        // Validate the complete response before mutating fallback rates.
+        if (![plnPerUsd, plnPerEur, plnPerGbp].every(function (rate) {
+            return typeof rate === 'number' && Number.isFinite(rate) && rate > 0 && rate < 1000000;
+        }) || !/^\d{4}-\d{2}-\d{2}$/.test(data[0].effectiveDate)) {
+            throw new Error('Invalid NBP response');
+        }
 
         PDE.EXCHANGE_RATES['PLN'] = plnPerUsd;
         PDE.EXCHANGE_RATES['EUR'] = plnPerUsd / plnPerEur;
