@@ -1124,7 +1124,7 @@
                 <details class="methodology-section methodology-sub" id="methodology-7">
                   <summary><h4 data-i18n="methodologyFxTitle">7. Exchange Rates</h4></summary>
                   <div class="methodology-sub-body">
-                  <p><span data-i18n="methodologyFxBody">Live mid rates are fetched from Narodowy Bank Polski (NBP) Table A via api.nbp.pl on page load. Fallback rates if the API is unavailable: 1 USD = 0.87 EUR / 3.67 PLN / 0.75 GBP.</span></p>
+                  <p><span data-i18n="methodologyFxBody">Live mid rates are fetched from Narodowy Bank Polski (NBP) Table A via api.nbp.pl on page load. Fallback rates if the API is unavailable: 1 USD = 0.87 EUR / 3.67 PLN / 0.75 GBP. Monetary inputs are converted to USD for model calculations and displayed in the selected currency. Percentage, hour, count and scale limits do not change with currency. PDF reports use the selected display currency; CSV and Excel exports contain explicitly labelled USD values. Shared links include the sender’s currency so monetary inputs can be converted into the viewer’s active currency.</span></p>
                   <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyFxSource">Narodowy Bank Polski — Table A mid exchange rates. api.nbp.pl.</span></p>
                   </div>
                 </details>
@@ -1159,7 +1159,7 @@
                 <details class="methodology-section methodology-sub" id="methodology-11">
                   <summary><h4 data-i18n="methodologyAdvancedTitle">11. Configurable Advanced Parameters</h4></summary>
                   <div class="methodology-sub-body">
-                  <p><span data-i18n="methodologyAdvancedBody">The "Advanced Parameters" panel lets you override the model's default coefficients in real time — including Pipeline Erosion Rate (0.0–1.0), WACC / Discount Rate (5–20%), NPV Time Horizon (3–10 years), Automation Lever Recovery (10–60%), Risk Lever Recovery (20–80%), Context-Switching Premium (0–30%), Corporate Tax Rate (0–50%, for the CAPEX depreciation tax shield), Annual Productive Hours (1,500–2,500, default 1,800), Innovation Runway Lever Recovery (10–80%), Management Efficiency Lever Recovery (5–40%), Retention &amp; Burnout Lever Recovery (10–60%), and Scenario C overrides: automation level (50–100%) and CAPEX multiplier (10–30%). It also exposes Monte Carlo settings, correlation strength, and risk-category weights. Changing any control immediately recalculates all dependent metrics. Defaults are restored on page reload.</span></p>
+                  <p><span data-i18n="methodologyAdvancedBody">The "Advanced Parameters" panel lets you override the model's default coefficients in real time — including Pipeline Erosion Rate (0.0–1.0), WACC / Discount Rate (5–20%), NPV Time Horizon (3–10 years), Automation Lever Recovery (10–60%), Risk Lever Recovery (20–80%), Context-Switching Premium (0–30%), Corporate Tax Rate (0–50%, for the CAPEX depreciation tax shield), Annual Productive Hours (1,500–2,500, default 1,800), Innovation Runway Lever Recovery (10–80%), Management Efficiency Lever Recovery (5–40%), Retention &amp; Burnout Lever Recovery (10–60%), and Scenario C overrides: automation level (50–100%) and CAPEX multiplier (1.0–3.0). It also exposes Monte Carlo settings, correlation strength, and risk-category weights. Changing any control immediately recalculates all dependent metrics. Reloading a scenario URL restores the parameters, toggles and Monte Carlo seed encoded in its hash. Reset restores all 38 scenario parameters to the initial defaults, disables advanced toggles and clears the simulation seed. It preserves language, display currency, Quick/Full mode and calibration actuals; monetary defaults are converted to the active currency.</span></p>
                   <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyAdvancedSource">User-configurable — overrides the Economic Model defaults (Section 9) in real time.</span></p>
                   </div>
                 </details>
@@ -1199,7 +1199,7 @@
                 <details class="methodology-section methodology-sub" id="methodology-16">
                   <summary><h4 data-i18n="methodologyCalibTitle">16. Model Calibration</h4></summary>
                   <div class="methodology-sub-body">
-                  <p><span data-i18n="methodologyCalibBody">The Model Calibration panel lets you compare model predictions against your actual quarterly data. Each metric row shows: (1) Predicted value — the model's annual estimate divided by 4. (2) Your actual value — entered per quarter. (3) Variance — actual minus predicted. (4) Delta % — (actual - predicted) / predicted x 100. (5) Accuracy badge — green (<=15% error — Accurate), yellow (<=30% — Off), red (>30% — Poor). An overall Accuracy Score averages all metric delta %. Actual values are saved to localStorage and persist across sessions. Use "Reset Actuals" in the panel header to clear all entered data.</span></p>
+                  <p><span data-i18n="methodologyCalibBody">The Model Calibration panel compares model predictions with actual quarterly data. Each row shows the annual model estimate divided by 4, your quarterly actual, the signed variance (actual minus predicted), and Delta % (variance divided by predicted × 100). For a zero prediction, Delta % is displayed as 0%; assess the absolute variance separately. Accuracy badges use absolute Delta %: green ≤15%, yellow ≤30%, red &gt;30%. The overall Accuracy Score is the percentage of all six metrics with entered actuals within the 15% tolerance; unfilled metrics do not count as accurate. It is not an average of Delta %. Actuals persist locally in your browser: monetary values are stored in USD and displayed in the selected currency; hours keep their own unit. Older saved actuals require you to choose their original currency before conversion. Use “Reset Actuals” at the bottom of the panel to clear calibration data independently of the scenario reset.</span></p>
                   <p><span class="methodology-label" data-i18n="methodologySourceLabel">Source:</span> <span data-i18n="methodologyCalibSource">Built-in calibration tool — user-provided actuals stored in localStorage.</span></p>
                   </div>
                 </details>
@@ -1212,7 +1212,7 @@
                   </div>
                 </details>
 
-                <p class="methodology-footer" id="methodology-footer" data-i18n="methodologyFooter">Methodology references last updated July 2026. All estimates labelled "tool estimate" should be calibrated against your organisation's own data for greatest accuracy.</p>
+                <p class="methodology-footer" id="methodology-footer" data-i18n="methodologyFooter">Tool behaviour documentation updated 12 October 2026. The date of the last methodology-reference update remains July 2026; the software corrections did not include a new source review. All estimates labelled “tool estimate” should be calibrated against your organisation’s own data.</p>
 
             </div>
         </details>
