@@ -582,28 +582,30 @@ PDE.exportPDF = async function exportPDF(mode) {
                 heroStr = L.verdictHeroNoReturn(heroCapex, heroSavings);
             }
             heroStr = heroStr.replace(/<[^>]+>/g, '');
-            let heroRows = 0;
+            let heroLines = [];
             if (heroStr) {
                 pdf.setFontSize(7); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(28, 20, 16);
-                const heroLines = wrapText(heroStr, ML + 6, UW - 12);
-                heroLines.slice(0, 2).forEach(function (ln, i) { pdf.text(ln, ML + 6, cy + 5 + i * 3.6); });
-                heroRows = Math.min(heroLines.length, 2);
+                heroLines = wrapText(heroStr, ML + 6, UW - 12);
             }
-            const barH   = 15 + heroRows * 4;
-            const statsY = cy + 5 + heroRows * 3.6;
+            pdf.setFontSize(5.5); pdf.setFont(pdfFont, fontItalic);
+            const noteLines = wrapText(L.verdictNote, ML + 6, UW - 12);
+            const barH = 24 + heroLines.length * 3.6 + noteLines.length * 2.6;
             needSpace(barH + 2);
+            const statsY = cy + 5 + heroLines.length * 3.6;
             drawRect(ML, cy, UW, barH, [255, 255, 255], [214, 201, 184]);
+            pdf.setFontSize(7); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(28, 20, 16);
+            heroLines.forEach(function (ln, i) { pdf.text(ln, ML + 6, cy + 5 + i * 3.6); });
             pdf.setFontSize(6); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(180, 83, 9);
             pdf.text(L.verdictRecoveryLabel.toUpperCase(), ML + 6, statsY);
             pdf.setFontSize(10); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(28, 20, 16);
-            pdf.text(PDE.formatCurrency(r.potentialSavings), ML + 6, statsY + 7);
+            const top3Recovery = leversRaw.slice().sort(function (a, b) { return b.recovery - a.recovery; }).slice(0, 3).reduce(function (sum, lever) { return sum + lever.recovery; }, 0);
+            pdf.text(PDE.formatCurrency(top3Recovery), ML + 6, statsY + 7);
             pdf.setFontSize(6); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(180, 83, 9);
             pdf.text(L.verdictPaybackLabel.toUpperCase(), ML + UW / 2, statsY);
             pdf.setFontSize(10); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(28, 20, 16);
             pdf.text(capexBelowMin ? '\u2014' : pbStrNom, ML + UW / 2, statsY + 7);
             pdf.setFontSize(5.5); pdf.setFont(pdfFont, fontItalic); pdf.setTextColor(140, 123, 110);
-            const noteLines = wrapText(L.verdictNote, ML + 6, UW - 12);
-            pdf.text(noteLines[0] || '', ML + 6, statsY + 13);
+            noteLines.forEach(function (ln, i) { pdf.text(ln, ML + 6, statsY + 13 + i * 2.6); });
             cy += barH + 4;
 
             // Financial results (3 core cards)
