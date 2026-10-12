@@ -7,6 +7,18 @@ PDE.sanitizeCell = function sanitizeCell(v) {
     return typeof v === 'string' && /^[=+\-@\t\r]/.test(v) ? "'" + v : v;
 };
 
+// Tabular exports contain model-base USD values; label them explicitly.
+PDE.exportTranslations = function exportTranslations() {
+    function resolve(value) {
+        if (Array.isArray(value)) return value.map(resolve);
+        if (typeof value === 'string') return value.replaceAll('{CC}', 'USD').replaceAll('{C}', 'USD');
+        return value;
+    }
+    return Object.fromEntries(Object.entries(PDE.TRANSLATIONS[PDE.currentLang]).map(function (entry) {
+        return [entry[0], resolve(entry[1])];
+    }));
+};
+
 PDE.exportExcel = function exportExcel() {
     const btn = document.getElementById('exportExcelBtn');
     btn.disabled = true;
@@ -14,7 +26,7 @@ PDE.exportExcel = function exportExcel() {
 
     setTimeout(() => {
         try {
-            const L  = PDE.TRANSLATIONS[PDE.currentLang];
+            const L  = PDE.exportTranslations();
             const wb = XLSX.utils.book_new();
 
             const sanitizeSheetData = data =>
@@ -100,7 +112,7 @@ PDE.exportExcel = function exportExcel() {
                 [L.xlsSimParamsTitle],
                 [L.xlsAutoLevel,  autoLvlRaw, '%'           ],
                 [L.xlsTeamSize,   teamSizeRaw, L.xlsTeamSizeUnit],
-                [L.xlsCapex,      capexRaw,   PDE.currentCurrency      ],
+                [L.xlsCapex,      capexRaw,   'USD'      ],
                 ...advancedRows,
             ];
             const wsInputs = XLSX.utils.aoa_to_sheet(sanitizeSheetData(inputsData));
@@ -137,9 +149,9 @@ PDE.exportExcel = function exportExcel() {
             wsLevers['!cols'] = [{wch:22},{wch:32},{wch:28},{wch:12},{wch:14}];
             XLSX.utils.book_append_sheet(wb, wsLevers, L.xlsSheetLevers);
 
-            const scenC_cap = p.capex * PDE.COEFFICIENTS.SCEN_C_CAPEX_MULTIPLIER;
+            const scenC_cap = p.capex * r.scenCCapexMult;
             const scenValues = [
-                [Math.round(scenA.net), Math.round(r.totalImpact), Math.round(r.totalImpact)],
+                [Math.round(r.totalImpact), Math.round(r.totalImpact), Math.round(r.totalImpact)],
                 [0,                     Math.round(p.capex),       Math.round(scenC_cap)  ],
                 [0,                     Math.round(scenB.net),     Math.round(scenC.net)  ],
                 ['\u221e',
@@ -211,7 +223,7 @@ PDE.exportCsv = function exportCsv() {
 
     setTimeout(() => {
         try {
-            const L = PDE.TRANSLATIONS[PDE.currentLang];
+            const L = PDE.exportTranslations();
             const p = PDE.getParams();
             const r = PDE.computeModel(p);
 
@@ -258,7 +270,7 @@ PDE.exportCsv = function exportCsv() {
             rows.push(L.xlsSimParamsTitle);
             rows.push('autoLevel,' + csvEscape(autoLvlRaw) + ',%');
             rows.push('teamSize,' + csvEscape(teamSizeRaw) + ',' + csvEscape(L.xlsTeamSizeUnit));
-            rows.push('capex,' + csvEscape(capexRaw) + ',' + csvEscape(PDE.currentCurrency));
+            rows.push('capex,' + csvEscape(capexRaw) + ',USD');
 
             const advancedPairs = [
                 [L.erosionRateLabel, p.erosionRate.toFixed(2)],
@@ -305,9 +317,9 @@ PDE.exportCsv = function exportCsv() {
 
             rows.push(L.xlsScenariosTitle);
             rows.push(L.xlsScenariosHeaders.map(function (h) { return csvEscape(h); }).join(','));
-            const scenC_cap = p.capex * PDE.COEFFICIENTS.SCEN_C_CAPEX_MULTIPLIER;
+            const scenC_cap = p.capex * r.scenCCapexMult;
             const scenValues = [
-                [Math.round(scenA.net), Math.round(r.totalImpact), Math.round(r.totalImpact)],
+                [Math.round(r.totalImpact), Math.round(r.totalImpact), Math.round(r.totalImpact)],
                 [0, Math.round(p.capex), Math.round(scenC_cap)],
                 [0, Math.round(scenB.net), Math.round(scenC.net)],
                 ['---', isFinite(scenB.pb) ? Math.round(scenB.pb * 10) / 10 : '---', isFinite(scenC.pb) ? Math.round(scenC.pb * 10) / 10 : '---'],
@@ -664,8 +676,8 @@ PDE.exportPDF = async function exportPDF(mode) {
             const dcolW = UW / 4;
             drawRect(ML, cy, UW, 7, [74, 63, 53]);
             pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(255, 255, 255);
-            pdf.text('Metric', ML + 2, cy + 5);
-            pdf.text('Your Value', ML + dcolW + 2, cy + 5);
+            pdf.text(L.doraColumnMetric, ML + 2, cy + 5);
+            pdf.text(L.doraColumnValue, ML + dcolW + 2, cy + 5);
             pdf.text(L.doraBandHeader, ML + dcolW * 2 + 2, cy + 5);
             pdf.text('Status', ML + dcolW * 3 + 2, cy + 5);
             cy += 10;
@@ -1164,8 +1176,8 @@ PDE.exportPDF = async function exportPDF(mode) {
                 const colW = UW / 4;
                 drawRect(ML, cy, UW, 7, [74,63,53]);
                 pdf.setFontSize(5.5); pdf.setFont(pdfFont, 'bold'); pdf.setTextColor(255,255,255);
-                pdf.text('Metric', ML + 2, cy + 5);
-                pdf.text('Your Value', ML + colW + 2, cy + 5);
+                pdf.text(L.doraColumnMetric, ML + 2, cy + 5);
+                pdf.text(L.doraColumnValue, ML + colW + 2, cy + 5);
                 pdf.text(L.doraBandHeader, ML + colW * 2 + 2, cy + 5);
                 pdf.text('Status', ML + colW * 3 + 2, cy + 5);
                 cy += 10;

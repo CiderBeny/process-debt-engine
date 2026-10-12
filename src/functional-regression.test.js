@@ -7,6 +7,7 @@ require('./config.js');
 require('./i18n.js');
 require('./utils.js');
 require('./ui-renderers.js');
+require('./exports.js');
 let stored = null;
 global.localStorage = {
     getItem: function () { return stored; },
@@ -106,5 +107,16 @@ test('calibration renders signed monetary differences and converted input values
                 assert.ok(elements.calibrationGrid.innerHTML.includes('value="' + Math.round(actual * PDE.EXCHANGE_RATES[currency] * 100) / 100 + '"'));
             }
         }
+    }
+});
+
+test('export money labels resolve to USD without changing UI translations', function () {
+    for (const lang of ['en', 'pl']) {
+        PDE.currentLang = lang;
+        const exported = PDE.exportTranslations();
+        assert.ok(!JSON.stringify(exported).includes('{C}'));
+        assert.ok(!JSON.stringify(exported).includes('{CC}'));
+        assert.equal(exported.xlsInputsRows.find(function (row) { return row[0] === 'Q4'; })[3], lang === 'en' ? 'USD/hr' : 'USD/godz.');
+        assert.ok(JSON.stringify(PDE.TRANSLATIONS[lang]).includes('{C}'));
     }
 });
