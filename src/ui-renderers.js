@@ -559,7 +559,7 @@ PDE.updateCalibration = function updateCalibration(r) {
             varPctStr = isFilled ? (varPct >= 0 ? '+' : '') + (varPct * 100).toFixed(0) + '%' : '\u2014';
         } else {
             predictedStr = PDE.formatCurrency(predicted);
-            varianceStr = isFilled ? (variance >= 0 ? '+' : '') + PDE.formatCurrency(Math.abs(variance)) : '\u2014';
+            varianceStr = isFilled ? (variance >= 0 ? '+' : '-') + PDE.formatCurrency(Math.abs(variance)) : '\u2014';
             varPctStr = isFilled ? (varPct >= 0 ? '+' : '') + (varPct * 100).toFixed(0) + '%' : '\u2014';
         }
 

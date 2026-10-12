@@ -90,3 +90,21 @@ test('reset covers every shareable field, toggles and seed, preserving preferenc
         }
     } finally { Object.assign(PDE, original); }
 });
+
+test('calibration renders signed monetary differences and converted input values', function () {
+    elements.calibrationGrid = { innerHTML: '' };
+    elements.calibrationScore = { innerHTML: '' };
+    for (const currency of Object.keys(PDE.EXCHANGE_RATES)) {
+        PDE.currentCurrency = currency;
+        for (const lang of ['pl', 'en']) {
+            PDE.currentLang = lang;
+            for (const actual of [50, 100, 150]) {
+                stored = JSON.stringify({ version: 2, currency: 'USD', actuals: { cWaste: actual } });
+                PDE.updateCalibration({ cWaste: 400 });
+                const expected = (actual >= 100 ? '+' : '-') + PDE.formatCurrency(Math.abs(actual - 100));
+                assert.ok(elements.calibrationGrid.innerHTML.includes('<span class="calib-variance">' + expected + '</span>'));
+                assert.ok(elements.calibrationGrid.innerHTML.includes('value="' + Math.round(actual * PDE.EXCHANGE_RATES[currency] * 100) / 100 + '"'));
+            }
+        }
+    }
+});
