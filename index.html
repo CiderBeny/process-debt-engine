@@ -898,6 +898,13 @@
                     <span id="calibToggleIcon" style="font-size:0.75rem;color:var(--text-muted);transition:transform 0.2s;">&#9654;</span>
                 </div>
                 <div id="calibrationBody" style="display:block;margin-top:1rem;">
+                    <div id="calibrationMigration" hidden>
+                        <p data-i18n="calibLegacyNotice">Choose the original currency of your saved actuals before using them.</p>
+                        <select id="calibrationLegacyCurrency" aria-label="Original currency" data-i18n-aria="calibLegacyCurrency">
+                            <option value="USD">USD</option><option value="EUR">EUR</option><option value="PLN">PLN</option><option value="GBP">GBP</option>
+                        </select>
+                        <button id="calibrationMigrateBtn" type="button" data-i18n="calibLegacyApply">Convert saved actuals</button>
+                    </div>
                     <div id="calibrationGrid" style="display:grid;grid-template-columns:1fr;gap:0.5rem;"></div>
                     <div id="calibrationFooter" style="display:flex;justify-content:space-between;align-items:center;margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--border-subtle);">
                         <div id="calibrationScore" style="font-size:0.8rem;font-weight:700;color:var(--text-primary);"></div>

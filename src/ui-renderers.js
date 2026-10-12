@@ -472,13 +472,45 @@ PDE.updateSensitivityViews = function updateSensitivityViews(params) {
     grid.innerHTML = html;
 };
 
+PDE.readCalibration = function readCalibration() {
+    try {
+        const saved = JSON.parse(localStorage.getItem(PDE.CALIBRATION.STORAGE_KEY));
+        if (!saved || typeof saved !== 'object' || Array.isArray(saved)) return { version: 2, actuals: {} };
+        if (saved.version === 2 && saved.currency === 'USD' && saved.actuals && typeof saved.actuals === 'object') return saved;
+        return { legacy: true, actuals: saved };
+    } catch (e) { void e; return { version: 2, actuals: {} }; }
+};
+
+PDE.parseCalibrationNumber = function parseCalibrationNumber(value) {
+    const text = String(value).trim().replace(',', '.');
+    if (!/^-?\d+(?:\.\d+)?$/.test(text)) return NaN;
+    return Number(text);
+};
+
+PDE.migrateCalibration = function migrateCalibration(currency) {
+    if (!Object.prototype.hasOwnProperty.call(PDE.EXCHANGE_RATES, currency)) return;
+    const saved = PDE.readCalibration();
+    if (!saved.legacy) return;
+    const actuals = {};
+    PDE.CALIBRATION.METRICS.forEach(function (m) {
+        const value = PDE.parseCalibrationNumber(saved.actuals[m.key]);
+        if (isFinite(value)) actuals[m.key] = m.format === 'currency' ? value / PDE.EXCHANGE_RATES[currency] : value;
+    });
+    try { localStorage.setItem(PDE.CALIBRATION.STORAGE_KEY, JSON.stringify({ version: 2, currency: 'USD', actuals: actuals })); } catch (e) { void e; }
+    if (PDE._lastResult) PDE.updateCalibration(PDE._lastResult);
+};
+
 PDE.updateCalibration = function updateCalibration(r) {
     if (!r) return;
     const L = PDE.TRANSLATIONS[PDE.currentLang];
     const cal = PDE.CALIBRATION;
 
-    let saved;
-    try { saved = JSON.parse(localStorage.getItem(cal.STORAGE_KEY)) || {}; } catch (e) { saved = {}; void e; }
+    const record = PDE.readCalibration();
+    const saved = record.legacy ? {} : record.actuals;
+    const migration = document.getElementById('calibrationMigration');
+    if (migration) migration.hidden = !record.legacy;
+    const legacyCurrency = document.getElementById('calibrationLegacyCurrency');
+    if (legacyCurrency) legacyCurrency.setAttribute('aria-label', L.calibLegacyCurrency);
 
     const grid = document.getElementById('calibrationGrid');
     if (!grid) return;
@@ -495,7 +527,8 @@ PDE.updateCalibration = function updateCalibration(r) {
         const inputId = 'calibActual_' + m.key;
         let actualVal = saved[m.key];
         if (actualVal === undefined || actualVal === null) actualVal = '';
-        const actualNum = parseFloat(actualVal);
+        const actualNum = PDE.parseCalibrationNumber(actualVal);
+        if (isFinite(actualNum) && m.format === 'currency') actualVal = String(Math.round(actualNum * PDE.EXCHANGE_RATES[PDE.currentCurrency] * 100) / 100);
         const isFilled = isFinite(actualNum);
         if (isFilled) filledCount++;
 
@@ -546,7 +579,7 @@ PDE.updateCalibration = function updateCalibration(r) {
         rows += '<div class="calib-row">' +
             '<span class="calib-label">' + PDE.esc(label) + '</span>' +
             '<span class="calib-predicted">' + predictedStr + '</span>' +
-            '<input class="calib-input" id="' + inputId + '" type="text" inputmode="decimal" placeholder="\u2014" value="' + PDE.esc(String(actualVal)) + '">' +
+            '<input class="calib-input" id="' + inputId + '" type="text" inputmode="decimal" placeholder="\u2014"' + (record.legacy ? ' disabled' : '') + ' value="' + PDE.esc(String(actualVal)) + '">' +
             '<span class="calib-variance">' + varianceStr + '</span>' +
             '<span class="calib-varpct">' + varPctStr + '</span>' +
             '<span class="calib-status">' + badgeHtml + '</span>' +
@@ -570,15 +603,16 @@ PDE.updateCalibration = function updateCalibration(r) {
 
 PDE.saveCalibrationActuals = function saveCalibrationActuals() {
     const cal = PDE.CALIBRATION;
+    if (PDE.readCalibration().legacy) return;
     const data = {};
     cal.METRICS.forEach(function (m) {
         const el = document.getElementById('calibActual_' + m.key);
         if (el) {
-            const v = el.value.trim();
-            if (v !== '') data[m.key] = v;
+            const v = PDE.parseCalibrationNumber(el.value);
+            if (isFinite(v)) data[m.key] = m.format === 'currency' ? PDE.currencyToUsd(v) : v;
         }
     });
-    try { localStorage.setItem(cal.STORAGE_KEY, JSON.stringify(data)); } catch (e) { void e; }
+    try { localStorage.setItem(cal.STORAGE_KEY, JSON.stringify({ version: 2, currency: 'USD', actuals: data })); } catch (e) { void e; }
 };
 
 PDE.calibrationHandleBlur = function calibrationHandleBlur() {

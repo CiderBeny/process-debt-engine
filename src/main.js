@@ -286,6 +286,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    const migrateBtn = document.getElementById('calibrationMigrateBtn');
+    if (migrateBtn) migrateBtn.addEventListener('click', function () {
+        PDE.migrateCalibration(document.getElementById('calibrationLegacyCurrency').value);
+    });
     const calibResetBtn = document.getElementById('calibResetBtn');
     if (calibResetBtn) calibResetBtn.addEventListener('click', PDE.resetCalibration);
 
