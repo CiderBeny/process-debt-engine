@@ -85,12 +85,12 @@ const _FONT_B64_MAX_LEN      = 700000; // ~512 KB binary ceiling
 
 function validateFontFace(f) {
     if (!f || typeof f !== 'object')                          return null;
-    if (!_FONT_ALLOWED_FAMILIES[f.family])                    return null;
+    if (typeof f.family !== 'string' || !Object.prototype.hasOwnProperty.call(_FONT_ALLOWED_FAMILIES, f.family))                    return null;
     if (!/^\d+$/.test(String(f.weight)))                      return null;
     const w = parseInt(f.weight, 10);
     if (w < 100 || w > 900 || w % 100 !== 0)                 return null;
-    if (!_FONT_ALLOWED_STYLES[f.style])                       return null;
-    if (!_FONT_ALLOWED_FMTS[f.fmt])                           return null;
+    if (typeof f.style !== 'string' || !Object.prototype.hasOwnProperty.call(_FONT_ALLOWED_STYLES, f.style))                       return null;
+    if (typeof f.fmt !== 'string' || !Object.prototype.hasOwnProperty.call(_FONT_ALLOWED_FMTS, f.fmt))                           return null;
     if (typeof f.b64 !== 'string')                            return null;
     if (f.b64.length === 0 || f.b64.length > _FONT_B64_MAX_LEN) return null;
     if (!_FONT_B64_RE.test(f.b64))                            return null;
