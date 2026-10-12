@@ -242,8 +242,9 @@ PDE.clamp = function clamp(id) {
     const raw = parseFloat(document.getElementById(id)?.value);
     if (!c) return isFinite(raw) ? raw : 0;
     if (!isFinite(raw)) return c.min;
-    const minInCurrency = c.min * PDE.EXCHANGE_RATES[PDE.currentCurrency];
-    const maxInCurrency = c.max * PDE.EXCHANGE_RATES[PDE.currentCurrency];
+    const rate = ['q4', 'q6', 'q8', 'capex'].includes(id) ? PDE.EXCHANGE_RATES[PDE.currentCurrency] : 1;
+    const minInCurrency = c.min * rate;
+    const maxInCurrency = c.max * rate;
     return Math.round(Math.min(maxInCurrency, Math.max(minInCurrency, raw)) * 100) / 100;
 };
 
